@@ -164,6 +164,8 @@ function serializeMap(nodes: IdeaNode[], edges: Edge[]) {
   };
 }
 
+const staleProposalMessage = 'El proyecto cambió. Carga la versión guardada para generar una propuesta nueva.';
+
 export default function App() {
   const [nodes, setNodes] = useState<IdeaNode[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
@@ -463,6 +465,17 @@ export default function App() {
       setStorageError(error instanceof Error ? error.message : 'No se pudo abrir el proyecto.');
     } finally { if (sequence === openSequence.current) setLoading(false); }
   }, [flushPendingSave, resetChat]);
+
+  const reloadProjectAfterAiConflict = async () => {
+    const id = projectRef.current?.id;
+    if (!id || aiBusy || loading || restoreBusy) return;
+    setAiBusy(true);
+    try {
+      if (await flushPendingSave()) await openProject(id);
+    } finally {
+      setAiBusy(false);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -899,8 +912,12 @@ export default function App() {
       projectsApi.backups(saved.id).then(({ backups: recoverable }) => setBackups(recoverable)).catch(() => undefined);
       loadProjectList().then(setProjectList).catch(() => undefined);
     } catch (error) {
-      if (error instanceof ProjectRequestError && error.status === 409) setAiProposal(null);
-      setAiError(error instanceof Error ? error.message : 'No se pudo aplicar la propuesta.');
+      if (error instanceof ProjectRequestError && error.status === 409) {
+        setAiProposal(null);
+        setAiError(staleProposalMessage);
+      } else {
+        setAiError(error instanceof Error ? error.message : 'No se pudo aplicar la propuesta.');
+      }
     }
     finally { setAiBusy(false); }
   }, [aiBusy, aiProposal, flushPendingSave, loadProjectList, nodes.length, project]);
@@ -959,8 +976,12 @@ export default function App() {
       projectsApi.backups(saved.id).then(({ backups: recoverable }) => setBackups(recoverable)).catch(() => undefined);
       loadProjectList().then(setProjectList).catch(() => undefined);
     } catch (error) {
-      if (error instanceof ProjectRequestError && error.status === 409) setAiSlideProposal(null);
-      setAiError(error instanceof Error ? error.message : 'No se pudo aplicar el borrador.');
+      if (error instanceof ProjectRequestError && error.status === 409) {
+        setAiSlideProposal(null);
+        setAiError(staleProposalMessage);
+      } else {
+        setAiError(error instanceof Error ? error.message : 'No se pudo aplicar el borrador.');
+      }
     }
     finally { setAiBusy(false); }
   }, [aiBusy, aiSlideProposal, flushPendingSave, loadProjectList, project]);
@@ -1064,8 +1085,12 @@ export default function App() {
         if (projectRef.current?.id === saved.id) setBackups(recoverable);
       }).catch(() => undefined);
     } catch (error) {
-      if (intent === 'apply' && error instanceof ProjectRequestError && error.status === 409) setDeckProposal(null);
-      setAiError(error instanceof Error ? error.message : 'No se pudo guardar la presentación.');
+      if (intent === 'apply' && error instanceof ProjectRequestError && error.status === 409) {
+        setDeckProposal(null);
+        setAiError(staleProposalMessage);
+      } else {
+        setAiError(error instanceof Error ? error.message : 'No se pudo guardar la presentación.');
+      }
     } finally { setAiBusy(false); }
   };
 
@@ -1654,7 +1679,7 @@ export default function App() {
                 setGenerationStatus('Cancelando la generación…');
               }}>Cancelar</button>}
             </div>}
-            {aiError && <div className="sample-notice storage-error" role={aiError.startsWith('Generación cancelada') ? 'status' : 'alert'}><span>ⓘ</span>{aiError}<button onClick={() => setAiError('')} aria-label="Cerrar aviso">×</button></div>}
+            {aiError && <div className="sample-notice storage-error" role={aiError.startsWith('Generación cancelada') ? 'status' : 'alert'}><span>ⓘ</span>{aiError}{aiError === staleProposalMessage && <button type="button" className="conflict-copy-button" disabled={aiBusy || loading || restoreBusy} onClick={() => void reloadProjectAfterAiConflict()}>Cargar versión guardada</button>}<button onClick={() => setAiError('')} aria-label="Cerrar aviso">×</button></div>}
             <form className="composer" onSubmit={(event) => { event.preventDefault(); void runChat(chatDraft); }}>
               <textarea id="chat-draft" name="message" aria-label="Escribe una idea" placeholder={aiReady ? 'Pregúntame algo o añade una idea…' : 'Configura un proveedor para empezar…'} rows={2} maxLength={3000} value={chatDraft} onChange={(event) => setChatDraft(event.target.value)} disabled={!aiReady || aiBusy} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); void runChat(chatDraft); } }} />
               <div className="composer__tools">
