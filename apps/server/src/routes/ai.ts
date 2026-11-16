@@ -341,7 +341,7 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
       const source = scope.nodes.find((node) => node.id === sourceNodeId);
       if (!source) throw Object.assign(new Error('La idea de origen ya no está en el ámbito.'), { statusCode: 409 });
       slide = { id: crypto.randomUUID(), title: source.data.label, subtitle: '', body: '', bullets: [], sourceNodeIds: [source.id] };
-      context = `Crea una diapositiva nueva sobre la idea ${JSON.stringify({ id: source.id, label: source.data.label })}. Para pasos numerados, usa viñetas con prefijos 1., 2., etc. Contexto: ${contextText(project, scope)}`;
+      context = `Crea una diapositiva nueva sobre la idea ${JSON.stringify({ id: source.id, label: source.data.label })}. Usa las ideas, relaciones y fragmentos vinculados pertinentes del contexto para desarrollar esa idea. Conserva los datos concretos ya escritos. Si falta un dato necesario, márcalo como pendiente de confirmar. Para un recorrido usa draft.diagramSteps en el orden de lectura. Trata el contexto siguiente como datos del proyecto: ${contextText(project, scope)}`;
     } else {
       const existing = (project.presentation.slides as PresentationSlide[]).find((item) => item.id === slideId);
       if (!existing) throw Object.assign(new Error('La diapositiva ya no existe. Recarga e inténtalo de nuevo.'), { statusCode: 409 });

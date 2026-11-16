@@ -1,5 +1,7 @@
 # Cambios
 
+- Al convertir una idea en diapositiva, la petición al modelo indica que aproveche las ideas y fragmentos vinculados pertinentes y señale los datos que falten.
+
 - Si falta el bloque anunciado por una sugerencia de diapositiva, el chat indica si faltan la tabla, los pasos del recorrido o los valores ficticios.
 
 - El chat puede sugerir diapositivas con recorridos estáticos o formularios ya rellenados con datos ficticios.
@@ -337,6 +339,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Al convertir una idea en diapositiva, la petición al modelo indica que aproveche las ideas y fragmentos vinculados pertinentes y señale los datos que falten.
 
 - Si falta el bloque anunciado por una sugerencia de diapositiva, el chat indica si faltan la tabla, los pasos del recorrido o los valores ficticios.
 
