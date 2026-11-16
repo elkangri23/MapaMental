@@ -115,6 +115,7 @@ function sanitizeSuggestions(value: unknown, nodes: IdeaNode[], canCreateSlide: 
   if (!Array.isArray(value)) return [];
   const ids = new Set(nodes.map((node) => node.id));
   const titles = new Set<string>();
+  const actions = new Set<string>();
   const suggestions: AiSuggestion[] = [];
   for (const entry of value.slice(0, 8)) {
     if (!isRecord(entry) || typeof entry.title !== 'string' || typeof entry.prompt !== 'string') continue;
@@ -125,8 +126,13 @@ function sanitizeSuggestions(value: unknown, nodes: IdeaNode[], canCreateSlide: 
     const prompt = entry.prompt.trim().slice(0, 700);
     const key = title.toLocaleLowerCase('es');
     if (!title || !prompt || titles.has(key)) continue;
-    titles.add(key);
     const format = entry.kind === 'create-slide' && entry.format === 'table' ? 'table' : undefined;
+    const action = entry.kind === 'create-slide' ? 'slide' : 'map';
+    const normalizedPrompt = prompt.normalize('NFC').replace(/\s+/g, ' ').trim().toLocaleLowerCase('es');
+    const actionKey = JSON.stringify([entry.targetNodeId, action, format, normalizedPrompt]);
+    if (actions.has(actionKey)) continue;
+    actions.add(actionKey);
+    titles.add(key);
     suggestions.push({ title, prompt, kind: entry.kind, targetNodeId: entry.targetNodeId, format });
     if (suggestions.length === 3) break;
   }
