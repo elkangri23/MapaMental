@@ -175,6 +175,7 @@ export default function App() {
   const [deckCount, setDeckCount] = useState('');
   const [deckMode, setDeckMode] = useState<'local' | 'ai'>('local');
   const [deckPrompt, setDeckPrompt] = useState('');
+  const [revisingDeckRequest, setRevisingDeckRequest] = useState(false);
   const [deckProposal, setDeckProposal] = useState<{ proposal: AiDeckProposal; scope: string[]; prompt: string; countInput: string } | null>(null);
   const deckDialogRef = useRef<HTMLDialogElement>(null);
   const deckDialogTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -1026,6 +1027,7 @@ export default function App() {
 
   const openDeckDialog = (trigger: HTMLButtonElement) => {
     if (!project || !nodes.length || aiBusy || loading) return;
+    setRevisingDeckRequest(false);
     setDeckMode('local');
     setDeckPrompt('');
     setDeckCount(String(suggestedSlideCount(nodes.length)));
@@ -1036,11 +1038,18 @@ export default function App() {
   const reviseDeckRequest = () => {
     if (!deckProposal || !aiReady || aiBusy || loading || !nodes.length) return;
     setDeckMode('ai');
+    setRevisingDeckRequest(true);
     setDeckPrompt(deckProposal.prompt);
     setDeckCount(deckProposal.countInput);
     deckDialogTriggerRef.current = deckProposalTriggerRef.current;
     deckDialogRef.current?.showModal();
   };
+
+  const previousDeckScope = revisingDeckRequest && deckProposal ? new Set(deckProposal.scope) : null;
+  const deckScopeChanged = previousDeckScope !== null && (
+    previousDeckScope.size !== aiContextPreview.nodes.length
+    || aiContextPreview.nodes.some(({ id }) => !previousDeckScope.has(id))
+  );
 
   const requestedSlides = Number(deckCount);
   const deckLimit = deckMode === 'ai' ? AI_DECK_SLIDE_LIMIT : PROJECT_SLIDE_LIMIT;
@@ -1934,6 +1943,7 @@ export default function App() {
             <label className="provider-field"><span>Enfoque de la presentación (opcional)</span>
               <input maxLength={800} value={deckPrompt} onChange={(event) => setDeckPrompt(event.target.value)} />
             </label>
+            {deckScopeChanged && <p>La selección cambió desde el borrador anterior. Al generar, se usarán las {aiContextPreview.nodes.length} ideas del contexto actual.</p>}
             <details><summary>Contexto para {activeProvider?.name} · {providerHasRemoteUsage ? 'remoto' : 'local'} · {aiContextPreview.nodes.length} ideas</summary>
               <p>Se comparten el nombre del proyecto, el resumen global, estas ideas, sus ancestros, las conexiones y fragmentos limitados de diapositivas vinculadas, además del enfoque indicado.</p>
               <p>Resumen global: {aiContextPreview.projectSummary.narrative}</p>

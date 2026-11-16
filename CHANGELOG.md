@@ -1,5 +1,7 @@
 # Cambios
 
+- Al ajustar un borrador de presentación, el diálogo avisa si la selección del mapa cambió y se usará el contexto actual.
+
 - Desde el borrador de una presentación se pueden ajustar las instrucciones y recuperar la cantidad solicitada o el modo automático.
 
 - La generación de presentaciones pide agrupar ideas relacionadas, repartir temas entre diapositivas y señalar las omisiones relevantes.
@@ -361,6 +363,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Al ajustar un borrador de presentación, el diálogo avisa si la selección del mapa cambió y se usará el contexto actual.
 
 - Desde el borrador de una presentación se pueden ajustar las instrucciones y recuperar la cantidad solicitada o el modo automático.
 
