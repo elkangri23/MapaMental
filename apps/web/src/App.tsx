@@ -1449,6 +1449,17 @@ export default function App() {
   const deckUnlinkedIdeaIds = deckProposal?.scope.filter((id) => !deckLinkedIdeaIds.has(id)) ?? [];
   const deckIdeaLabels = deckProposal ? new Map(nodes.map(({ id, data }) => [id, data.label])) : null;
 
+  const renderDeckSourceIdea = (id: string) => {
+    const label = deckIdeaLabels?.get(id);
+    return <li key={id}>{label === undefined ? 'Idea eliminada' : (
+      <button type="button" className="quiet-button" disabled={aiBusy || loading}
+        aria-label={`Seleccionar en el mapa: ${label}`} aria-current={selectedNodeId === id ? 'true' : undefined}
+        onClick={() => { setSelectedNodeId(id); setWorkspaceView('map'); }}>
+        {label}
+      </button>
+    )}</li>;
+  };
+
   const slideBeingRevised = aiSlideProposal && aiSlideProposal.sourceNodeId === undefined
     ? slides.find(({ id }) => id === aiSlideProposal.slideId)
     : undefined;
@@ -1759,16 +1770,7 @@ export default function App() {
                 <details>
                   <summary>{deckUnlinkedIdeaIds.length} {deckUnlinkedIdeaIds.length === 1 ? 'idea del ámbito sin vínculo' : 'ideas del ámbito sin vínculo'}</summary>
                   <ul>
-                    {deckUnlinkedIdeaIds.map((id) => {
-                      const label = deckIdeaLabels?.get(id);
-                      return <li key={id}>{label === undefined ? 'Idea eliminada' : (
-                        <button type="button" className="quiet-button" disabled={aiBusy || loading}
-                          aria-label={`Seleccionar en el mapa: ${label}`}
-                          onClick={() => { setSelectedNodeId(id); setWorkspaceView('map'); }}>
-                          {label}
-                        </button>
-                      )}</li>;
-                    })}
+                    {deckUnlinkedIdeaIds.map(renderDeckSourceIdea)}
                   </ul>
                 </details>
               )}
@@ -1789,7 +1791,8 @@ export default function App() {
                   {slide.table && <SlideTableBlock table={slide.table} />}
                   {!!slide.diagramSteps?.length && <ol aria-label="Recorrido">{slide.diagramSteps.map((step, item) => <li key={item}>{step}</li>)}</ol>}
                   {!!slide.mockFields?.length && <dl aria-label="Formulario de ejemplo">{slide.mockFields.map((field, item) => <div key={item}><dt>{field.label}</dt><dd>{field.value}</dd></div>)}</dl>}
-                  <small>Ideas vinculadas: {slide.sourceNodeIds.map((id) => deckIdeaLabels?.get(id) ?? 'Idea eliminada').join(' · ')}</small>
+                  <small>Ideas vinculadas</small>
+                  <ul aria-label="Ideas vinculadas">{slide.sourceNodeIds.map(renderDeckSourceIdea)}</ul>
                 </details>;
               })}
               <button type="button" className="slide-ai-panel__submit" disabled={aiBusy || project?.revision !== deckProposal.proposal.baseRevision}
