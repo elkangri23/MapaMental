@@ -19,7 +19,7 @@ import {
   Position,
 } from '@xyflow/react';
 import type { IdeaNodeData } from '@espacio-visual/domain';
-import { AI_DECK_SLIDE_LIMIT, buildProjectAiContext, PROJECT_CHAT_MESSAGE_LIMIT, PROJECT_NODE_LIMIT, PROJECT_SCHEMA_VERSION, PROJECT_SLIDE_LIMIT, type FutureProjectPreview, type PresentationSlide, type ProjectDocument, type ProjectSummary } from '@espacio-visual/domain';
+import { AI_DECK_SLIDE_LIMIT, buildProjectAiContext, PROJECT_CHAT_MESSAGE_LIMIT, PROJECT_NODE_LIMIT, PROJECT_SCHEMA_VERSION, PROJECT_SLIDE_LIMIT, type FutureProjectPreview, type PresentationSlide, type ProjectDocument, type ProjectSummary, type SlideTable } from '@espacio-visual/domain';
 import { isLocalProviderUrl, type ProviderConfiguration, type ProviderKind, type ProviderProfile, type ProviderRates } from '@espacio-visual/domain';
 import type { AiChatMessage, AiDeckProposal, AiProposal, AiSlideProposal, AiSuggestion } from '@espacio-visual/domain';
 import { ProjectRequestError, projectsApi } from './api/projects.js';
@@ -232,6 +232,7 @@ export default function App() {
   const [aiError, setAiError] = useState('');
   const [aiProposal, setAiProposal] = useState<AiProposal | null>(null);
   const [aiSlideProposal, setAiSlideProposal] = useState<AiSlideProposal | null>(null);
+  const [slideTableEdit, setSlideTableEdit] = useState<{ proposal: AiSlideProposal; table: SlideTable } | null>(null);
   const [slideAiOpen, setSlideAiOpen] = useState(false);
   const [slideAiPrompt, setSlideAiPrompt] = useState('');
   const aiAbort = useRef<AbortController | null>(null);
@@ -978,6 +979,8 @@ export default function App() {
     });
   }, [activeSlideIndex, aiBusy, aiReady, runGeneration]);
 
+  const editedSlideTable = slideTableEdit?.proposal === aiSlideProposal ? slideTableEdit?.table : undefined;
+
   const applyAiSlideProposal = useCallback(async () => {
     const proposal = aiSlideProposal;
     if (!proposal || !project || aiBusy) return;
@@ -990,7 +993,9 @@ export default function App() {
       setAiSlideProposal(null); setAiError('El proyecto o la diapositiva cambió desde la propuesta. Vuelve a generarla.'); setAiBusy(false); return;
     }
     try {
-      const { project: saved } = await aiApi.applySlide(currentProject.id, proposal);
+      const { project: saved } = await aiApi.applySlide(currentProject.id, editedSlideTable
+        ? { ...proposal, draft: { ...proposal.draft, table: editedSlideTable } }
+        : proposal);
       const nextSlides = saved.presentation.slides as PresentationSlide[];
       projectRef.current = saved; slidesRef.current = nextSlides; revisionRef.current = saved.revision;
       savedSlidesRef.current = JSON.stringify(nextSlides);
@@ -1009,7 +1014,7 @@ export default function App() {
       }
     }
     finally { setAiBusy(false); }
-  }, [aiBusy, aiSlideProposal, flushPendingSave, loadProjectList, project]);
+  }, [aiBusy, aiSlideProposal, editedSlideTable, flushPendingSave, loadProjectList, project]);
 
   const undoAiSlideAction = useCallback(async () => {
     if (!project?.lastAiSlideUndo || aiBusy) return;
@@ -1531,7 +1536,7 @@ export default function App() {
     : undefined;
   const slideChanges: string[] = [];
   if (slideBeingRevised && aiSlideProposal) {
-    const { draft } = aiSlideProposal;
+    const draft = editedSlideTable ? { ...aiSlideProposal.draft, table: editedSlideTable } : aiSlideProposal.draft;
     const blocks = [
       { label: 'Título', before: slideBeingRevised.title, after: draft.title },
       { label: 'Subtítulo', before: slideBeingRevised.subtitle, after: draft.subtitle },
@@ -1576,7 +1581,11 @@ export default function App() {
       {aiSlideProposal.draft.bullets.length > 0 && <ul>{aiSlideProposal.draft.bullets.map((bullet, index) => <li key={index}>{bullet}</li>)}</ul>}
       {!!aiSlideProposal.draft.diagramSteps?.length && <div className="slide-flow-preview" aria-label="Recorrido propuesto">{aiSlideProposal.draft.diagramSteps.map((step, index, steps) => <span className="slide-flow-preview__item" key={index}>{step}{index < steps.length - 1 && <b aria-hidden="true">→</b>}</span>)}</div>}
       {!!aiSlideProposal.draft.mockFields?.length && <div className="slide-mock-form__preview" aria-label="Formulario ficticio propuesto">{aiSlideProposal.draft.mockFields.map((field, index) => <div className="slide-mock-form__sample" key={index}><span>{field.label}</span><div>{field.value || 'Valor de ejemplo'}</div></div>)}</div>}
-      {aiSlideProposal.draft.table && <SlideTableBlock table={aiSlideProposal.draft.table} />}
+      {aiSlideProposal.draft.table && <>
+        <p>Revisa la tabla y corrige las celdas antes de aplicar el borrador.</p>
+        <SlideTableBlock table={editedSlideTable ?? aiSlideProposal.draft.table} disabled={aiBusy}
+          onChange={(table) => setSlideTableEdit({ proposal: aiSlideProposal, table })} />
+      </>}
       <button type="button" className="slide-ai-panel__submit" disabled={aiBusy || slideProposalUnchanged || project?.revision !== aiSlideProposal.baseRevision} onClick={() => void applyAiSlideProposal()}>{project?.revision !== aiSlideProposal.baseRevision ? 'El proyecto cambió · vuelve a proponer' : aiSlideProposal.sourceNodeId ? 'Añadir diapositiva' : 'Aplicar a esta diapositiva'}</button>
     </section>;
 

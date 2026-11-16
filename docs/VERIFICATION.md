@@ -75,6 +75,12 @@ Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos ta
 - La primera ronda generó una tabla de tres columnas y dos filas. El texto marcó la ubicación y el clima como pendientes. Aplicar añadió una diapositiva y deshacer recuperó la presentación original. Algunas celdas tituladas Mes de inicio y Mes de fin contenían estaciones, un punto pendiente de calidad semántica.
 - En la segunda ronda, el proveedor devolvió HTTP 502 al generar la diapositiva. Se confirma el flujo completo de la tabla en una ronda. La aceptación de dos rondas completas y el recorrido desde Chrome siguen abiertos.
 
+### Edición antes de aplicar una tabla (pendiente en Chrome)
+
+- Genera una diapositiva con tabla. Cambia una celda a «Pendiente de confirmar» y descarta el borrador. Comprueba que el proyecto conserva la presentación anterior.
+- Genera otra tabla, edita una celda con el teclado y comprueba que el foco permanece en el campo. Aplica el borrador, recarga y confirma que se guardó el valor editado. Deshaz la operación y comprueba que se restaura la presentación original.
+- La compilación web pasó. Estos pasos buscan comprobar la edición en la vista previa y quedan pendientes de ejecución.
+
 ### Comprobación específica de tablas con FreeLLMAPI
 
 - Se realizaron dos recorridos por la API de MapaMental en proyectos temporales, solicitando una tarjeta de calendario de siembra a gpt-oss-120b. Las cuatro peticiones de generación devolvieron HTTP 200.
