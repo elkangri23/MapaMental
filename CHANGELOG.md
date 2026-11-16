@@ -1,5 +1,7 @@
 # Cambios
 
+- El borrador de una presentación indica cuántas diapositivas tiene la presentación que se sustituirá y cómo recuperarla.
+
 - La API rechaza los borradores de mejora idénticos antes de crear una revisión o sustituir la opción de deshacer.
 
 - La vista previa avisa si el borrador es idéntico a la diapositiva y desactiva Aplicar para evitar un guardado redundante.
@@ -349,6 +351,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- El borrador de una presentación indica cuántas diapositivas tiene la presentación que se sustituirá y cómo recuperarla.
 
 - La API rechaza los borradores de mejora idénticos antes de crear una revisión o sustituir la opción de deshacer.
 

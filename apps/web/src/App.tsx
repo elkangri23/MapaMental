@@ -1719,9 +1719,15 @@ export default function App() {
             {aiSlideProposal?.sourceNodeId && slideProposalPreview}
             {deckProposal && <section ref={deckPreviewRef} onKeyDown={(event) => discardProposalOnEscape(event, discardDeckProposal)} className="slide-ai-proposal deck-preview" tabIndex={-1} aria-label="Revisar presentación propuesta">
               <div className="slide-block-editor__heading">
-                <strong>Borrador de {deckProposal.proposal.slides.length} diapositivas</strong>
+                <strong>Borrador de {deckProposal.proposal.slides.length} {deckProposal.proposal.slides.length === 1 ? 'diapositiva' : 'diapositivas'}</strong>
                 <button type="button" className="slide-block-remove" aria-keyshortcuts="Escape" disabled={aiBusy} onClick={discardDeckProposal}>Descartar</button>
               </div>
+              {slides.length > 0 && (
+                <p>
+                  La presentación actual tiene {slides.length} {slides.length === 1 ? 'diapositiva' : 'diapositivas'}.
+                  Al sustituirla, podrás recuperarla con Deshacer presentación IA o desde Copias.
+                </p>
+              )}
               {deckProposal.proposal.message && <p>{deckProposal.proposal.message}</p>}
               {deckProposal.proposal.slides.map((slide, index) => <details key={index}>
                 <summary>{index + 1}. {slide.title}</summary>
@@ -1733,9 +1739,8 @@ export default function App() {
                 {!!slide.mockFields?.length && <dl aria-label="Formulario de ejemplo">{slide.mockFields.map((field, item) => <div key={item}><dt>{field.label}</dt><dd>{field.value}</dd></div>)}</dl>}
                 <small>Ideas vinculadas: {slide.sourceNodeIds.map((id) => nodes.find((node) => node.id === id)?.data.label ?? 'Idea eliminada').join(' · ')}</small>
               </details>)}
-              {!!slides.length && <small>Al aplicar se sustituirá la presentación actual, que quedará guardada en Copias.</small>}
               <button type="button" className="slide-ai-panel__submit" disabled={aiBusy || project?.revision !== deckProposal.proposal.baseRevision}
-                onClick={() => void saveDeckChange('apply')}>{project?.revision !== deckProposal.proposal.baseRevision ? 'El proyecto cambió · vuelve a generar' : 'Aplicar presentación'}</button>
+                onClick={() => void saveDeckChange('apply')}>{project?.revision !== deckProposal.proposal.baseRevision ? 'El proyecto cambió · vuelve a generar' : slides.length ? 'Sustituir presentación' : 'Crear presentación'}</button>
             </section>}
             <div className="suggestion-label">
               <span>PRÓXIMOS CAMINOS</span>
