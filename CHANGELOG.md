@@ -1,5 +1,7 @@
 # Cambios
 
+- El inicio OIDC aplica el límite de operaciones pendientes aunque varias peticiones coincidan, y el plazo empieza cuando se completa la preparación del enlace.
+
 - El canje OIDC y la cookie del segundo factor tienen estados separados y comparten el plazo original de cinco minutos.
 
 - Añadido un perfil personal local con nombre y correo editables desde la barra superior.
@@ -373,6 +375,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- El inicio OIDC aplica el límite de operaciones pendientes aunque varias peticiones coincidan, y el plazo empieza cuando se completa la preparación del enlace.
 
 - El canje OIDC y la cookie del segundo factor tienen estados separados y comparten el plazo original de cinco minutos.
 

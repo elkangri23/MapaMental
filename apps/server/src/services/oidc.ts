@@ -58,10 +58,6 @@ export async function beginOidcAuthorization(input: { purpose: OidcPurpose; loca
     throw Object.assign(new Error('La vinculación inicial requiere una sesión local y una instalación sin identidad vinculada.'), { statusCode: 403 });
   }
 
-  const now = Date.now();
-  for (const [state, transaction] of transactions) if (transaction.expiresAt <= now) transactions.delete(state);
-  if (transactions.size >= 8) throw Object.assign(new Error('Hay demasiados inicios de sesión pendientes. Espera unos minutos e inténtalo otra vez.'), { statusCode: 429 });
-
   const config = await configuredClient(auth);
   const codeVerifier = randomPKCECodeVerifier();
   const codeChallenge = await calculatePKCECodeChallenge(codeVerifier);
@@ -76,6 +72,10 @@ export async function beginOidcAuthorization(input: { purpose: OidcPurpose; loca
     code_challenge: codeChallenge,
     code_challenge_method: 'S256',
   });
+  const now = Date.now();
+  for (const [state, transaction] of transactions) if (transaction.expiresAt <= now) transactions.delete(state);
+  if (transactions.size >= 8) throw Object.assign(new Error('Hay demasiados inicios de sesión pendientes. Espera unos minutos e inténtalo otra vez.'), { statusCode: 429 });
+
   transactions.set(state, {
     purpose: input.purpose,
     state,
