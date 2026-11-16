@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import {
   addEdge,
   Background,
@@ -1408,8 +1408,27 @@ export default function App() {
   const editingRates = ratesForModel(providerForm);
   const savedProvider = providerConfiguration.profiles.find((profile) => profile.id === providerForm.id);
 
-  const slideProposalPreview = aiSlideProposal && <section ref={slidePreviewRef} className="slide-ai-proposal" tabIndex={-1} aria-label="Revisar borrador de IA">
-      <div className="slide-block-editor__heading"><strong>Borrador propuesto</strong><button type="button" className="slide-block-remove" onClick={() => { setAiSlideProposal(null); slideProposalTriggerRef.current?.focus(); }}>Descartar</button></div>
+  const discardMapProposal = () => {
+    setAiProposal(null);
+    mapProposalTriggerRef.current?.focus();
+  };
+  const discardSlideProposal = () => {
+    setAiSlideProposal(null);
+    slideProposalTriggerRef.current?.focus();
+  };
+  const discardDeckProposal = () => {
+    setDeckProposal(null);
+    deckProposalTriggerRef.current?.focus();
+  };
+  const discardProposalOnEscape = (event: ReactKeyboardEvent<HTMLElement>, discard: () => void) => {
+    if (event.key !== 'Escape' || event.defaultPrevented || aiBusy) return;
+    event.preventDefault();
+    event.stopPropagation();
+    discard();
+  };
+
+  const slideProposalPreview = aiSlideProposal && <section ref={slidePreviewRef} onKeyDown={(event) => discardProposalOnEscape(event, discardSlideProposal)} className="slide-ai-proposal" tabIndex={-1} aria-label="Revisar borrador de IA">
+      <div className="slide-block-editor__heading"><strong>Borrador propuesto</strong><button type="button" className="slide-block-remove" aria-keyshortcuts="Escape" disabled={aiBusy} onClick={discardSlideProposal}>Descartar</button></div>
       <p>{aiSlideProposal.message}</p>
       <small>{aiSlideProposal.provider} · {aiSlideProposal.sourceNodeId
         ? `Se añadirá una diapositiva al final de la presentación a partir de «${nodes.find((node) => node.id === aiSlideProposal.sourceNodeId)?.data.label ?? 'Idea de origen'}».`
@@ -1651,8 +1670,8 @@ export default function App() {
             <div className="chat-transcript" role="log" aria-label="Conversación con el asistente" aria-live="polite" aria-relevant="additions">
               {chatMessages.map((message, index) => <div key={`${index}-${message.role}`} className={`chat-message chat-message--${message.role}`}><span aria-hidden="true">{message.role === 'assistant' ? '✦' : 'Tú'}</span><p><span className="sr-only">{message.role === 'assistant' ? 'Asistente: ' : 'Tú: '}</span>{message.content}</p></div>)}
             </div>
-            {aiProposal && <section ref={mapPreviewRef} className="ai-proposal" tabIndex={-1} aria-label="Revisar propuesta de ideas">
-              <div className="ai-proposal__head"><strong>Propuesta de {aiProposal.ideas.length} ideas</strong><button type="button" className="quiet-button" onClick={() => { setAiProposal(null); mapProposalTriggerRef.current?.focus(); }}>Descartar</button></div>
+            {aiProposal && <section ref={mapPreviewRef} onKeyDown={(event) => discardProposalOnEscape(event, discardMapProposal)} className="ai-proposal" tabIndex={-1} aria-label="Revisar propuesta de ideas">
+              <div className="ai-proposal__head"><strong>Propuesta de {aiProposal.ideas.length} ideas</strong><button type="button" className="quiet-button" aria-keyshortcuts="Escape" disabled={aiBusy} onClick={discardMapProposal}>Descartar</button></div>
               <p>{aiProposal.message}</p>
               <small>Se añadirán bajo «{nodes.find((node) => node.id === aiProposal.parentNodeId)?.data.label ?? 'la idea seleccionada'}». Otras ramas quedan intactas.</small>
               <ul>{aiProposal.ideas.map((idea) => <li key={idea.id}>{idea.label}</li>)}</ul>
@@ -1660,10 +1679,10 @@ export default function App() {
               <button className="provider-test ai-proposal__apply" disabled={aiBusy || project?.revision !== aiProposal.baseRevision || nodes.length + aiProposal.ideas.length > PROJECT_NODE_LIMIT} onClick={() => void applyAiProposal()}>{project?.revision !== aiProposal.baseRevision ? 'El mapa cambió · regenera' : 'Añadir estas ideas al mapa'}</button>
             </section>}
             {aiSlideProposal?.sourceNodeId && slideProposalPreview}
-            {deckProposal && <section ref={deckPreviewRef} className="slide-ai-proposal deck-preview" tabIndex={-1} aria-label="Revisar presentación propuesta">
+            {deckProposal && <section ref={deckPreviewRef} onKeyDown={(event) => discardProposalOnEscape(event, discardDeckProposal)} className="slide-ai-proposal deck-preview" tabIndex={-1} aria-label="Revisar presentación propuesta">
               <div className="slide-block-editor__heading">
                 <strong>Borrador de {deckProposal.proposal.slides.length} diapositivas</strong>
-                <button type="button" className="slide-block-remove" onClick={() => { setDeckProposal(null); deckProposalTriggerRef.current?.focus(); }}>Descartar</button>
+                <button type="button" className="slide-block-remove" aria-keyshortcuts="Escape" disabled={aiBusy} onClick={discardDeckProposal}>Descartar</button>
               </div>
               {deckProposal.proposal.message && <p>{deckProposal.proposal.message}</p>}
               {deckProposal.proposal.slides.map((slide, index) => <details key={index}>
