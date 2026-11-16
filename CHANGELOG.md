@@ -1,5 +1,7 @@
 # Cambios
 
+- La vista previa avisa si el borrador es idéntico a la diapositiva y desactiva Aplicar para evitar un guardado redundante.
+
 - La vista previa indica los cambios de título, subtítulo, texto y viñetas antes de aplicar una mejora de IA a una diapositiva.
 
 - La vista previa distingue las tablas, recorridos y formularios ficticios que se añadirán, actualizarán o quitarán de una diapositiva existente.
@@ -345,6 +347,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- La vista previa avisa si el borrador es idéntico a la diapositiva y desactiva Aplicar para evitar un guardado redundante.
 
 - La vista previa indica los cambios de título, subtítulo, texto y viñetas antes de aplicar una mejora de IA a una diapositiva.
 

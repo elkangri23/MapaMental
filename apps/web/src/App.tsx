@@ -1457,12 +1457,15 @@ export default function App() {
     }
   }
 
+  const slideProposalUnchanged = slideBeingRevised !== undefined && slideChanges.length === 0;
+
   const slideProposalPreview = aiSlideProposal && <section ref={slidePreviewRef} onKeyDown={(event) => discardProposalOnEscape(event, discardSlideProposal)} className="slide-ai-proposal" tabIndex={-1} aria-label="Revisar borrador de IA">
       <div className="slide-block-editor__heading"><strong>Borrador propuesto</strong><button type="button" className="slide-block-remove" aria-keyshortcuts="Escape" disabled={aiBusy} onClick={discardSlideProposal}>Descartar</button></div>
       <p>{aiSlideProposal.message}</p>
       <small>{aiSlideProposal.provider} · {aiSlideProposal.sourceNodeId
         ? `Se añadirá una diapositiva al final de la presentación a partir de «${nodes.find((node) => node.id === aiSlideProposal.sourceNodeId)?.data.label ?? 'Idea de origen'}».`
         : 'Solo cambiará esta diapositiva.'}</small>
+      {slideProposalUnchanged && <p>El borrador conserva el contenido actual de la diapositiva.</p>}
       {slideChanges.length > 0 && (
         <ul aria-label="Cambios en la diapositiva">
           {slideChanges.map((change) => <li key={change}>{change}</li>)}
@@ -1475,7 +1478,7 @@ export default function App() {
       {!!aiSlideProposal.draft.diagramSteps?.length && <div className="slide-flow-preview" aria-label="Recorrido propuesto">{aiSlideProposal.draft.diagramSteps.map((step, index, steps) => <span className="slide-flow-preview__item" key={index}>{step}{index < steps.length - 1 && <b aria-hidden="true">→</b>}</span>)}</div>}
       {!!aiSlideProposal.draft.mockFields?.length && <div className="slide-mock-form__preview" aria-label="Formulario ficticio propuesto">{aiSlideProposal.draft.mockFields.map((field, index) => <div className="slide-mock-form__sample" key={index}><span>{field.label}</span><div>{field.value || 'Valor de ejemplo'}</div></div>)}</div>}
       {aiSlideProposal.draft.table && <SlideTableBlock table={aiSlideProposal.draft.table} />}
-      <button type="button" className="slide-ai-panel__submit" disabled={aiBusy || project?.revision !== aiSlideProposal.baseRevision} onClick={() => void applyAiSlideProposal()}>{project?.revision !== aiSlideProposal.baseRevision ? 'El proyecto cambió · vuelve a proponer' : aiSlideProposal.sourceNodeId ? 'Añadir diapositiva' : 'Aplicar a esta diapositiva'}</button>
+      <button type="button" className="slide-ai-panel__submit" disabled={aiBusy || slideProposalUnchanged || project?.revision !== aiSlideProposal.baseRevision} onClick={() => void applyAiSlideProposal()}>{project?.revision !== aiSlideProposal.baseRevision ? 'El proyecto cambió · vuelve a proponer' : aiSlideProposal.sourceNodeId ? 'Añadir diapositiva' : 'Aplicar a esta diapositiva'}</button>
     </section>;
 
   return (
