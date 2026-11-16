@@ -12,6 +12,12 @@
 - Se ejecutó logout y se comprobó la cabecera que elimina la cookie. Se adelantó el reloj del proceso más de doce horas para verificar el vencimiento. Un proceso Node nuevo rechazó la cookie protegida anterior al consultar el perfil.
 - Al volver al modo local, la sesión local pudo consultar proyectos y la protegida no accedió a sus rutas. La emisión tras OIDC y WebAuthn se acepta por separado con un proveedor y un autenticador reales.
 
+## Canje OIDC y espera del segundo factor (T-021)
+
+- Con Fastify aislado y un estado temporal de prueba, el canje devolvió una cookie HttpOnly y SameSite Strict. Repetir el canje inicial obtuvo HTTP 401.
+- La cookie temporal produjo HTTP 428 al consultar el estado de sesión y HTTP 403 al consultar el perfil. Al adelantar el reloj más de cinco minutos, el estado del segundo factor dejó de ser válido.
+- El recorrido comienza con un estado de prueba. La aceptación con un proveedor OIDC y una passkey reales sigue abierta.
+
 ## Aceptación pendiente del modo protegido (T-021 y T-023 a T-026)
 
 1. Desde el modo local, vincular un proveedor OIDC real, registrar una passkey y reiniciar en modo protegido. Verificar que el inicio exige OIDC y verificación de usuario con passkey.

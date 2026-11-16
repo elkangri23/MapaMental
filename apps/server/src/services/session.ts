@@ -6,7 +6,7 @@ const clientHeaderValue = 'espacio-visual-ui-v1';
 export type SessionMode = keyof typeof cookieNames;
 interface SessionRecord { expiresAt: number; mode: SessionMode; identityId?: string; lastUvAt?: number }
 const sessions = new Map<string, SessionRecord>();
-const oidcSteps = new Map<string, { expiresAt: number; identityId: string }>();
+const oidcSteps = new Map<string, { expiresAt: number; identityId: string; stage: 'handoff' | 'second-factor' }>();
 const recoverySessions = new Map<string, { expiresAt: number; identityId: string }>();
 const inheritedNonce = process.env.ESPACIO_VISUAL_SESSION_NONCE;
 delete process.env.ESPACIO_VISUAL_SESSION_NONCE;
@@ -62,7 +62,7 @@ export function createOidcSecondFactorStep(identityId: string) {
   for (const [token, step] of oidcSteps) if (step.expiresAt <= now) oidcSteps.delete(token);
   if (oidcSteps.size >= 8) throw Object.assign(new Error('Hay demasiadas verificaciones de identidad pendientes.'), { statusCode: 429 });
   const token = randomBytes(32).toString('base64url');
-  oidcSteps.set(token, { identityId, expiresAt: now + 5 * 60 * 1000 });
+  oidcSteps.set(token, { identityId, expiresAt: now + 5 * 60 * 1000, stage: 'handoff' });
   return token;
 }
 
@@ -80,14 +80,14 @@ function getOidcSecondFactorStep(requestCookie: string | undefined) {
   const token = requestCookie?.split(';').map((part) => part.trim()).find((part) => part.startsWith(`${cookieName}=`))?.slice(cookieName.length + 1);
   if (!token || !/^[A-Za-z0-9_-]{40,64}$/.test(token)) return null;
   const step = oidcSteps.get(token);
-  if (!step) return null;
+  if (step?.stage !== 'second-factor') return null;
   if (step.expiresAt <= Date.now()) { oidcSteps.delete(token); return null; }
   return { token, ...step };
 }
 
 export function consumeOidcSecondFactor(token: string, identityId: string) {
   const step = oidcSteps.get(token);
-  if (!step || step.expiresAt <= Date.now() || step.identityId !== identityId) return false;
+  if (step?.stage !== 'second-factor' || step.expiresAt <= Date.now() || step.identityId !== identityId) return false;
   oidcSteps.delete(token);
   return true;
 }
@@ -123,9 +123,10 @@ export function clearRecoveryCookie() { return 'ev_recovery_step=; Path=/api; Ht
 export function exchangeOidcSecondFactorStep(token: string) {
   const step = oidcSteps.get(token);
   if (!step || step.expiresAt <= Date.now()) { oidcSteps.delete(token); return null; }
+  if (step.stage !== 'handoff') return null;
   oidcSteps.delete(token);
   const nextToken = randomBytes(32).toString('base64url');
-  oidcSteps.set(nextToken, step);
+  oidcSteps.set(nextToken, { ...step, stage: 'second-factor' });
   return nextToken;
 }
 
@@ -135,7 +136,7 @@ export function clearOidcSecondFactorCookie() {
 
 export function setOidcSecondFactorCookie(token: string) {
   const step = oidcSteps.get(token);
-  if (!step || step.expiresAt <= Date.now()) throw new Error('No se puede emitir la cookie temporal de autenticación.');
+  if (step?.stage !== 'second-factor' || step.expiresAt <= Date.now()) throw new Error('No se puede emitir la cookie temporal de autenticación.');
   return `ev_oidc_step=${token}; Path=/api; HttpOnly; SameSite=Strict; Max-Age=${Math.floor((step.expiresAt - Date.now()) / 1000)}`;
 }
 
