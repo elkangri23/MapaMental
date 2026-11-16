@@ -276,3 +276,4 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 
 - El chat, las sugerencias y las propuestas IA reciben fragmentos de diapositivas relacionadas con el ámbito: hasta 20 diapositivas, 500 caracteres cada una y 6.000 en total.
 - La vista previa del contexto muestra esos fragmentos antes de enviarlos al proveedor. ADR-0016 registra los límites y el motivo.
+- Chrome y un proveedor simulado confirmaron que el payload contiene el contenido de la diapositiva enlazada y omite el de otra rama.

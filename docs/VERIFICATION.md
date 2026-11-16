@@ -393,6 +393,6 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 
 ### Fragmentos acotados de diapositivas en contexto IA — 2026-11-16
 
-- `buildProjectAiContext` agrega cuerpo, viñetas, pasos, campos ficticios y tablas solo de diapositivas vinculadas al ámbito. Limita el contenido a 20 diapositivas, 500 caracteres por diapositiva y 6.000 en total.
-- Las vistas previas de chat/sugerencias y de presentación muestran títulos y fragmentos; el servidor usa la misma función compartida para formar el payload.
-- `npm run build` valida tipos y compilación. Sigue pendiente un recorrido dinámico que compare el contenido de la vista previa con la petición real a un proveedor simulado; no se afirma verificación E2E para este cambio.
+- En una instancia aislada con perfil Chrome, almacenamiento temporal y un mock OpenAI-compatible en `127.0.0.1`, se creó un mapa con una diapositiva enlazada a «Validar aprendizaje» y otra enlazada a una rama ajena. El panel abierto para la rama mostró el cuerpo, viñeta, pasos, campos ficticios y tabla de la diapositiva pertinente; no mostró el marcador secreto de la otra.
+- Se envió una petición de chat desde la rama seleccionada. El proveedor capturó `DETAIL_BODY`, `DETAIL_BULLET`, `DETAIL_STEP`, `DETAIL_FIELD` y `DETAIL_TABLE`; no recibió `UNRELATED_SECRET_SENTINEL`. La respuesta simulada produjo HTTP 200 y una sugerencia con destino válido. Esto confirma la coincidencia de contenido relevante entre la vista previa y la petición en este escenario.
+- `buildProjectAiContext` limita a 20 diapositivas, 500 caracteres por diapositiva y 6.000 en total; estos topes no se estresaron con contenido largo en el recorrido. No se usó un modelo real. El servidor, proveedor, perfil y proyectos temporales se detuvieron o quedaron aislados fuera del repositorio.
