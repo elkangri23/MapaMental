@@ -82,6 +82,11 @@ Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos ta
 - Completado con la compilación de producción, Chrome aislado y el modelo solicitado gpt-oss-120b a través de FreeLLMAPI. Al editar la primera celda, el foco se mantuvo en ella. Tras aplicar y recargar, el documento conservó «Pendiente de confirmar». Deshacer dejó solo la diapositiva original.
 - En otro borrador se cambió una celda y se pulsó Escape. Se cerró la vista previa, el foco volvió a la tarjeta y el documento conservó solo la diapositiva original. El modelo generó meses concretos en el primer borrador y marcó celdas como pendientes en el segundo. La segunda tarjeta no anunció que contenía una tabla, aunque el borrador sí la incluyó.
 
+### Recuperación del formato de tabla omitido
+
+- Con un proveedor simulado, la ruta de chat devolvió una tarjeta con formato de tabla a partir de una petición explícita que omitía ese campo. Una mención incidental a una tabla mantuvo el formato genérico y una tarjeta con formato explícito de recorrido lo conservó.
+- Al usar el formato recuperado en la ruta de propuestas, el servidor rechazó un borrador sin tabla y aceptó el mismo borrador con una tabla válida. La comprobación usó almacenamiento temporal y no consumió cuota de FreeLLMAPI.
+
 ### Comprobación específica de tablas con FreeLLMAPI
 
 - Se realizaron dos recorridos por la API de MapaMental en proyectos temporales, solicitando una tarjeta de calendario de siembra a gpt-oss-120b. Las cuatro peticiones de generación devolvieron HTTP 200.
