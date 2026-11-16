@@ -211,7 +211,7 @@ export default function App() {
   const [oidcBusy, setOidcBusy] = useState(false);
   const [protectedLoginBusy, setProtectedLoginBusy] = useState(false);
   const [protectedLoginPending, setProtectedLoginPending] = useState(false);
-  const [oidcRetryRequired, setOidcRetryRequired] = useState(false);
+  const [oidcRetryMessage, setOidcRetryMessage] = useState('');
   const [protectedLoginMessage, setProtectedLoginMessage] = useState('');
   const [recoveryFormOpen, setRecoveryFormOpen] = useState(false);
   const [recoveryResuming, setRecoveryResuming] = useState(false);
@@ -1366,7 +1366,9 @@ export default function App() {
 
   useEffect(() => {
     const requirePasskey = () => setProtectedLoginPending(true);
-    const requireOidcRetry = () => setOidcRetryRequired(true);
+    const requireOidcRetry = (event: Event) => {
+      if (event instanceof CustomEvent && typeof event.detail === 'string') setOidcRetryMessage(event.detail);
+    };
     window.addEventListener('espacio-visual:passkey-required', requirePasskey);
     window.addEventListener('espacio-visual:oidc-retry-required', requireOidcRetry);
     return () => {
@@ -1560,10 +1562,10 @@ export default function App() {
         </div>
       </header>
 
-      {oidcRetryRequired && <section className="protected-login-notice" aria-labelledby="oidc-retry-title">
+      {oidcRetryMessage && <section className="protected-login-notice" aria-labelledby="oidc-retry-title">
         <div>
           <strong id="oidc-retry-title">Inicio protegido sin completar</strong>
-          <p>Vuelve a iniciar sesión cuando quieras continuar.</p>
+          <p role="alert">{oidcRetryMessage}</p>
         </div>
         <button type="button" className="quiet-button" onClick={() => window.location.reload()}>Reintentar inicio de sesión</button>
       </section>}

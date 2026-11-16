@@ -3,6 +3,14 @@ import type { FutureProjectPreview, ProjectDocument, ProjectSummary } from '@esp
 let sessionPromise: Promise<void> | null = null;
 const initialOidcResult = new URLSearchParams(window.location.search).get('auth');
 
+let oidcRetryMessage: string | null = null;
+
+function requireOidcRetry(message: string): never {
+  oidcRetryMessage = message;
+  window.dispatchEvent(new CustomEvent('espacio-visual:oidc-retry-required', { detail: message }));
+  throw new Error(message);
+}
+
 async function ensureSession() {
   if (sessionPromise) return sessionPromise;
   sessionPromise = (async () => {
@@ -20,15 +28,17 @@ async function ensureSession() {
     const status = await fetch('/api/session/status', { headers, credentials: 'same-origin' });
     if (status.status === 200) return;
     if (status.status === 401) {
+      if (oidcRetryMessage) requireOidcRetry(oidcRetryMessage);
       if (initialOidcResult === 'cancelled' || initialOidcResult === 'failed') {
-        window.dispatchEvent(new CustomEvent('espacio-visual:oidc-retry-required'));
-        throw new Error(initialOidcResult === 'cancelled'
+        requireOidcRetry(initialOidcResult === 'cancelled'
           ? 'Se canceló el acceso con el proveedor de identidad.'
           : 'No se pudo validar la respuesta OIDC.');
       }
-      const start = await fetch('/api/session/oidc/start', { method: 'POST', headers, credentials: 'same-origin', body: JSON.stringify({ purpose: 'login' }) });
+      const start = await fetch('/api/session/oidc/start', {
+        method: 'POST', headers, credentials: 'same-origin', body: JSON.stringify({ purpose: 'login' }),
+      }).catch(() => requireOidcRetry('No se pudo conectar con el servicio local para iniciar sesión.'));
       const result = await start.json().catch(() => ({})) as { authorizationUrl?: string; message?: string };
-      if (!start.ok || !result.authorizationUrl) throw new Error(result.message ?? 'No se pudo iniciar el acceso OIDC.');
+      if (!start.ok || !result.authorizationUrl) requireOidcRetry(result.message ?? 'No se pudo iniciar el acceso OIDC.');
       window.location.assign(result.authorizationUrl);
       return new Promise<void>(() => undefined);
     }
