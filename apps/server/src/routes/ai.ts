@@ -44,6 +44,11 @@ async function streamGeneration<T>(
     }
   };
 
+  // Keep the event stream active while the provider prepares its response.
+  const heartbeat = stream && setInterval(() => {
+    if (!stream.destroyed && !controller.signal.aborted) stream.write(': heartbeat\n\n');
+  }, 4_000);
+
   try {
     if (stream) reply.type('text/event-stream; charset=utf-8').send(stream);
     controller.signal.throwIfAborted();
@@ -70,6 +75,7 @@ async function streamGeneration<T>(
         : 'El proveedor no completó una respuesta válida. Revisa la conexión o vuelve a intentarlo.' });
     }
   } finally {
+    clearInterval(heartbeat);
     request.raw.off('aborted', abort);
     reply.raw.off('close', onResponseClose);
     stream?.end();

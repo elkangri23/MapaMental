@@ -60,6 +60,12 @@ Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos ta
 
 ### Primera evaluación real con FreeLLMAPI
 
+#### Modelos adicionales y respuestas lentas
+
+- El catálogo de FreeLLMAPI anunció los alias `qwen3.5-9b` y `gemma-4-31b-it`. Se repitió por la API de MapaMental la consulta que pide un recorrido y un formulario ficticio en el mapa temporal de cosecha.
+- La primera petición a Qwen por SSE perdió la conexión a los 10 segundos. Se añadieron comentarios SSE cada cuatro segundos mientras hay una generación activa. Con un proveedor compatible con Ollama simulado que esperó 12 segundos, se recibieron al menos dos comentarios y el resultado completo. El cliente web ignora los comentarios SSE. Las peticiones con respuesta JSON conservan el comportamiento anterior.
+- Con la corrección, las dos consultas terminaron con un evento SSE de error del proveedor. Qwen tardó 60,1 segundos y Gemma, 24,4 segundos. Ninguna generó tarjetas. Queda comparar la calidad con otro alias que complete una respuesta.
+
 #### Vista previa de formulario y clasificación de recorrido en Chrome
 
 - En Chrome con un proyecto temporal y FreeLLMAPI (gpt-oss-120b), la tarjeta de formulario abrió la vista previa con el rótulo «Formulario de ejemplo con datos ficticios» y campos ya rellenados. Aplicar añadió una diapositiva. Deshacer restauró la presentación a cero diapositivas.

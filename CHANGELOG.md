@@ -1,5 +1,7 @@
 # Cambios
 
+- El chat mantiene abierta la conexión mientras el modelo prepara una respuesta lenta.
+
 - Las tarjetas que proponen crear un recorrido visual explícito abren una diapositiva con diagrama aunque el modelo las clasifique como ideas del mapa.
 
 - La vista previa de diapositivas muestra un rótulo visible para los formularios con datos ficticios.
