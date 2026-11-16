@@ -97,7 +97,7 @@ Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos ta
 
 - El servidor indica que los datos ausentes se marcan en cada celda afectada aunque la tarjeta sugiera una estimación. Una nota general no basta.
 - Dos peticiones de borrador mediante FreeLLMAPI con gpt-oss-120b solicitaron meses para tomate y lechuga con ubicación y clima ausentes. Una pedía estimarlos si era posible. Ambas devolvieron HTTP 200 y las seis celdas de meses quedaron como «Pendiente de confirmar». El texto y las viñetas tampoco atribuyeron fechas al huerto.
-- La comprobación cubre dos peticiones de diapositiva por API. Queda repetir el recorrido de sugerencias en Chrome con el ajuste y revisar otras variaciones del mapa.
+- La comprobación cubre dos peticiones de diapositiva por API. En Chrome con un proyecto temporal, una tarjeta para Siembra anunció «Diapositiva con tabla». La primera generación falló y el reintento desde la misma tarjeta produjo seis filas de meses. En las doce celdas de Tomate y Lechuga apareció «Pendiente de confirmar». Se añadió la diapositiva desde la vista previa y Deshacer la retiró. Quedan otras variaciones del mapa y modelos por evaluar.
 
 ## Presentación completa con IA
 
