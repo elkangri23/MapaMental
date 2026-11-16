@@ -1349,6 +1349,14 @@ export default function App() {
     finally { setProtectedLoginBusy(false); }
   }, []);
 
+  const closeRecoveryForm = () => {
+    if (protectedLoginBusy) return;
+    setRecoveryCode('');
+    setRecoveryFormOpen(false);
+    setProtectedLoginMessage('');
+    recoveryButtonRef.current?.focus();
+  };
+
   const canResumeRecovery = protectedLoginPending && recoveryOnly && !recoveryFormOpen && !protectedLoginBusy;
   useEffect(() => {
     if (canResumeRecovery) recoveryButtonRef.current?.focus();
@@ -1616,8 +1624,13 @@ export default function App() {
       {protectedLoginPending && <section className="protected-login-notice" role="region" aria-labelledby="protected-login-title">
         <div><strong id="protected-login-title">{recoveryOnly ? 'Continúa la recuperación' : 'Completa el acceso con tu passkey'}</strong><p>{recoveryOnly ? 'Registra una passkey nueva para completar la recuperación.' : 'La identidad OIDC se verificó. Confirma ahora con Windows Hello, una llave FIDO2 u otra passkey registrada.'}</p>{protectedLoginMessage && <p role="status">{protectedLoginMessage}</p>}</div>
         <div className="provider-passkey-row"><button type="button" className="quiet-button" disabled={protectedLoginBusy || recoveryOnly} hidden={recoveryOnly} onClick={() => void completeProtectedLogin()}>{protectedLoginBusy ? 'Esperando passkey…' : 'Continuar con passkey'}</button>
-          <button ref={recoveryButtonRef} type="button" className="quiet-button" disabled={protectedLoginBusy} aria-expanded={recoveryFormOpen} aria-controls={recoveryFormOpen ? 'protected-recovery-form' : undefined} onClick={() => recoveryFormOpen ? setRecoveryFormOpen(false) : void openProtectedRecovery()}>{recoveryFormOpen ? 'Cerrar recuperación' : recoveryOnly ? 'Continuar recuperación' : 'Perdí mi passkey'}</button></div>
-        {recoveryFormOpen && <form id="protected-recovery-form" className="provider-passkey-setup" onSubmit={(event) => void recoverProtectedLogin(event)} aria-labelledby="protected-recovery-title">
+          <button ref={recoveryButtonRef} type="button" className="quiet-button" disabled={protectedLoginBusy} aria-expanded={recoveryFormOpen} aria-controls={recoveryFormOpen ? 'protected-recovery-form' : undefined} onClick={() => recoveryFormOpen ? closeRecoveryForm() : void openProtectedRecovery()}>{recoveryFormOpen ? 'Cerrar recuperación' : recoveryOnly ? 'Continuar recuperación' : 'Perdí mi passkey'}</button></div>
+        {recoveryFormOpen && <form id="protected-recovery-form" className="provider-passkey-setup" onSubmit={(event) => void recoverProtectedLogin(event)} aria-labelledby="protected-recovery-title"
+          onKeyDown={(event) => {
+            if (event.key !== 'Escape' || event.defaultPrevented || event.nativeEvent.isComposing || protectedLoginBusy) return;
+            event.preventDefault();
+            closeRecoveryForm();
+          }}>
           <h2 id="protected-recovery-title">Recuperar acceso con TOTP</h2>
           <p id="protected-recovery-description">Se registrará una passkey nueva y se revocarán las passkeys anteriores. La recuperación no abre proyectos ni el chat.</p>
           {!recoveryResuming && <label className="provider-field" htmlFor="protected-recovery-code"><span>Código de seis dígitos</span>
@@ -1627,7 +1640,7 @@ export default function App() {
             <input id="protected-recovery-passkey-name" type="text" autoComplete="off" maxLength={64} value={recoveryPasskeyName} onChange={(event) => setRecoveryPasskeyName(event.target.value)} required disabled={protectedLoginBusy} autoFocus={recoveryResuming} />
           </label>
           <div className="provider-passkey-row"><button type="submit" className="quiet-button" disabled={protectedLoginBusy || !recoveryPasskeyName.trim() || (!recoveryResuming && !/^\d{6}$/.test(recoveryCode))}>{protectedLoginBusy ? 'Registrando…' : 'Verificar y registrar passkey'}</button>
-            <button type="button" className="quiet-button" disabled={protectedLoginBusy} onClick={() => setRecoveryFormOpen(false)}>Cancelar</button></div>
+            <button type="button" className="quiet-button" disabled={protectedLoginBusy} onClick={closeRecoveryForm}>Cancelar</button></div>
         </form>}
       </section>}
 
