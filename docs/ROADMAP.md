@@ -9,16 +9,16 @@ Los hitos son incrementos internos de implementación v1, no productos comercial
 | M2 — IA y proveedores | Chat contextual, sugerencias accionables, propuestas y operaciones IA seguras | Proveedor local real puede crear/ampliar un mapa; el alcance se previsualiza y las operaciones son reversibles; proveedor remoto muestra contexto detallado y respeta límites | T-009–T-010, T-012 |
 | M3 — Presentaciones | Conversión desde mapa, edición y visor | Cantidad pedida coincide con navegación y PDF; PNG actual legible | T-011 |
 | M4 — Uso diario | Instalador Windows y documentación operativa | Instalación y desinstalación verificadas; guía coincide con paquete | T-013–T-014 |
-| M5 — Identidad y autenticación (diseño aprobado) | Modo protegido opcional con OIDC, segundo factor WebAuthn y recuperación TOTP | Sesión revocable; OIDC, alta/recuperación de passkeys y revisiones de seguridad recorridas | T-020–T-026 (T-018–T-019, T-022 y T-027 completadas) |
+| M5 — Identidad y autenticación (diseño aprobado) | Modo protegido opcional con OIDC, segundo factor WebAuthn y recuperación TOTP | Sesión revocable; OIDC, alta/recuperación de passkeys y revisiones de seguridad recorridas | T-021, T-023–T-026 (T-018–T-020, T-022 y T-027 completadas) |
 
 La línea base transversal de seguridad y accesibilidad se sigue en T-015 y T-016 de [`TASKS.md`](TASKS.md). La auditoría de código del 2026-11-15 corrigió la fijación DNS para SSRF, validación de configuración/documentos y errores; el build y el audit de dependencias pasan. Siguen pendientes los recorridos negativos de rutas, validación de proveedores en Windows y evaluación manual WCAG; no declarar conformidad hasta cerrarlos. Informe: [`reviews/2026-11-15-security-audit.md`](reviews/2026-11-15-security-audit.md).
 
 ### Puerta de entrada a M5
 
-M5 es una ampliación solicitada. **T-018 y T-019 están cerradas:** alcance de una persona Windows/loopback y contrato OIDC + passkey WebAuthn `UV`; TOTP opcional de recuperación; RP ID `localhost`; ADR-0012 aceptado. **T-020/T-021 están parciales.** TOTP ya tiene implementación parcial: enrolamiento tras reautenticación, secreto/anti-replay en Credential Manager, bloqueo tras fallos, y recuperación limitada a registrar una passkey nueva y revocar las anteriores. Falta validar IdP, apps autenticadoras y autenticadores reales. El modo protegido depende de Internet para OIDC; el modo local sigue disponible. No habrá acceso por red, multiusuario ni sincronización en nube.
+M5 es una ampliación solicitada. **T-018 y T-019 están cerradas:** alcance de una persona Windows/loopback y contrato OIDC + passkey WebAuthn `UV`; TOTP opcional de recuperación; RP ID `localhost`; ADR-0012 aceptado. **T-020 está cerrada. T-021 sigue parcial.** TOTP ya tiene implementación parcial: enrolamiento tras reautenticación, secreto/anti-replay en Credential Manager, bloqueo tras fallos, y recuperación limitada a registrar una passkey nueva y revocar las anteriores. Falta validar IdP, apps autenticadoras y autenticadores reales. El modo protegido depende de Internet para OIDC; el modo local sigue disponible. No habrá acceso por red, multiusuario ni sincronización en nube.
 
 1. Alcance y contrato aprobados: T-018–T-019.
-2. Sesión/authorization y OIDC: T-020 parcial y T-021 parcial; falta validación con IdP real.
+2. Base de sesión y guardas verificadas en T-020. T-021 sigue pendiente del recorrido con IdP real.
 3. WebAuthn/passkeys y ciclo de vida: T-024/T-025 parciales; falta verificación real.
 4. Cerrar recuperación MFA: recorrer la recuperación TOTP con app autenticadora real, comprobar bloqueo, ventana/replay y caducidad, y verificar que el token temporal no accede a datos de proyecto; completar T-023.
 5. Auditoría, accesibilidad y operación: T-026 parcial; informe estático, guía de operación y registro local acotado añadidos; formularios accesibles en estructura, recorridos manuales pendientes.

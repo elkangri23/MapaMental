@@ -1,6 +1,6 @@
 # Informe de autenticación: OAuth/OIDC, MFA y passkeys
 
-**Estado:** ADR-0012 aceptado; T-018/T-019/T-022 cerradas; T-020/T-021/T-023/T-024/T-025 parciales. OIDC, WebAuthn y recuperación TOTP tienen implementación parcial; no se han recorrido con IdP, app autenticadora ni autenticadores reales. No considerar M5 operativo todavía.
+**Estado:** ADR-0012 aceptado; T-018/T-019/T-020/T-022 cerradas; T-021/T-023/T-024/T-025 parciales. OIDC, WebAuthn y recuperación TOTP tienen implementación parcial; no se han recorrido con IdP, app autenticadora ni autenticadores reales. No considerar M5 operativo todavía.
 
 ## Resumen ejecutivo
 
@@ -31,7 +31,7 @@ La línea de base existente está en [`SECURITY.md`](SECURITY.md), [`ADR-0009`](
 
 De acuerdo con el objetivo expresado para el proyecto —uso personal, proveedores LLM locales y configuración en el propio equipo— el modo objetivo se limita a **una persona Windows y acceso loopback**. Esta ampliación no habilitará escucha por red, cuentas multiusuario ni sincronización en nube. El modo local sin autenticación seguirá disponible para conservar el uso sin IdP y sin conexión.
 
-Se planifica un modo protegido opcional para autenticar el acceso a la UI/API local. Este límite protege el uso de la app; no cifra los proyectos ni sustituye permisos de Windows. Las decisiones de IdP configurable, WebAuthn administrado por la app, MFA y recuperación están fijadas en ADR-0012; T-020–T-025 tienen implementación parcial y los recorridos de aceptación siguen pendientes.
+Se planifica un modo protegido opcional para autenticar el acceso a la UI/API local. Este límite protege el uso de la app; no cifra los proyectos ni sustituye permisos de Windows. Las decisiones de IdP configurable, WebAuthn administrado por la app, MFA y recuperación están fijadas en ADR-0012; T-021 y T-023–T-025 tienen implementación parcial y los recorridos de aceptación siguen pendientes.
 
 ### Detalles de implementación pendientes
 
@@ -41,7 +41,7 @@ Se planifica un modo protegido opcional para autenticar el acceso a la UI/API lo
 - **Recuperación:** T-023 implementa parcialmente enrolamiento TOTP autenticado y una recuperación tras OIDC que solo permite registrar una passkey nueva y revocar las anteriores; falta recorrido de extremo a extremo y verificación negativa.
 - **Datos locales:** issuer/client ID e identidad vinculada no son secretos y se guardan en el perfil local; claves WebAuthn privadas permanecen en el autenticador. El secreto TOTP y el estado de anti-replay/bloqueo se guardan mediante `@napi-rs/keyring` en Windows Credential Manager, fuera de `auth.json`, proyectos y backups de proyectos.
 
-T-018/T-019/T-022 están cerradas. T-020/T-021/T-023/T-024/T-025 están parciales. ADR-0012 fija OIDC configurable con cliente público, identidad por `(iss, sub)`, passkey WebAuthn propia como segundo paso, TOTP opcional solo para recuperación y RP ID `localhost`. El emisor y client ID se configuran manualmente; no se elige ni instala un proveedor específico. El alta inicial vincula explícitamente una única identidad OIDC desde el flujo local de confianza y bloquea cualquier auto-registro posterior.
+T-018/T-019/T-020/T-022 están cerradas. T-021/T-023/T-024/T-025 están parciales. ADR-0012 fija OIDC configurable con cliente público, identidad por `(iss, sub)`, passkey WebAuthn propia como segundo paso, TOTP opcional solo para recuperación y RP ID `localhost`. El emisor y client ID se configuran manualmente; no se elige ni instala un proveedor específico. El alta inicial vincula explícitamente una única identidad OIDC desde el flujo local de confianza y bloquea cualquier auto-registro posterior.
 
 **Estado de implementación (2026-11-16):** T-021 parcial. Se integró `openid-client` 6.8.8 con discovery, cliente público, Authorization Code + PKCE S256, state/nonce de un solo uso, callback en el literal loopback `[::1]` y comprobación de issuer/subject tras la validación del ID Token por la biblioteca. El callback entrega el estado MFA de un solo uso como fragmento al origen UI `localhost`; la app lo retira del historial y lo canjea por cookie host-only en ese mismo origen. Las peticiones OIDC comparten el egress seguro con DNS/IP fijados. Ajustes inicia la vinculación; en modo protegido se inicia login y la respuesta válida deja un estado temporal de cinco minutos para el paso WebAuthn. OIDC por sí solo no crea sesión protegida. Solo se ha validado el build; falta configurar un IdP y recorrer casos positivos/negativos. Hay que confirmar que el IdP acepta el callback IPv6 loopback con puerto variable.
 
@@ -117,7 +117,7 @@ Se escriben eventos mínimos de seguridad en `%LOCALAPPDATA%\EspacioVisual\secur
 
 ## Fases y tareas
 
-Las tareas T-018–T-026 están en [`TASKS.md`](TASKS.md). T-018/T-019/T-022 están cerradas; T-020/T-021/T-023/T-024/T-025 y T-026 están parciales. La guía de configuración, recuperación y desvinculación está en [`AUTH_OPERATIONS.md`](AUTH_OPERATIONS.md). Hay formularios accesibles en estructura para enrolamiento TOTP y recuperación, pero falta validación manual con teclado/lector de pantalla/contraste. Ver [`reviews/2026-11-16-auth-mfa-audit.md`](reviews/2026-11-16-auth-mfa-audit.md). El siguiente bloque es recorrer OIDC + TOTP + alta de una passkey real y verificar que la sesión temporal no alcanza rutas protegidas.
+Las tareas T-018–T-026 están en [`TASKS.md`](TASKS.md). T-018/T-019/T-020/T-022 están cerradas; T-021/T-023/T-024/T-025 y T-026 están parciales. La guía de configuración, recuperación y desvinculación está en [`AUTH_OPERATIONS.md`](AUTH_OPERATIONS.md). Hay formularios accesibles en estructura para enrolamiento TOTP y recuperación, pero falta validación manual con teclado/lector de pantalla/contraste. Ver [`reviews/2026-11-16-auth-mfa-audit.md`](reviews/2026-11-16-auth-mfa-audit.md). El siguiente bloque es recorrer OIDC + TOTP + alta de una passkey real y verificar que la sesión temporal no alcanza rutas protegidas.
 
 ## Criterios de salida globales
 

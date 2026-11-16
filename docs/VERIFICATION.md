@@ -6,7 +6,13 @@
 - Una sesión local guardó y recuperó el perfil, con recorte de espacios y comprobación del archivo persistido. En modo protegido se rechazó la cookie local. Una sesión protegida creada para la comprobación pudo consultar y vaciar el perfil. Tras revocarla, dejó de tener acceso.
 - En Chrome, la compilación de producción abrió el diálogo con sus dos campos etiquetados. Guardar cerró el diálogo y devolvió el foco a Mi perfil. En un segundo recorrido aislado se guardaron nombre y correo ficticios, se recargó la página y ambos valores reaparecieron. Con una ventana emulada de 320 píxeles CSS, el diálogo abrió sin desbordamiento horizontal. Escape descartó una edición sin guardar y devolvió el foco a Mi perfil. Intro reabrió el diálogo con los valores persistidos.
 
-## Aceptación pendiente del modo protegido (T-020 a T-026)
+## Base de sesión protegida (T-020)
+
+- En Fastify con almacenamiento temporal y sesiones de prueba se comprobó que las rutas de proyectos, proveedores, perfil e IA rechazaban una sesión ausente, local, revocada o caducada en modo protegido. Una sesión protegida válida accedió a esas rutas. El modo protegido rechazó el canje del nonce local.
+- Se ejecutó logout y se comprobó la cabecera que elimina la cookie. Se adelantó el reloj del proceso más de doce horas para verificar el vencimiento. Un proceso Node nuevo rechazó la cookie protegida anterior al consultar el perfil.
+- Al volver al modo local, la sesión local pudo consultar proyectos y la protegida no accedió a sus rutas. La emisión tras OIDC y WebAuthn se acepta por separado con un proveedor y un autenticador reales.
+
+## Aceptación pendiente del modo protegido (T-021 y T-023 a T-026)
 
 1. Desde el modo local, vincular un proveedor OIDC real, registrar una passkey y reiniciar en modo protegido. Verificar que el inicio exige OIDC y verificación de usuario con passkey.
 2. Registrar una segunda passkey, revocarla tras reautenticarse y comprobar la invalidación de sesiones y el rechazo de la credencial revocada. Comprobar caducidad y reinicio.
