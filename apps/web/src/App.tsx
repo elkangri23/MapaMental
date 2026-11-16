@@ -1759,7 +1759,16 @@ export default function App() {
                 <details>
                   <summary>{deckUnlinkedIdeaIds.length} {deckUnlinkedIdeaIds.length === 1 ? 'idea del ámbito sin vínculo' : 'ideas del ámbito sin vínculo'}</summary>
                   <ul>
-                    {deckUnlinkedIdeaIds.map((id) => <li key={id}>{deckIdeaLabels?.get(id) ?? 'Idea eliminada'}</li>)}
+                    {deckUnlinkedIdeaIds.map((id) => {
+                      const label = deckIdeaLabels?.get(id);
+                      return <li key={id}>{label === undefined ? 'Idea eliminada' : (
+                        <button type="button" className="quiet-button" disabled={aiBusy || loading}
+                          aria-label={`Seleccionar en el mapa: ${label}`}
+                          onClick={() => { setSelectedNodeId(id); setWorkspaceView('map'); }}>
+                          {label}
+                        </button>
+                      )}</li>;
+                    })}
                   </ul>
                 </details>
               )}

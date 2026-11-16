@@ -1,5 +1,7 @@
 # Cambios
 
+- Las ideas sin vínculo del borrador se pueden seleccionar en el mapa desde la lista de revisión.
+
 - Al ajustar un borrador de presentación, el diálogo avisa si la selección del mapa cambió y se usará el contexto actual.
 
 - Desde el borrador de una presentación se pueden ajustar las instrucciones y recuperar la cantidad solicitada o el modo automático.
@@ -363,6 +365,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Las ideas sin vínculo del borrador se pueden seleccionar en el mapa desde la lista de revisión.
 
 - Al ajustar un borrador de presentación, el diálogo avisa si la selección del mapa cambió y se usará el contexto actual.
 
