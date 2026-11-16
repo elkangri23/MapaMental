@@ -93,6 +93,12 @@ Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos ta
 - Las dos tarjetas apuntaron a Siembra y generaron tablas de cuatro y dos columnas, con dos filas para Tomate y Lechuga. Las columnas de meses contenían nombres de meses. En las dos rondas se añadió la diapositiva y deshacer devolvió la presentación a una diapositiva.
 - Las tablas todavía proponían meses concretos con la ubicación y el clima sin confirmar. La primera lo indicaba en Observaciones. Este recorrido confirma la coherencia entre encabezado y tipo de dato y el guardado reversible. Queda verificar que los datos inciertos queden marcados en cada celda y repetir el flujo de uso en Chrome.
 
+### Datos pendientes en las celdas del calendario
+
+- El servidor indica que los datos ausentes se marcan en cada celda afectada aunque la tarjeta sugiera una estimación. Una nota general no basta.
+- Dos peticiones de borrador mediante FreeLLMAPI con gpt-oss-120b solicitaron meses para tomate y lechuga con ubicación y clima ausentes. Una pedía estimarlos si era posible. Ambas devolvieron HTTP 200 y las seis celdas de meses quedaron como «Pendiente de confirmar». El texto y las viñetas tampoco atribuyeron fechas al huerto.
+- La comprobación cubre dos peticiones de diapositiva por API. Queda repetir el recorrido de sugerencias en Chrome con el ajuste y revisar otras variaciones del mapa.
+
 ## Presentación completa con IA
 
 - Chrome y Ollama simulado, con proyectos temporales. Se pidió un borrador de cuatro diapositivas y, en modo automático, se aceptó un borrador de cinco. El servidor rechazó una cantidad distinta de la solicitada y referencias fuera del mapa enviado.
