@@ -1,5 +1,16 @@
 # Criterios de aceptación
 
+## Calidad de las sugerencias con el mapa de siembra (T-010)
+
+Este recorrido está pendiente con un modelo real. Usa un proyecto de prueba llamado «Huerto de balcón». Añade a la idea central las ramas «Prueba A — Siembra» y «Prueba B — Cosecha». Bajo Siembra, añade tomate y lechuga. Deja Cosecha sin ideas hijas. Crea una diapositiva vinculada a Siembra titulada «Calendario de siembra», con los dos cultivos y los meses por concretar.
+
+1. Con el mapa completo, envía al chat «Quiero convertir este mapa en una guía práctica para mi primer huerto. Aún no he indicado la ubicación ni el clima». Busca tarjetas que aprovechen detalles concretos del proyecto, como completar el calendario, desarrollar la rama de cosecha o convertir la siembra en una diapositiva con pasos.
+2. Selecciona «Prueba A — Siembra» y pulsa **Generar sugerencias**. Comprueba que los destinos de las tarjetas pertenecen a la rama visible y que ofrecen acciones distintas. Para meses o profundidades concretas, la tarjeta debe pedir los datos que falten o explicitar los supuestos.
+3. Pulsa una tarjeta de expansión. Comprueba que la vista previa señala la rama y muestra las ideas antes de guardar. Aplícala y deshaz el cambio desde el pie del mapa. Repite con una tarjeta de diapositiva y comprueba que el borrador respeta el formato anunciado, por ejemplo una tabla con columnas de cultivo, época y profundidad. Si falta una tarjeta de alguno de los tipos, anótalo.
+4. Repite las dos rondas con las mismas condiciones y un proyecto nuevo. Registra proveedor, modelo, versión de la app, tiempos aproximados y títulos de las tarjetas. Para cada tarjeta, indica si es concreta, si aporta algo distinto, si apunta al destino correcto y si el resultado cumple lo prometido. Registra también las tarjetas genéricas, los supuestos sin explicar y las acciones fallidas.
+
+Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos tarjetas útiles y distintas para el mapa completo, una recomendación pertinente para la rama seleccionada y se puedan recorrer la expansión y la diapositiva con sus formatos anunciados. Si algún criterio falla, conserva los resultados para ajustar el comportamiento y repetir el recorrido.
+
 ## Presentación completa con IA
 
 - Chrome y Ollama simulado, con proyectos temporales. Se pidió un borrador de cuatro diapositivas y, en modo automático, se aceptó un borrador de cinco. El servidor rechazó una cantidad distinta de la solicitada y referencias fuera del mapa enviado.
