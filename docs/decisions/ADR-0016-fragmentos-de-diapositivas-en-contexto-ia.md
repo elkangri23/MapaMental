@@ -24,4 +24,4 @@ Las sugerencias IA conocían títulos de diapositivas relacionadas con el ámbit
 
 ## Consecuencias
 
-Las sugerencias pueden apoyarse en contenido ya creado sin duplicarlo entero. La vista previa deja visible la información compartida. Los límites pueden truncar tablas o fragmentos largos, y el resumen narrativo global sigue pendiente; el modelo aún recibe las ideas y relaciones estructuradas del ámbito.
+Las sugerencias pueden apoyarse en contenido ya creado sin duplicarlo entero. La vista previa deja visible la información compartida. Los límites pueden truncar tablas o fragmentos largos. ADR-0018 añade después un resumen estructural global determinista (idea central y hasta ocho ramas); no genera prosa adicional ni amplía los fragmentos detallados de diapositivas.

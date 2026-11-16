@@ -1,5 +1,10 @@
 # Cambios
 
+## Resumen global en contexto IA — 2026-11-16
+
+- Vista previa y solicitudes IA comparten un resumen estructural con la idea central y hasta ocho ramas principales, limitadas a 120 caracteres por etiqueta. El detalle de diapositivas ajenas sigue excluido; la vista previa informa que se comparten los nombres principales.
+- El mock recibió el resumen mostrado, el extracto seleccionado y no recibió el marcador ajeno. Añadido ADR-0018.
+
 ## Contrato de error correlacionable — 2026-11-16
 
 - Las respuestas JSON de error y los eventos terminales SSE ahora incluyen código estable y `correlationId` alineado con `reqId` del servicio. Se preservan campos de estado como `mode`, y el texto de errores 5xx se redacta.

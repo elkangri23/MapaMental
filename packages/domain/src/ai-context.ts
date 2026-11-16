@@ -6,6 +6,36 @@ export interface AiContextRelation { from: string; to: string; sourceLabel: stri
 const relatedSlideLimit = 20;
 const relatedSlideExcerptLimit = 500;
 const relatedSlideTotalLimit = 6000;
+const summaryThemeLimit = 8;
+const summaryThemeLabelLimit = 120;
+
+function boundedLabel(label: string) {
+  return label.trim().replace(/\s+/g, ' ').slice(0, summaryThemeLabelLimit);
+}
+
+function summarizeMap(projectName: string, nodes: AiContextNode[], edges: Array<{ source: string; target: string }>) {
+  if (nodes.length === 0) return `El mapa de «${projectName}» todavía no tiene ideas.`;
+  const nodesById = new Map(nodes.map((node) => [node.id, node]));
+  const incomingIds = new Set(edges.map((edge) => edge.target));
+  const roots = nodes.filter((node) => !incomingIds.has(node.id));
+  const root = nodesById.get('root') ?? roots[0] ?? nodes[0];
+  const branchIds = root
+    ? [...new Set(edges.filter((edge) => edge.source === root.id).map((edge) => edge.target))]
+    : roots.map((node) => node.id);
+  const branches = branchIds.flatMap((id) => {
+    const node = nodesById.get(id);
+    return node && node.id !== root?.id ? [node] : [];
+  });
+  const branchNames = branches.slice(0, summaryThemeLimit).map((node) => `«${boundedLabel(node.label)}»`);
+  const omittedBranches = Math.max(0, branches.length - branchNames.length);
+
+  if (root) {
+    const central = boundedLabel(root.label);
+    if (branchNames.length === 0) return `Idea central: «${central}». Aún no tiene ramas principales.`;
+    return `Idea central: «${central}». Ramas principales: ${branchNames.join(', ')}${omittedBranches ? ` y ${omittedBranches} más` : ''}.`;
+  }
+  return `Ideas de partida: ${branchNames.join(', ')}${omittedBranches ? ` y ${omittedBranches} más` : ''}.`;
+}
 
 /** Builds the bounded project context shared by the UI preview and AI routes. */
 export function buildProjectAiContext(project: ProjectDocument, requestedScopeIds: string[]) {
@@ -91,7 +121,12 @@ export function buildProjectAiContext(project: ProjectDocument, requestedScopeId
 
   return {
     project: project.name,
-    projectSummary: { ideaCount: nodes.length, connectionCount: edges.length, slideCount: project.presentation.slides.length },
+    projectSummary: {
+      narrative: summarizeMap(project.name, nodes, edges),
+      ideaCount: nodes.length,
+      connectionCount: edges.length,
+      slideCount: project.presentation.slides.length,
+    },
     map: { nodes: mapNodes(scopeIds), relations },
     ancestors: mapNodes(ancestors),
     relatedSlideTitles: [...new Set(relatedSlides.map((slide) => slide.title))].slice(0, relatedSlideLimit),

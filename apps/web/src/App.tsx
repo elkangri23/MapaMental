@@ -638,7 +638,9 @@ export default function App() {
       relations: (context?.map.relations ?? []).map((relation) => `${relation.sourceLabel} → ${relation.targetLabel}`),
       relatedSlides: context?.relatedSlideTitles ?? [],
       relatedSlideExcerpts: context?.relatedSlideExcerpts ?? [],
-      projectSummary: context?.projectSummary ?? { ideaCount: nodes.length, connectionCount: edges.length, slideCount: slides.length },
+      projectSummary: context?.projectSummary ?? {
+        narrative: 'Resumen no disponible.', ideaCount: nodes.length, connectionCount: edges.length, slideCount: slides.length,
+      },
       omittedCount: context?.restOfMapCount ?? Math.max(0, nodes.length - scopedNodes.length),
       omittedAncestors: context?.omittedAncestorCount ?? 0,
       truncatedNodes: selectedIds.filter((id) => !scopedNodes.some((node) => node.id === id)).length,
@@ -1661,7 +1663,8 @@ export default function App() {
               {providerHasRemoteUsage && <p className="provider-usage-note">{usageSummary(activeProvider)} {usageWarning(activeProvider)}</p>}
               {aiContextExpanded && <div className="context-preview" aria-label="Contexto que se enviará al proveedor">
                 <strong>Proyecto: {project?.name ?? 'Proyecto actual'}</strong>
-                <span>Resumen global: {aiContextPreview.projectSummary.ideaCount} ideas, {aiContextPreview.projectSummary.connectionCount} relaciones y {aiContextPreview.projectSummary.slideCount} diapositivas.</span>
+                <span>Resumen global: {aiContextPreview.projectSummary.narrative}</span>
+                <span>Mapa completo: {aiContextPreview.projectSummary.ideaCount} ideas, {aiContextPreview.projectSummary.connectionCount} relaciones y {aiContextPreview.projectSummary.slideCount} diapositivas.</span>
                 <span>Ideas incluidas ({aiContextPreview.nodes.length}):</span>
                 <ul>{aiContextPreview.nodes.map((node) => <li key={node.id}>{node.data.label}</li>)}</ul>
                 {aiContextPreview.relations.length > 0 && <><span>Relaciones incluidas:</span><ul>{aiContextPreview.relations.map((relation) => <li key={relation}>{relation}</li>)}</ul></>}
@@ -1669,7 +1672,7 @@ export default function App() {
                 {aiContextPreview.omittedAncestors > 0 && <span>Se omiten {aiContextPreview.omittedAncestors} ancestros adicionales por el límite de contexto.</span>}
                 {aiContextPreview.relatedSlides.length > 0 && <><span>Diapositivas vinculadas:</span><ul>{aiContextPreview.relatedSlides.map((title, index) => <li key={`${index}-${title}`}>{title}</li>)}</ul></>}
                 {aiContextPreview.relatedSlideExcerpts.length > 0 && <><span>Fragmentos enviados (máximo 500 caracteres por diapositiva y 6.000 en total):</span><ul>{aiContextPreview.relatedSlideExcerpts.map((slide, index) => <li key={`${index}-${slide.title}`}><strong>{slide.title}:</strong> {slide.excerpt}</li>)}</ul></>}
-                {aiContextPreview.omittedCount > 0 && <span>El resto del mapa queda fuera del contexto: {aiContextPreview.omittedCount} ideas.</span>}
+                {aiContextPreview.omittedCount > 0 && <span>El detalle del resto del mapa queda fuera del contexto: {aiContextPreview.omittedCount} ideas; el resumen global sí menciona las ramas principales.</span>}
                 {aiContextPreview.truncatedNodes > 0 && <span>Por límite de contexto se omiten {aiContextPreview.truncatedNodes} ideas seleccionadas adicionales.</span>}
                 <span>El chat se guarda en este proyecto. Al conversar o generar sugerencias se incluyen hasta 10 mensajes recientes, con un máximo de 3.000 caracteres por mensaje; al desarrollar una sugerencia se envía su petición sin el historial.</span>
                 {!!chatMessages.length && <>
@@ -1769,7 +1772,8 @@ export default function App() {
             </label>
             <details><summary>Contexto para {activeProvider?.name} · {providerHasRemoteUsage ? 'remoto' : 'local'} · {aiContextPreview.nodes.length} ideas</summary>
               <p>Se comparten el nombre del proyecto, el resumen global, estas ideas, sus ancestros, las conexiones y fragmentos limitados de diapositivas vinculadas, además del enfoque indicado.</p>
-              <p>Resumen: {aiContextPreview.projectSummary.ideaCount} ideas, {aiContextPreview.projectSummary.connectionCount} relaciones y {aiContextPreview.projectSummary.slideCount} diapositivas.</p>
+              <p>Resumen global: {aiContextPreview.projectSummary.narrative}</p>
+              <p>Mapa completo: {aiContextPreview.projectSummary.ideaCount} ideas, {aiContextPreview.projectSummary.connectionCount} relaciones y {aiContextPreview.projectSummary.slideCount} diapositivas.</p>
               <ul>{aiContextPreview.nodes.map((node) => <li key={node.id}>{node.data.label}</li>)}</ul>
               {!!aiContextPreview.ancestors.length && <ul aria-label="Ancestros incluidos">{aiContextPreview.ancestors.map((node) => <li key={node.id}>{node.label}</li>)}</ul>}
               {!!aiContextPreview.relations.length && <ul aria-label="Conexiones incluidas">{aiContextPreview.relations.map((relation, index) => <li key={index}>{relation}</li>)}</ul>}

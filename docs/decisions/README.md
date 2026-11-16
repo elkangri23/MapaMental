@@ -23,4 +23,5 @@ Estados: **Aceptado**, **Propuesto**, **Reemplazado**. Un ADR reemplazado se con
 | [0015](ADR-0015-formato-persistido-proyecto-v3.md) | Contrato serializado v3 de mapa, conversación y presentación | Aceptado; no modifica el esquema actual |
 | [0016](ADR-0016-fragmentos-de-diapositivas-en-contexto-ia.md) | Fragmentos acotados de diapositivas relevantes en contexto IA | Aceptado; visible en la vista previa |
 | [0017](ADR-0017-volumen-local-para-proyectos.md) | Validar volumen local fijo antes de iniciar el servicio | Aceptado; comprobación Windows al arranque |
+| [0018](ADR-0018-resumen-global-contexto-ia.md) | Resumen global estructural y acotado en contexto IA | Aceptado; ramas visibles en la vista previa |
 
