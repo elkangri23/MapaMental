@@ -75,6 +75,12 @@ Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos ta
 - La primera ronda generó una tabla de tres columnas y dos filas. El texto marcó la ubicación y el clima como pendientes. Aplicar añadió una diapositiva y deshacer recuperó la presentación original. Algunas celdas tituladas Mes de inicio y Mes de fin contenían estaciones, un punto pendiente de calidad semántica.
 - En la segunda ronda, el proveedor devolvió HTTP 502 al generar la diapositiva. Se confirma el flujo completo de la tabla en una ronda. La aceptación de dos rondas completas y el recorrido desde Chrome siguen abiertos.
 
+### Comprobación específica de tablas con FreeLLMAPI
+
+- Se realizaron dos recorridos por la API de MapaMental en proyectos temporales, solicitando una tarjeta de calendario de siembra a gpt-oss-120b. Las cuatro peticiones de generación devolvieron HTTP 200.
+- Las dos tarjetas apuntaron a Siembra y generaron tablas de cuatro y dos columnas, con dos filas para Tomate y Lechuga. Las columnas de meses contenían nombres de meses. En las dos rondas se añadió la diapositiva y deshacer devolvió la presentación a una diapositiva.
+- Las tablas todavía proponían meses concretos con la ubicación y el clima sin confirmar. La primera lo indicaba en Observaciones. Este recorrido confirma la coherencia entre encabezado y tipo de dato y el guardado reversible. Queda verificar que los datos inciertos queden marcados en cada celda y repetir el flujo de uso en Chrome.
+
 ## Presentación completa con IA
 
 - Chrome y Ollama simulado, con proyectos temporales. Se pidió un borrador de cuatro diapositivas y, en modo automático, se aceptó un borrador de cinco. El servidor rechazó una cantidad distinta de la solicitada y referencias fuera del mapa enviado.
