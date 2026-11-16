@@ -1,5 +1,7 @@
 # Cambios
 
+- Al ampliar una idea con IA, la vista previa omite etiquetas repetidas dentro del borrador o entre la idea principal y sus hijas directas.
+
 - Las vistas previas de IA muestran un contorno cuando reciben el foco. El contorno queda dentro del panel para que el chat no lo recorte.
 
 - Escape descarta la vista previa de IA que tiene el foco y vuelve al botón de origen si sigue disponible.
@@ -323,6 +325,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Al ampliar una idea con IA, la vista previa omite etiquetas repetidas dentro del borrador o entre la idea principal y sus hijas directas.
 
 - Las vistas previas de IA muestran un contorno cuando reciben el foco. El contorno queda dentro del panel para que el chat no lo recorte.
 

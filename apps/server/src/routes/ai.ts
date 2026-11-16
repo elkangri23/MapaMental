@@ -147,16 +147,21 @@ function ideaPosition(parent: IdeaNode, index: number, count: number) {
   return { x: x + offsetX, y: centerY - halfHeight + index * 112 };
 }
 
-function sanitizedIdeas(value: unknown, parent: IdeaNode): AiIdeaProposal[] {
+function sanitizedIdeas(value: unknown, parent: IdeaNode, existingLabels: string[]): AiIdeaProposal[] {
   if (!Array.isArray(value) || value.length < 1 || value.length > 12) throw Object.assign(new Error('La propuesta debe contener entre 1 y 12 ideas.'), { statusCode: 502 });
   const tones = new Set(['lavender', 'mint', 'peach', 'blue']);
-  return value.flatMap((entry, index) => {
+  const labelKey = (label: string) => label.normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('es');
+  const usedLabels = new Set(existingLabels.map(labelKey));
+  const ideas = value.flatMap((entry) => {
     if (!isRecord(entry) || typeof entry.label !== 'string') return [];
     const label = entry.label.trim().replace(/\s+/g, ' ').slice(0, 160);
-    if (!label) return [];
+    const key = labelKey(label);
+    if (!key || usedLabels.has(key)) return [];
+    usedLabels.add(key);
     const id = `ai-${crypto.randomUUID()}`;
-    return [{ id, label, tone: tones.has(String(entry.tone)) ? entry.tone as AiIdeaProposal['tone'] : 'blue', position: ideaPosition(parent, index, value.length) }];
+    return [{ id, label, tone: tones.has(String(entry.tone)) ? entry.tone as AiIdeaProposal['tone'] : 'blue' as const }];
   });
+  return ideas.map((idea, index) => ({ ...idea, position: ideaPosition(parent, index, ideas.length) }));
 }
 
 function sanitizedSlideDraft(value: unknown, current: Pick<AiSlideDraft, 'diagramSteps' | 'mockFields' | 'table'>, failureStatus: number): AiSlideDraft {
@@ -291,7 +296,11 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
     const content = await generateProviderText(provider.profile, provider.apiKey, [{ role: 'user', content: request.body.prompt.trim() }], system, signal);
     report('validating', provider.profile.kind);
     const parsed = parseJson(content);
-    const ideas = sanitizedIdeas(parsed.ideas, parent);
+    const childIds = new Set((project.map.edges as IdeaEdge[]).filter(({ source }) => source === parent.id).map(({ target }) => target));
+    const existingLabels = (project.map.nodes as IdeaNode[])
+      .filter(({ id }) => id === parent.id || childIds.has(id))
+      .map(({ data }) => data.label);
+    const ideas = sanitizedIdeas(parsed.ideas, parent, existingLabels);
     if (ideas.length < 2 || typeof parsed.message !== 'string') throw Object.assign(new Error('La propuesta no contiene suficientes ideas válidas.'), { statusCode: 502 });
     const proposal: AiProposal = { baseRevision: project.revision, parentNodeId: parent.id, message: parsed.message.trim().slice(0, 1200), ideas };
     return { proposal, provider: provider.profile.name };
