@@ -1,6 +1,14 @@
 import { ensureApiSession } from './projects.js';
 import type { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/browser';
 
+export class OidcStepExpiredError extends Error {}
+
+async function checkOidcStep(response: Response, headers: Record<string, string>) {
+  if (response.status !== 401) return;
+  const status = await fetch('/api/session/status', { headers, credentials: 'same-origin' }).catch(() => null);
+  if (status?.status === 401) throw new OidcStepExpiredError('La verificación OIDC caducó. Vuelve a iniciar sesión.');
+}
+
 export interface OidcConfigurationView {
   issuer: string;
   clientId: string;
@@ -116,10 +124,12 @@ export const authApi = {
     const headers = { 'content-type': 'application/json', 'x-espacio-visual-client': 'espacio-visual-ui-v1' };
     const optionsResponse = await fetch('/api/session/passkeys/authentication/options', { method: 'POST', credentials: 'same-origin', headers, body: '{}' });
     const optionsResult = await optionsResponse.json().catch(() => ({})) as { message?: string };
+    await checkOidcStep(optionsResponse, headers);
     if (!optionsResponse.ok) throw new Error(optionsResult.message ?? 'No se pudieron cargar las opciones de passkey.');
     const credential = await startAuthentication({ optionsJSON: optionsResult as PublicKeyCredentialRequestOptionsJSON });
     const verify = await fetch('/api/session/passkeys/authentication/verify', { method: 'POST', credentials: 'same-origin', headers, body: JSON.stringify(credential) });
     const result = await verify.json().catch(() => ({})) as { message?: string; authenticated?: boolean };
+    await checkOidcStep(verify, headers);
     if (!verify.ok || !result.authenticated) throw new Error(result.message ?? 'No se pudo completar la verificación con passkey.');
   },
 };

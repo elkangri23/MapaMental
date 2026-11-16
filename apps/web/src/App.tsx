@@ -24,7 +24,7 @@ import { isLocalProviderUrl, type ProviderConfiguration, type ProviderKind, type
 import type { AiChatMessage, AiDeckProposal, AiProposal, AiSlideProposal, AiSuggestion } from '@espacio-visual/domain';
 import { ProjectRequestError, projectsApi } from './api/projects.js';
 import { providersApi } from './api/providers.js';
-import { authApi, type OidcConfigurationView } from './api/auth.js';
+import { authApi, OidcStepExpiredError, type OidcConfigurationView } from './api/auth.js';
 const PasskeySettingsPanel = lazy(() => import('./components/PasskeySettingsPanel.js'));
 import { aiApi, type GenerationOptions } from './api/ai.js';
 import { SlideTableBlock } from './SlideTableBlock.js';
@@ -1324,7 +1324,16 @@ export default function App() {
     try {
       await authApi.completePasskeyLogin();
       window.location.replace(window.location.pathname);
-    } catch (error) { setProtectedLoginMessage(error instanceof Error ? error.message : 'No se pudo verificar la passkey.'); setProtectedLoginBusy(false); }
+    } catch (error) {
+      if (error instanceof OidcStepExpiredError) {
+        setProtectedLoginPending(false);
+        setRecoveryFormOpen(false);
+        setOidcRetryMessage(error.message);
+      } else {
+        setProtectedLoginMessage(error instanceof Error ? error.message : 'No se pudo verificar la passkey.');
+      }
+      setProtectedLoginBusy(false);
+    }
   }, []);
 
   const openProtectedRecovery = useCallback(async () => {
