@@ -179,6 +179,8 @@ export default function App() {
   const deckDialogRef = useRef<HTMLDialogElement>(null);
   const mapPreviewRef = useRef<HTMLElement>(null);
   const slidePreviewRef = useRef<HTMLElement>(null);
+  const mapProposalTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const slideProposalTriggerRef = useRef<HTMLButtonElement | null>(null);
   const deckPreviewRef = useRef<HTMLElement>(null);
   const [project, setProject] = useState<ProjectDocument | null>(null);
   const [futureProject, setFutureProject] = useState<FutureProjectPreview | null>(null);
@@ -877,7 +879,7 @@ export default function App() {
     });
   }, [aiBusy, aiReady, chatMessages, currentSuggestionBatch, project, runGeneration, selectedBranchIds, selectedNodeId]);
 
-  const runSuggestion = useCallback(async (suggestion: AiSuggestion) => {
+  const runSuggestion = useCallback(async (suggestion: AiSuggestion, trigger: HTMLButtonElement) => {
     if (!project || !aiReady || aiBusy) { if (!aiReady) setAiError('Configura un proveedor y un modelo desde Ajustes para generar una propuesta.'); return; }
     const parentNodeId = suggestion.targetNodeId;
     if (!parentNodeId || !selectedBranchIds.has(parentNodeId) || !nodes.some((node) => node.id === parentNodeId)) {
@@ -890,11 +892,13 @@ export default function App() {
         const { proposal } = await aiApi.proposeNewSlide(project.id, parentNodeId, selectedIds, suggestion.prompt, suggestion.format, options);
         options.signal.throwIfAborted();
         setAiProposal(null);
+        slideProposalTriggerRef.current = trigger;
         setAiSlideProposal(proposal);
       } else {
         const { proposal } = await aiApi.propose(project.id, suggestion.prompt, parentNodeId, selectedIds, options);
         options.signal.throwIfAborted();
         setAiSlideProposal(null);
+        mapProposalTriggerRef.current = trigger;
         setAiProposal(proposal);
       }
     });
@@ -950,7 +954,7 @@ export default function App() {
     finally { setAiBusy(false); }
   }, [aiBusy, flushPendingSave, project]);
 
-  const requestSlideProposal = useCallback(async (prompt: string) => {
+  const requestSlideProposal = useCallback(async (prompt: string, trigger: HTMLButtonElement) => {
     const slide = slidesRef.current[activeSlideIndex];
     const currentProject = projectRef.current;
     if (!slide || !currentProject || !aiReady || aiBusy) {
@@ -960,6 +964,7 @@ export default function App() {
     await runGeneration(currentProject.id, 'Generando el borrador de la diapositiva…', async (options) => {
       const { proposal } = await aiApi.proposeSlide(currentProject.id, slide.id, prompt.trim(), options);
       options.signal.throwIfAborted();
+      slideProposalTriggerRef.current = trigger;
       setAiSlideProposal(proposal);
     });
   }, [activeSlideIndex, aiBusy, aiReady, runGeneration]);
@@ -1399,7 +1404,7 @@ export default function App() {
   const savedProvider = providerConfiguration.profiles.find((profile) => profile.id === providerForm.id);
 
   const slideProposalPreview = aiSlideProposal && <section ref={slidePreviewRef} className="slide-ai-proposal" tabIndex={-1} aria-label="Revisar borrador de IA">
-      <div className="slide-block-editor__heading"><strong>Borrador propuesto</strong><button type="button" className="slide-block-remove" onClick={() => setAiSlideProposal(null)}>Descartar</button></div>
+      <div className="slide-block-editor__heading"><strong>Borrador propuesto</strong><button type="button" className="slide-block-remove" onClick={() => { setAiSlideProposal(null); slideProposalTriggerRef.current?.focus(); }}>Descartar</button></div>
       <p>{aiSlideProposal.message}</p>
       <small>{aiSlideProposal.provider} · {aiSlideProposal.sourceNodeId
         ? `Se añadirá una diapositiva al final de la presentación a partir de «${nodes.find((node) => node.id === aiSlideProposal.sourceNodeId)?.data.label ?? 'Idea de origen'}».`
@@ -1553,11 +1558,11 @@ export default function App() {
                         <p>Se enviarán el borrador activo y {slides[activeSlideIndex].sourceNodeIds.length} ideas vinculadas. Las demás ramas quedan fuera del contexto.</p>
                         <label className="slide-editor__label" htmlFor="slide-ai-prompt">¿Qué quieres explorar?</label>
                         <textarea id="slide-ai-prompt" maxLength={2000} value={slideAiPrompt} onChange={(event) => setSlideAiPrompt(event.target.value)} placeholder="Amplía el argumento, añade un ejemplo o convierte la idea en un recorrido…" disabled={!aiReady || aiBusy} />
-                        <button type="button" className="slide-ai-panel__submit" onClick={() => void requestSlideProposal(slideAiPrompt)} disabled={!aiReady || aiBusy || !slideAiPrompt.trim()}>Proponer contenido</button>
+                        <button type="button" className="slide-ai-panel__submit" onClick={(event) => void requestSlideProposal(slideAiPrompt, event.currentTarget)} disabled={!aiReady || aiBusy || !slideAiPrompt.trim()}>Proponer contenido</button>
                         <div className="slide-ai-panel__suggestions" aria-label="Ideas sugeridas">
-                          <button type="button" onClick={() => { const prompt = 'Amplía esta idea con un argumento claro, un ejemplo concreto y tres ideas clave.'; setSlideAiPrompt(prompt); void requestSlideProposal(prompt); }} disabled={!aiReady || aiBusy}>Ampliar la idea</button>
-                          <button type="button" onClick={() => { const prompt = 'Añade un recorrido de uso en pasos sencillos y concretos.'; setSlideAiPrompt(prompt); void requestSlideProposal(prompt); }} disabled={!aiReady || aiBusy}>Añadir recorrido</button>
-                          <button type="button" onClick={() => { const prompt = 'Propón una maqueta de formulario estática con campos y valores completamente ficticios.'; setSlideAiPrompt(prompt); void requestSlideProposal(prompt); }} disabled={!aiReady || aiBusy}>Crear formulario ficticio</button>
+                          <button type="button" onClick={(event) => { const prompt = 'Amplía esta idea con un argumento claro, un ejemplo concreto y tres ideas clave.'; setSlideAiPrompt(prompt); void requestSlideProposal(prompt, event.currentTarget); }} disabled={!aiReady || aiBusy}>Ampliar la idea</button>
+                          <button type="button" onClick={(event) => { const prompt = 'Añade un recorrido de uso en pasos sencillos y concretos.'; setSlideAiPrompt(prompt); void requestSlideProposal(prompt, event.currentTarget); }} disabled={!aiReady || aiBusy}>Añadir recorrido</button>
+                          <button type="button" onClick={(event) => { const prompt = 'Propón una maqueta de formulario estática con campos y valores completamente ficticios.'; setSlideAiPrompt(prompt); void requestSlideProposal(prompt, event.currentTarget); }} disabled={!aiReady || aiBusy}>Crear formulario ficticio</button>
                         </div>
                         <small className="slide-ai-panel__provider">{activeProvider ? `Proveedor: ${activeProvider.name} · ${activeProvider.model} · ${activeProvider.kind === 'ollama' || activeProvider.kind === 'lmstudio' ? 'local' : 'remoto'}` : 'Configura un proveedor para generar contenido.'}</small>
                       </section>}
@@ -1642,7 +1647,7 @@ export default function App() {
               {chatMessages.map((message, index) => <div key={`${index}-${message.role}`} className={`chat-message chat-message--${message.role}`}><span aria-hidden="true">{message.role === 'assistant' ? '✦' : 'Tú'}</span><p><span className="sr-only">{message.role === 'assistant' ? 'Asistente: ' : 'Tú: '}</span>{message.content}</p></div>)}
             </div>
             {aiProposal && <section ref={mapPreviewRef} className="ai-proposal" tabIndex={-1} aria-label="Revisar propuesta de ideas">
-              <div className="ai-proposal__head"><strong>Propuesta de {aiProposal.ideas.length} ideas</strong><button type="button" className="quiet-button" onClick={() => setAiProposal(null)}>Descartar</button></div>
+              <div className="ai-proposal__head"><strong>Propuesta de {aiProposal.ideas.length} ideas</strong><button type="button" className="quiet-button" onClick={() => { setAiProposal(null); mapProposalTriggerRef.current?.focus(); }}>Descartar</button></div>
               <p>{aiProposal.message}</p>
               <small>Se añadirán bajo «{nodes.find((node) => node.id === aiProposal.parentNodeId)?.data.label ?? 'la idea seleccionada'}». Otras ramas quedan intactas.</small>
               <ul>{aiProposal.ideas.map((idea) => <li key={idea.id}>{idea.label}</li>)}</ul>
@@ -1683,7 +1688,7 @@ export default function App() {
                 if (!target) return null;
                 const createsSlide = suggestion.kind === 'create-slide';
                 return (
-                  <button type="button" key={JSON.stringify([suggestion.targetNodeId, suggestion.title])} className={`suggestion-card suggestion-card--${createsSlide ? 'peach' : 'violet'}`} onClick={() => void runSuggestion(suggestion)} disabled={aiBusy || !aiReady || (createsSlide && slides.length >= PROJECT_SLIDE_LIMIT)}>
+                  <button type="button" key={JSON.stringify([suggestion.targetNodeId, suggestion.title])} className={`suggestion-card suggestion-card--${createsSlide ? 'peach' : 'violet'}`} onClick={(event) => void runSuggestion(suggestion, event.currentTarget)} disabled={aiBusy || !aiReady || (createsSlide && slides.length >= PROJECT_SLIDE_LIMIT)}>
                     <span className="suggestion-card__icon" aria-hidden="true">{createsSlide ? '▤' : '✧'}</span>
                     <span className="suggestion-card__text"><strong>{suggestion.title}</strong><small>{suggestion.format === 'table' ? 'Diapositiva con tabla' : createsSlide ? 'Nueva diapositiva' : 'Ideas para la rama'} · {target.data.label}</small></span>
                     <span className="suggestion-card__arrow" aria-hidden="true">↗</span>
