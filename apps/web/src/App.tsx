@@ -212,6 +212,7 @@ export default function App() {
   const [protectedLoginBusy, setProtectedLoginBusy] = useState(false);
   const [protectedLoginPending, setProtectedLoginPending] = useState(false);
   const [oidcRetryMessage, setOidcRetryMessage] = useState('');
+  const oidcRetryButtonRef = useRef<HTMLButtonElement>(null);
   const [protectedLoginMessage, setProtectedLoginMessage] = useState('');
   const [recoveryFormOpen, setRecoveryFormOpen] = useState(false);
   const [recoveryResuming, setRecoveryResuming] = useState(false);
@@ -1347,6 +1348,11 @@ export default function App() {
     finally { setProtectedLoginBusy(false); }
   }, []);
 
+  const showOidcRetry = oidcRetryMessage !== '';
+  useEffect(() => {
+    if (showOidcRetry) oidcRetryButtonRef.current?.focus();
+  }, [showOidcRetry]);
+
   const recoverProtectedLogin = useCallback(async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!recoveryResuming && !/^\d{6}$/.test(recoveryCode)) return;
@@ -1593,12 +1599,12 @@ export default function App() {
         </div>
       </header>
 
-      {oidcRetryMessage && <section className="protected-login-notice" aria-labelledby="oidc-retry-title">
+      {showOidcRetry && <section className="protected-login-notice" aria-labelledby="oidc-retry-title">
         <div>
           <strong id="oidc-retry-title">Inicio protegido sin completar</strong>
           <p role="alert">{oidcRetryMessage}</p>
         </div>
-        <button type="button" className="quiet-button" onClick={() => window.location.reload()}>Reintentar inicio de sesión</button>
+        <button ref={oidcRetryButtonRef} type="button" className="quiet-button" onClick={() => window.location.reload()}>Reintentar inicio de sesión</button>
       </section>}
 
       {protectedLoginPending && <section className="protected-login-notice" role="region" aria-labelledby="protected-login-title">

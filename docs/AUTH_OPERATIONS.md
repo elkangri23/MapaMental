@@ -34,7 +34,7 @@ No continúes al modo protegido hasta haber comprobado que puedes usar al menos 
 3. Registra una passkey nueva en el autenticador.
 4. Al finalizar, la app elimina las passkeys anteriores de su lista y cierra las sesiones protegidas activas. Después vuelve a iniciar sesión con OIDC y la passkey nueva.
 
-La cookie de recuperación dura cinco minutos y solo autoriza registrar la passkey de reemplazo. Si cancelas el autenticador, puedes reanudar desde la misma pantalla mientras la cookie siga vigente; no vuelve a pedir ni consumir el TOTP. Si caduca, inicia otra vez el login OIDC.
+La cookie de recuperación dura cinco minutos y solo autoriza registrar la passkey de reemplazo. Si cancelas el autenticador, puedes reanudar desde la misma pantalla mientras la cookie siga vigente; no vuelve a pedir ni consumir el TOTP. Si recargas mientras sigue vigente, elige **Continuar recuperación**. Si caduca, el foco pasa a **Reintentar inicio de sesión** para volver a OIDC.
 
 Si también perdiste el acceso al IdP o al TOTP, la recuperación automática no está disponible. No hay cuenta de soporte ni método por email/SMS. El restablecimiento local descrito abajo desvincula la identidad y requiere volver a realizar el alta desde una sesión local confiable.
 
