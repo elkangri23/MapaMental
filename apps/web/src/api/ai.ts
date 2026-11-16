@@ -1,5 +1,5 @@
 import type { AiChatMessage, AiDeckProposal, AiGenerationEvent, AiGenerationStage, AiProposal, AiSlideDraft, AiSlideProposal, AiSuggestion, ProjectDocument } from '@espacio-visual/domain';
-import { ensureApiSession } from './projects.js';
+import { ensureApiSession, ProjectRequestError } from './projects.js';
 
 export type GenerationOptions = { signal: AbortSignal; onStage: (stage: AiGenerationStage) => void };
 
@@ -43,7 +43,7 @@ async function request<T>(path: string, body: unknown, options?: GenerationOptio
     return readGeneration<T>(response.body, options);
   }
   const result = await response.json().catch(() => ({})) as T & { message?: string };
-  if (!response.ok) throw new Error(result.message ?? `Error ${response.status}`);
+  if (!response.ok) throw new ProjectRequestError(result.message ?? `Error ${response.status}`, response.status);
   return result;
 }
 

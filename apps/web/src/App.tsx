@@ -898,7 +898,10 @@ export default function App() {
       setNotice(`Se añadieron ${aiProposal.ideas.length} ideas. Puedes deshacer esta acción desde el pie del mapa.`);
       projectsApi.backups(saved.id).then(({ backups: recoverable }) => setBackups(recoverable)).catch(() => undefined);
       loadProjectList().then(setProjectList).catch(() => undefined);
-    } catch (error) { setAiError(error instanceof Error ? error.message : 'No se pudo aplicar la propuesta.'); }
+    } catch (error) {
+      if (error instanceof ProjectRequestError && error.status === 409) setAiProposal(null);
+      setAiError(error instanceof Error ? error.message : 'No se pudo aplicar la propuesta.');
+    }
     finally { setAiBusy(false); }
   }, [aiBusy, aiProposal, flushPendingSave, loadProjectList, nodes.length, project]);
 
@@ -955,7 +958,10 @@ export default function App() {
       setNotice(creating ? 'Se añadió la diapositiva. Puedes deshacerlo desde el pie del proyecto.' : 'Se aplicó el borrador. Puedes deshacerlo desde el pie del proyecto.');
       projectsApi.backups(saved.id).then(({ backups: recoverable }) => setBackups(recoverable)).catch(() => undefined);
       loadProjectList().then(setProjectList).catch(() => undefined);
-    } catch (error) { setAiError(error instanceof Error ? error.message : 'No se pudo aplicar el borrador.'); }
+    } catch (error) {
+      if (error instanceof ProjectRequestError && error.status === 409) setAiSlideProposal(null);
+      setAiError(error instanceof Error ? error.message : 'No se pudo aplicar el borrador.');
+    }
     finally { setAiBusy(false); }
   }, [aiBusy, aiSlideProposal, flushPendingSave, loadProjectList, project]);
 
@@ -1058,6 +1064,7 @@ export default function App() {
         if (projectRef.current?.id === saved.id) setBackups(recoverable);
       }).catch(() => undefined);
     } catch (error) {
+      if (intent === 'apply' && error instanceof ProjectRequestError && error.status === 409) setDeckProposal(null);
       setAiError(error instanceof Error ? error.message : 'No se pudo guardar la presentación.');
     } finally { setAiBusy(false); }
   };

@@ -1,5 +1,7 @@
 # Cambios
 
+- La interfaz retira las propuestas de IA obsoletas al recibir un conflicto al aplicarlas.
+
 - El lanzador de Windows da tiempo a la comprobación de almacenamiento y explica cuándo Windows no puede validar el volumen de proyectos.
 
 ## Paquete portátil reconstruido — 2026-11-16
@@ -301,6 +303,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- La interfaz retira las propuestas de IA obsoletas al recibir un conflicto al aplicarlas.
 
 - El lanzador de Windows da tiempo a la comprobación de almacenamiento y explica cuándo Windows no puede validar el volumen de proyectos. — 2026-11-16
 
