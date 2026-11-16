@@ -1729,16 +1729,26 @@ export default function App() {
                 </p>
               )}
               {deckProposal.proposal.message && <p>{deckProposal.proposal.message}</p>}
-              {deckProposal.proposal.slides.map((slide, index) => <details key={index}>
-                <summary>{index + 1}. {slide.title}</summary>
-                {slide.subtitle && <p>{slide.subtitle}</p>}
-                {slide.body && <p>{slide.body}</p>}
-                {!!slide.bullets.length && <ul>{slide.bullets.map((bullet, item) => <li key={item}>{bullet}</li>)}</ul>}
-                {slide.table && <SlideTableBlock table={slide.table} />}
-                {!!slide.diagramSteps?.length && <ol aria-label="Recorrido">{slide.diagramSteps.map((step, item) => <li key={item}>{step}</li>)}</ol>}
-                {!!slide.mockFields?.length && <dl aria-label="Formulario de ejemplo">{slide.mockFields.map((field, item) => <div key={item}><dt>{field.label}</dt><dd>{field.value}</dd></div>)}</dl>}
-                <small>Ideas vinculadas: {slide.sourceNodeIds.map((id) => nodes.find((node) => node.id === id)?.data.label ?? 'Idea eliminada').join(' · ')}</small>
-              </details>)}
+              {deckProposal.proposal.slides.map((slide, index) => {
+                const visualBlocks = [
+                  slide.table ? 'Tabla' : '',
+                  slide.diagramSteps?.length ? 'Recorrido' : '',
+                  slide.mockFields?.length ? 'Formulario ficticio' : '',
+                ].filter(Boolean);
+                return <details key={index}>
+                  <summary>
+                    {index + 1}. {slide.title}
+                    {visualBlocks.length > 0 && <small className="deck-preview__blocks">{visualBlocks.join(' · ')}</small>}
+                  </summary>
+                  {slide.subtitle && <p>{slide.subtitle}</p>}
+                  {slide.body && <p>{slide.body}</p>}
+                  {!!slide.bullets.length && <ul>{slide.bullets.map((bullet, item) => <li key={item}>{bullet}</li>)}</ul>}
+                  {slide.table && <SlideTableBlock table={slide.table} />}
+                  {!!slide.diagramSteps?.length && <ol aria-label="Recorrido">{slide.diagramSteps.map((step, item) => <li key={item}>{step}</li>)}</ol>}
+                  {!!slide.mockFields?.length && <dl aria-label="Formulario de ejemplo">{slide.mockFields.map((field, item) => <div key={item}><dt>{field.label}</dt><dd>{field.value}</dd></div>)}</dl>}
+                  <small>Ideas vinculadas: {slide.sourceNodeIds.map((id) => nodes.find((node) => node.id === id)?.data.label ?? 'Idea eliminada').join(' · ')}</small>
+                </details>;
+              })}
               <button type="button" className="slide-ai-panel__submit" disabled={aiBusy || project?.revision !== deckProposal.proposal.baseRevision}
                 onClick={() => void saveDeckChange('apply')}>{project?.revision !== deckProposal.proposal.baseRevision ? 'El proyecto cambió · vuelve a generar' : slides.length ? 'Sustituir presentación' : 'Crear presentación'}</button>
             </section>}

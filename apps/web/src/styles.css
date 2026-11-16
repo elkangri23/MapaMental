@@ -201,6 +201,7 @@ kbd { border: 1px solid #e5e6ed; border-radius: 4px; padding: 2px 4px; backgroun
 .deck-preview details p, .deck-preview details small, .deck-preview details dl, .deck-preview details ol { color: #55596b; line-height: 1.5; overflow-wrap: anywhere; }
 .deck-preview details dl { padding: 8px; background: #f5f2ff; }
 .deck-preview summary, .deck-dialog summary { cursor: pointer; overflow-wrap: anywhere; }
+.deck-preview__blocks { display: block; margin-top: 3px; }
 .recovery-dialog__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-bottom: 15px; border-bottom: 1px solid #f0eff5; }
 .recovery-dialog__head strong, .recovery-dialog__head small { display: block; }
 .recovery-dialog__head strong { color: #414255; font-family: Georgia, serif; font-size: 17px; font-weight: 500; }
