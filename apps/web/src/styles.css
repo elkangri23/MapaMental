@@ -302,6 +302,7 @@ kbd { border: 1px solid #e5e6ed; border-radius: 4px; padding: 2px 4px; backgroun
 
 /* WCAG 2.0 AA baseline: visible focus, readable foregrounds, reflow and reduced motion. */
 :focus-visible { outline: 3px solid #5143b5; outline-offset: 2px; }
+.ai-proposal:focus, .slide-ai-proposal[tabindex]:focus { outline: 3px solid #5143b5; outline-offset: -3px; }
 button:disabled:focus-visible { outline-color: #5143b5; }
 .composer textarea:focus-visible, .idea-node__input:focus-visible, .provider-field input:focus-visible, .provider-field select:focus-visible { outline: 3px solid #5143b5; outline-offset: 2px; }
 .canvas-heading p, .eyebrow, .canvas-footer, .canvas-badge, .local-status, .chat-header__title small, .chat-context,
