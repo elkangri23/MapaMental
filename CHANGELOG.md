@@ -1,5 +1,9 @@
 # Cambios
 
+## Fallo upstream verificado en el servicio completo — 2026-11-16
+
+- El mock HTTP 503 pasó SSE y JSON con validación de almacenamiento activa: evento terminal `UPSTREAM_ERROR` y respuesta JSON 502 correlacionados. Logs y respuestas no filtraron los marcadores privados.
+
 ## Manejo de errores del proveedor en JSON y SSE — 2026-11-16
 
 - Un mock 503 confirmó HTTP 502 con error redactado en JSON y un evento terminal `UPSTREAM_ERROR` correlacionado por SSE; el cuerpo sentinela del proveedor no se filtró. Se ejecutó en arnés Fastify aislado porque Windows Storage bloqueó el arranque completo en esta sesión.

@@ -428,3 +428,10 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - El mock local respondió HTTP 503 y un cuerpo con `FAIL_RESPONSE_SENTINEL`. Por JSON, la ruta devolvió HTTP 502, `UPSTREAM_ERROR`, `correlationId` y mensaje genérico; el texto del proveedor no apareció en la respuesta.
 - Por SSE, la conexión estableció HTTP 200 y terminó con un evento `error` que incluía `UPSTREAM_ERROR`, ID de correlación y mensaje genérico; el cuerpo del proveedor no apareció en los eventos. Los registros de traza indicaron fin con error/código, sin mensaje o cuerpo del upstream.
 - El recorrido registró `sessionRoutes`, `projectRoutes`, `providerRoutes` y `aiRoutes` en un arnés Fastify aislado sobre datos temporales. No se usó un modelo real. Dos intentos de iniciar `apps/server/src/index.ts` fallaron cerrados porque la consulta `Get-Volume` no devolvió respuesta dentro del límite; no se omitió esa comprobación para arrancar el servicio. Por tanto, falta repetir el mismo flujo a través del arranque completo tras recuperarse Windows Storage.
+
+
+### Confirmación en el servicio completo del fallo upstream — T-004 — 2026-11-16
+
+- Se repitió el mock HTTP 503 contra `apps/server/src/index.ts` con carpeta de proyecto, perfiles y datos aislados. La validación Windows Storage (`Get-Volume`, `Get-Partition`, `Get-Disk`) clasificó el directorio en C: como `Fixed`/NVMe y el proceso completo escuchó en loopback; no se desactivó el control de volumen.
+- SSE devolvió HTTP 200 para el flujo abierto y terminó con evento `error` que incluía `UPSTREAM_ERROR`, `correlationId` y mensaje genérico. La petición JSON devolvió HTTP 502 con el mismo código/correlación y mensaje 5xx redactado. El mock incluyó `FAIL_RESPONSE_SENTINEL` en el cuerpo 503; no apareció en ninguna respuesta al cliente.
+- Los logs completos de Fastify mostraron etapas y código/correlación para SSE y JSON, más el error central redactado para JSON. No aparecieron `FULL_PROMPT_SENTINEL`, `FULL_LABEL_SENTINEL` ni `FAIL_RESPONSE_SENTINEL`. Mock y servicio detenidos; perfiles y proyecto solo existieron en Temp.
