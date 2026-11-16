@@ -266,3 +266,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 
 - Los proyectos creados con una versión futura aparecen como solo lectura. Si los campos conocidos pasan validación, se puede consultar su proyección; si el contenido no es compatible, se conserva únicamente la información básica y se evita mostrar un mapa incompleto.
 - Se actualizaron las tareas, estado, almacenamiento, roadmap, índice de documentación y evidencias de verificación para cerrar T-007 y conservar las diferencias de diseño aún abiertas.
+
+## Contrato persistido canónico de proyecto — 2026-11-16
+
+- ADR-0015 documenta el formato JSON v3 que usa `ProjectDocument`, incluidas las formas reales de nodos, relaciones, conversación y diapositivas.
+- Se aclaró que las estructuras conceptuales del diseño no implican cambios de serialización ni migración.

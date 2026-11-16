@@ -384,3 +384,9 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - El GET no autenticado de `/api/session/oidc-config` devolvió HTTP 403 con `code:"FORBIDDEN"`, mensaje de sesión y `correlationId:"req-3"`. El cuerpo conservó el código de estado requerido por el cliente; no se inició sesión ni se accedió a datos personales.
 - Tras canjear el nonce temporal en la misma instancia, un POST SSE de IA a un UUID de proyecto inexistente devolvió `stage` y un evento terminal `error` con `code:"NOT_FOUND"`, mensaje y `correlationId:"req-3"`. La llamada no contactó proveedor alguno ni cambió un proyecto.
 - `npm run build` pasó con Node 24.22.2 y `npm audit --omit=dev` reportó cero vulnerabilidades. Vite mantiene su aviso por un bundle principal de 505,63 kB. La ruta de normalización oculta detalles para 5xx; la respuesta 5xx y el manejo visual del ID de correlación aún requieren recorrido específico. La configuración y carpetas temporales se dejaron aisladas y el servicio se detuvo.
+
+### Contrato persistido del proyecto — T-004 — 2026-11-16
+
+- Se cotejaron `ProjectDocument`, `PresentationSlide`, validadores y uso de almacenamiento con el modelo descrito en la especificación.
+- ADR-0015 fija el JSON v3 existente como contrato canónico y documenta las diferencias de representación. No se modificó el esquema ni se requiere migración.
+- Esta resolución documental no sustituye recorridos de volumen, calidad de contexto IA, trazabilidad de operaciones ni medición de capacidad; siguen pendientes en T-004.

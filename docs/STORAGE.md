@@ -1,5 +1,7 @@
 # Proyectos, guardado y recuperación
 
+El formato persistido canónico vigente es `ProjectDocument` JSON v3; sus campos, estructuras de mapa y diapositiva se especifican en [ADR-0015](decisions/ADR-0015-formato-persistido-proyecto-v3.md). Las vistas conceptuales del diseño no alteran el archivo. Cualquier cambio estructural futuro requiere decidir una versión de esquema y definir su migración.
+
 **Estado: persistencia base recorrida manualmente; migraciones 0→1 y 2→3, copia y reintento de reemplazo verificados en almacenamiento aislado.** La UI permite seleccionar/crear proyectos, autosave de mapa y diapositivas, consultar/restaurar copias válidas y aplicar/deshacer una propuesta IA. En almacenamiento temporal aislado se verificó migración 0→1 y restauración desde UI; en la continuación se restauró desde UI el backup inicial de una presentación de cinco diapositivas y se confirmó revisión nueva con copia preservada. También se recorrieron aplicación/deshacer del flujo IA y persistencia de diapositivas/bloques tras recarga. Se recorrió v2→v3 conservando la revisión y copia byte por byte, y los fallos `EPERM` de reemplazo con conservación de backup y reintento. El modo de solo lectura para esquemas futuros se verificó con fixtures aislados; sigue pendiente recorrer el deshacer IA tras reiniciar el servicio.
 
 ## Formato actual
