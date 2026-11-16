@@ -1,8 +1,12 @@
 # Cambios
 
+## Capacidad de guardado local — 2026-11-16
+
+- Un fixture local de 1.005.189 bytes, 1.000 ideas y 100 diapositivas se guardó ocho veces directamente con `saveProject` en 63–142 ms. Se eliminó una validación completa redundante del objeto intermedio; la revisión final normalizada sigue validándose antes de respaldar y guardar. Métrica de servicio local, sin transporte HTTP; otros equipos quedan por medir.
+
 ## Trazabilidad técnica de operaciones IA — 2026-11-16
 
-- Se añadieron eventos estructurados de generación, proveedor, validación y guardado correlacionados por ID de petición, sin registrar prompts ni contenido del proyecto. ADR-0019 documenta los campos y límites; falta recorrer/capturar los logs con un proveedor simulado.
+- Se añadieron eventos estructurados de generación, proveedor, validación y guardado correlacionados por ID de petición, sin registrar prompts ni contenido del proyecto. ADR-0019 documenta los campos y límites; el recorrido con mock confirmó generación, validación, guardado y ausencia de marcadores sensibles.
 
 ## Resumen global en contexto IA — 2026-11-16
 

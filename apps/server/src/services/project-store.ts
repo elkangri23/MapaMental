@@ -311,7 +311,8 @@ async function saveProjectUnlocked(id: string, input: SaveProjectInput) {
   if (input.preserveAiUndo) candidate.lastAiUndo = input.project.lastAiUndo;
   if (input.preserveAiSlideUndo) candidate.lastAiSlideUndo = input.project.lastAiSlideUndo;
   if (input.preserveAiDeckUndo) candidate.lastAiDeckUndo = input.project.lastAiDeckUndo;
-  if (!validateProject(candidate)) throw Object.assign(new Error('El documento del proyecto no es válido.'), { statusCode: 400 });
+  // Validate the fully normalized next revision once below; validating this
+  // intermediate candidate first repeats a full walk of large project graphs.
   const conversationOnly = !input.preserveAiUndo && !input.preserveAiSlideUndo && !input.preserveAiDeckUndo
     && candidate.name === current.name && isDeepStrictEqual(candidate.map, current.map)
     && isDeepStrictEqual(candidate.presentation, current.presentation)

@@ -389,7 +389,7 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 
 - Se cotejaron `ProjectDocument`, `PresentationSlide`, validadores y uso de almacenamiento con el modelo descrito en la especificación.
 - ADR-0015 fija el JSON v3 existente como contrato canónico y documenta las diferencias de representación. No se modificó el esquema ni se requiere migración.
-- Esta resolución documental no sustituye calidad de contexto IA, trazabilidad de operaciones ni medición de capacidad; siguen pendientes en T-004.
+- Esta resolución documental no sustituye calidad de contexto IA ni la medición de capacidad y trazabilidad que se añadieron en recorridos posteriores; otros pendientes permanecen en T-004.
 
 ### Fragmentos acotados de diapositivas en contexto IA — 2026-11-16
 
@@ -412,5 +412,12 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 
 ### Instrumentación de trazabilidad IA — T-004 — 2026-11-16
 
-- El código añade eventos estructurados para inicio, etapas y resultado de generación, además de validación previa, inicio y resultado del guardado de mapa/diapositiva/presentación. Incluye ID de petición, plantilla de ruta, UUID de proyecto validado, tipo de proveedor cuando se conoce, operación, código estable, revisiones y duración. No incorpora texto del proyecto, prompt/respuesta, nombre ni URL del proveedor o credenciales.
-- Revisión estática y build de producción confirmados. No se capturaron registros de una operación simulada en ejecución; falta comprobar la forma final de los eventos y que no aparezcan campos sensibles en los logs reales.
+- En almacenamiento, perfil y servicio aislados, se creó un mapa con `TRACE_LABEL_SENTINEL`; se solicitó una propuesta con `TRACE_PROMPT_SENTINEL` a un mock OpenAI-compatible y se aplicó. La operación generó dos ideas y guardó la revisión 3.
+- Los logs mostraron `ai_generation_started`, etapas `waiting-for-provider` y `validating`, `ai_generation_finished`, `ai_operation_validated`, `ai_project_commit_started` y `ai_project_commit_finished`; las fases se correlacionaron con los IDs de petición. El tipo de proveedor fue `openai-compatible`, y el commit incluyó revisiones base/objetivo y duración. Ninguno de los dos marcadores apareció en los registros capturados. El mock solo registró la ruta y el tamaño del cuerpo recibido.
+- Build de producción y `npm audit --omit=dev` con cero vulnerabilidades. No se recorrieron respuesta fallida del proveedor, error de guardado ni SSE; las pruebas reales de Ollama/LM Studio permanecen pendientes. Los datos y configuraciones temporales se aislaron.
+
+### Medición de guardado local — capacidad T-004 — 2026-11-16
+
+- Fixture sintético persistido bajo directorio temporal aislado: 1.005.189 bytes, 1.000 nodos, 999 relaciones, 100 diapositivas y 100 mensajes de conversación. Windows clasificó el volumen local de prueba como fijo/NVMe en la comprobación previa del entorno.
+- Se midió directamente la llamada del servicio `saveProject`, incluyendo lectura/validación de la revisión vigente, copia previa, validación de la copia, escritura durable (sync, lectura/validación temporal y rename) y mantenimiento de copias. Tras la compilación con Node 24.22.0, ocho guardados dieron 63–142 ms. El objetivo local de 1 MB en menos de 1 s se cumple en este fixture y equipo.
+- La medición excluye serialización de la petición y transporte HTTP/UI. En una tentativa separada, PowerShell tardó 7.8 s y el tiempo de respuesta del endpoint fue 2.82 s, por lo que no se usa como métrica del servicio: el coste del cliente y de transferir/responder 1 MB contaminó el recorrido. No se generaliza a otros equipos/discos ni a cancelación o arranque en frío. Los datos de prueba permanecen en Temp, no en el repositorio.

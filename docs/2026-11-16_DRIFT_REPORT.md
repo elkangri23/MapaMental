@@ -7,7 +7,7 @@
 - **Persistencia y contrato serializado — resuelto en 2026-11-16:** ADR-0015 declara `ProjectDocument` v3 como formato persistido canónico. El diseño conceptual no obliga a guardar una estructura distinta; cambiarla requerirá versión y migración explícitas.
 - **Trazabilidad de operaciones:** el diseño prevé correlacionar proveedor, validación, commit y guardado sin registrar prompts. Ahora hay un registro local acotado de eventos de autenticación y se eliminan los query strings de los logs HTTP, pero no se registra la secuencia proveedor→validación→commit→guardado para cambios IA.
 - **Dirección de escucha — resuelto:** ADR-0013 establece `::1` para el servicio, `localhost` para el origen WebAuthn y el callback `[::1]` para OIDC. Se actualizaron la especificación y los ADR 0001/0009; la prueba con un IdP real sigue pendiente.
-- **Capacidad objetivo:** el diseño fija una meta inicial de 1.000 nodos; el límite efectivo del dominio y la interfaz es 10.000. No se ha documentado una decisión que sustituya la meta ni medido el objetivo de guardado de 1 MB en menos de un segundo.
+- **Capacidad objetivo (medición parcial):** el diseño fija una meta inicial de 1.000 nodos y 100 diapositivas; el límite efectivo sigue en 10.000 nodos. En Windows/Node 24 se guardó desde `saveProject` un fixture de 1.005.189 bytes con 1.000 nodos, 999 aristas y 100 diapositivas en ocho ejecuciones de 63–142 ms, incluyendo copia previa y escritura durable. No incluye serialización/transferencia HTTP ni demuestra el rendimiento de otros discos; el límite efectivo frente a la meta de diseño sigue sin decisión explícita.
 
 ## README.md
 

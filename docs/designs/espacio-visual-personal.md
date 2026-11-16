@@ -180,7 +180,7 @@ El mapa usará nodos y conexiones jerárquicos, disposición radial inicial y po
 * **Recuperación:** escritura y reemplazo durable, copia previa verificada y restauración explicada con revisión/fecha.
 * **Compatibilidad:** proyecto versionado, migraciones explícitas y lectura protegida de esquemas futuros.
 * **Respuesta:** progreso visible; la UI reflejará una edición solo tras confirmación durable. Cancelar antes del commit no cambiará el proyecto.
-* **Capacidad inicial objetivo:** hasta 1.000 nodos y 100 diapositivas en un proyecto, con guardado de un archivo de 1 MB en menos de 1 segundo en disco local SSD. El servicio devolverá confirmación de cancelación local en menos de 500 ms, aunque el proveedor puede tardar en detener cómputo. Son metas para validar, no resultados medidos.
+* **Capacidad inicial objetivo:** hasta 1.000 nodos y 100 diapositivas en un proyecto, con guardado de un archivo de 1 MB en menos de 1 segundo en disco local SSD. Medición del 2026-11-16: `saveProject` guardó un fixture de 1.005.189 bytes, 1.000 nodos, 999 aristas y 100 diapositivas en ocho ejecuciones de 63–142 ms, incluida copia y escritura durable, sobre el entorno local C: NVMe con Node 24.22.0. No incluye serialización/transferencia HTTP y no garantiza otros equipos. El servicio devolverá confirmación de cancelación local en menos de 500 ms, aunque el proveedor puede tardar en detener cómputo; esa meta de cancelación aún no se ha medido.
 * **Diagnóstico:** errores separados para conexión, modelo, validación, aplicación y guardado; no registrar prompts.
 
 ## Future Improvements

@@ -15,4 +15,4 @@ No registrar prompts, respuestas del modelo, historial, etiquetas/relaciones, no
 - Los logs pueden correlacionar esperas y fallos del proveedor con validación y guardado durable mediante `reqId`, sin guardar el texto enviado o producido por el modelo.
 - Revisión base/objetivo y duración ayudan a identificar conflictos y latencia de persistencia.
 - Los logs de Fastify dependen de la configuración de registro del proceso; no se incorpora retención, análisis o interfaz de auditoría.
-- El cambio fue inspeccionado estáticamente y compilado. La verificación de registros reales con un mock local queda pendiente en T-004.
+- Build de producción y auditoría de dependencias pasaron. Un recorrido aislado con mock local verificó eventos de proveedor y guardado correlacionados por petición; los marcadores del prompt/idea no aparecieron en los logs. Los fallos de proveedor/5xx y la retención operativa siguen fuera de este recorrido.
