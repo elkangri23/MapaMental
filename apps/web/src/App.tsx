@@ -1222,7 +1222,7 @@ export default function App() {
     try {
       const saved = await authApi.saveOidcConfiguration({ issuer: oidcConfiguration.issuer, clientId: oidcConfiguration.clientId });
       setOidcConfiguration(saved);
-      setOidcMessage('Configuración guardada. El inicio de sesión protegido aún no está habilitado.');
+      setOidcMessage('Configuración guardada. Vincula tu identidad OIDC y registra una passkey; después podrás iniciar en modo protegido.');
     } catch (error) { setOidcMessage(error instanceof Error ? error.message : 'No se pudo guardar la identidad.'); }
     finally { setOidcBusy(false); }
   }, [oidcConfiguration]);

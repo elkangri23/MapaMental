@@ -1,5 +1,10 @@
 # Cambios
 
+## Aclaración del acceso OIDC protegido — 2026-11-16
+
+- Ajustes ya no indica erróneamente que el inicio protegido no está habilitado: explica que hay que vincular OIDC y registrar una passkey antes de arrancar con `MYMAP_AUTH_MODE=protected`.
+- El código de OIDC + PKCE, passkeys/WebAuthn y recuperación TOTP ya está integrado. El recorrido real sigue pendiente de configurar un IdP y usar un autenticador en el equipo.
+
 ## Recorrido de contexto IA con proveedor simulado — 2026-11-16
 
 - T-010: se comprobó en Chrome que «Ver contexto» coincide con el cuerpo HTTP recibido por un mock local; rama, ancestro, relaciones, diapositiva vinculada, conteos y exclusiones coincidieron.
