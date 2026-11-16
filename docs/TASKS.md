@@ -35,7 +35,7 @@ Implementado en T-010: la vista previa y el contexto del proveedor incluyen un r
 
 ## Cierre documental
 
-- [ ] **T-014 — Actualizar guías de instalación y uso contra el paquete real.** Criterio: instalación, inicio, actualización, datos y desinstalación recorridos en el paquete final; quitar estados de “previsto” solo tras comprobarlos.
+- [ ] **T-014 — Actualizar guías de instalación y uso contra el paquete real.** Criterio: instalación, inicio, actualización, datos y desinstalación recorridos en el paquete final; quitar estados de “previsto” solo tras comprobarlos. El recorrido de aceptación está en [Instalación](INSTALLATION.md#recorrido-pendiente-del-instalador).
 
 ## Seguridad y accesibilidad transversal
 

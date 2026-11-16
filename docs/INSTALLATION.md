@@ -25,6 +25,15 @@ El lanzador reinicia una instancia activa si cambia el modo. Para volver al modo
 
 El proyecto del instalador está preparado en `packaging\windows\setup.iss`. Está configurado para instalar por usuario, crear accesos directos en el menú Inicio y ofrecer un acceso directo opcional en el escritorio. La compilación del instalador y el recorrido de instalación, actualización y desinstalación quedan pendientes.
 
+### Recorrido pendiente del instalador
+
+Usa un perfil de Windows de prueba para comprobar el ciclo completo con datos separados.
+
+1. Ejecuta el instalador como usuario sin privilegios de administrador. Comprueba que instala bajo el perfil de ese usuario, crea los accesos directos de Inicio y respeta la elección del acceso directo de escritorio.
+2. Abre la aplicación desde Inicio. Crea un mapa de prueba, espera a «Guardado local» y usa «Detener Espacio Visual» para cerrar el servicio.
+3. Ejecuta un instalador de versión posterior en la misma carpeta. Abre la aplicación desde Inicio y comprueba que el mapa se conserva y se puede editar.
+4. Guarda y detén el servicio antes de desinstalar desde Configuración de Windows. Comprueba que se retiran la aplicación y sus accesos directos y que el mapa sigue en la carpeta de proyectos.
+
 ## Datos, actualización y retirada del paquete portátil
 
 - Los proyectos y sus copias se guardan por defecto en `Documents\EspacioVisual\Proyectos`.
