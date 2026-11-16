@@ -1,4 +1,4 @@
-import { getRecoveryIdentity, revokeAllProtectedSessions } from './session.js';
+import { getRecoveryIdentity, getSessionIdentity, hasRecentUserVerification, isValidSession, revokeAllProtectedSessions, type SessionMode } from './session.js';
 import { randomUUID } from 'node:crypto';
 import { mkdir, open, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
@@ -119,14 +119,31 @@ export async function saveAuthConfiguration(input: unknown) {
   });
 }
 
-export async function addStoredPasskey(passkey: StoredPasskey, expectedIdentity: string, recoveryCookie?: string) {
+export type PasskeyRegistrationAccess = { mode: SessionMode | 'recovery'; cookie: string | undefined };
+
+export async function addStoredPasskey(passkey: StoredPasskey, expectedIdentity: string, access: PasskeyRegistrationAccess) {
   return serializeMutation(async () => {
     const current = await getAuthConfiguration();
     if (!current?.owner) throw Object.assign(new Error('Vincula primero una identidad OIDC.'), { statusCode: 409 });
-    const recovering = recoveryCookie !== undefined;
-    if (expectedIdentity !== current.owner.issuer + '\u0000' + current.owner.subject
-      || (recovering && getRecoveryIdentity(recoveryCookie) !== expectedIdentity)) {
-      throw Object.assign(new Error('La identidad o la recuperación ya no son válidas.'), { statusCode: 401 });
+    if (expectedIdentity !== current.owner.issuer + '\u0000' + current.owner.subject) {
+      throw Object.assign(new Error('La identidad ya no es válida.'), { statusCode: 401 });
+    }
+    const { mode, cookie } = access;
+    const recovering = mode === 'recovery';
+    if (mode === 'recovery') {
+      if (getRecoveryIdentity(cookie) !== expectedIdentity) {
+        throw Object.assign(new Error('La recuperación ya no es válida.'), { statusCode: 401 });
+      }
+    } else {
+      if (!isValidSession(cookie, mode) || (mode === 'protected' && getSessionIdentity(cookie, mode) !== expectedIdentity)) {
+        throw Object.assign(new Error('La sesión caducó o fue revocada.'), { statusCode: 401 });
+      }
+      if (mode === 'protected' && !hasRecentUserVerification(cookie)) {
+        throw Object.assign(new Error('Vuelve a verificar una passkey antes de añadir otra credencial.'), { statusCode: 428 });
+      }
+      if (mode === 'local' && current.passkeys.length > 0) {
+        throw Object.assign(new Error('Entra en modo protegido para añadir otra passkey.'), { statusCode: 409 });
+      }
     }
     if (current.passkeys.some((item) => item.id === passkey.id)) throw Object.assign(new Error('Esta passkey ya está registrada.'), { statusCode: 409 });
     if (!recovering && current.passkeys.some((item) => item.name.toLocaleLowerCase() === passkey.name.toLocaleLowerCase())) throw Object.assign(new Error('Ya existe una passkey con ese nombre.'), { statusCode: 409 });

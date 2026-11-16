@@ -33,6 +33,11 @@
 
 - En el almacén temporal se registraron diez credenciales ficticias. Una identidad distinta se rechazó y conservó las diez. El reemplazo autorizado dejó únicamente la nueva credencial, incluso al reutilizar un nombre, e invalidó la sesión protegida y la de recuperación. La prueba se realizó en el almacén compilado y no accionó un autenticador.
 
+## Autorización al guardar una passkey (T-024)
+
+- Con credenciales y sesiones de prueba, el almacén aceptó el alta inicial en modo local y rechazó una segunda alta local. Una sesión protegida revocada y otra con verificación de usuario fuera del plazo fueron rechazadas y el archivo conservó solo la credencial inicial.
+- El alta adicional con una sesión protegida recién verificada y el reemplazo con una sesión de recuperación activa conservaron su comportamiento esperado. El recorrido se hizo en el almacén compilado con datos temporales. Queda comprobar la ceremonia WebAuthn con un autenticador real.
+
 ## Aceptación pendiente del modo protegido (T-021 y T-023 a T-026)
 
 1. Desde el modo local, vincular un proveedor OIDC real, registrar una passkey y reiniciar en modo protegido. Verificar que el inicio exige OIDC y verificación de usuario con passkey.

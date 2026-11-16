@@ -1,5 +1,7 @@
 # Cambios
 
+- El alta de passkey comprueba otra vez la sesión y la verificación de usuario antes de guardar la credencial.
+
 - La recuperación guarda la nueva passkey y retira las anteriores en una sola escritura. Puede reemplazarlas aunque ya haya diez registradas.
 
 - Cuando el servidor confirma que falta el segundo factor, el foco pasa a Continuar con passkey.
@@ -399,6 +401,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- El alta de passkey comprueba otra vez la sesión y la verificación de usuario antes de guardar la credencial.
 
 - La recuperación guarda la nueva passkey y retira las anteriores en una sola escritura. Puede reemplazarlas aunque ya haya diez registradas.
 

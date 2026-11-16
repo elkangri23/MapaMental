@@ -148,7 +148,10 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
         const currentIdentity = config?.owner ? `${config.owner.issuer}\u0000${config.owner.subject}` : null;
         if (!recoveryIdentity || currentIdentity !== recoveryIdentity) return reply.code(401).send({ message: 'La identidad de recuperación ya no es válida.' });
       }
-      const result = await finishPasskeyRegistration(sessionId, request.body as never, recoveryId ? request.headers.cookie : undefined);
+      const result = await finishPasskeyRegistration(sessionId, request.body as never, {
+        mode: recoveryId ? 'recovery' : mode,
+        cookie: request.headers.cookie,
+      });
       if (recoveryId) {
         reply.header('set-cookie', [clearRecoveryCookie(), clearOidcSecondFactorCookie(), clearSessionCookie('protected')]);
       }

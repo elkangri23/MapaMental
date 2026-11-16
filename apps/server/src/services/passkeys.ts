@@ -7,7 +7,7 @@ import {
   type AuthenticationResponseJSON,
   type RegistrationResponseJSON,
 } from '@simplewebauthn/server';
-import { addStoredPasskey, getAuthConfiguration, removeStoredPasskey, renameStoredPasskey, updateStoredPasskey, type StoredPasskey } from './auth-store.js';
+import { addStoredPasskey, getAuthConfiguration, removeStoredPasskey, renameStoredPasskey, updateStoredPasskey, type PasskeyRegistrationAccess, type StoredPasskey } from './auth-store.js';
 import { expectedUiOrigin, markSessionUserVerified } from './session.js';
 
 const rpID = 'localhost';
@@ -46,7 +46,7 @@ export async function beginPasskeyRegistration(sessionId: string, name: string, 
   return options;
 }
 
-export async function finishPasskeyRegistration(sessionId: string, response: RegistrationResponseJSON, recoveryCookie?: string) {
+export async function finishPasskeyRegistration(sessionId: string, response: RegistrationResponseJSON, access: PasskeyRegistrationAccess) {
   const key = `register:${sessionId}`;
   const ceremony = ceremonies.get(key);
   ceremonies.delete(key);
@@ -72,7 +72,7 @@ export async function finishPasskeyRegistration(sessionId: string, response: Reg
     createdAt: new Date().toISOString(),
     lastUsedAt: null,
   };
-  const passkeys = await addStoredPasskey(passkey, ceremony.identityId, recoveryCookie);
+  const passkeys = await addStoredPasskey(passkey, ceremony.identityId, access);
   return { passkeyCount: passkeys.length, credentialId: passkey.id };
 }
 
