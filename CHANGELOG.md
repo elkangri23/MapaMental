@@ -1,5 +1,9 @@
 # Cambios
 
+## Manejo de errores del proveedor en JSON y SSE — 2026-11-16
+
+- Un mock 503 confirmó HTTP 502 con error redactado en JSON y un evento terminal `UPSTREAM_ERROR` correlacionado por SSE; el cuerpo sentinela del proveedor no se filtró. Se ejecutó en arnés Fastify aislado porque Windows Storage bloqueó el arranque completo en esta sesión.
+
 ## Capacidad de guardado local — 2026-11-16
 
 - Un fixture local de 1.005.189 bytes, 1.000 ideas y 100 diapositivas se guardó ocho veces directamente con `saveProject` en 63–142 ms. Se eliminó una validación completa redundante del objeto intermedio; la revisión final normalizada sigue validándose antes de respaldar y guardar. Métrica de servicio local, sin transporte HTTP; otros equipos quedan por medir.

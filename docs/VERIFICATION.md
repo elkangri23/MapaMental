@@ -383,7 +383,7 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - En una instancia de producción aislada con `APPDATA`, `LOCALAPPDATA` y carpeta de proyectos temporales, un `GET /api/no-such-route` devolvió HTTP 404 y `{code:"NOT_FOUND", message, correlationId:"req-2"}`.
 - El GET no autenticado de `/api/session/oidc-config` devolvió HTTP 403 con `code:"FORBIDDEN"`, mensaje de sesión y `correlationId:"req-3"`. El cuerpo conservó el código de estado requerido por el cliente; no se inició sesión ni se accedió a datos personales.
 - Tras canjear el nonce temporal en la misma instancia, un POST SSE de IA a un UUID de proyecto inexistente devolvió `stage` y un evento terminal `error` con `code:"NOT_FOUND"`, mensaje y `correlationId:"req-3"`. La llamada no contactó proveedor alguno ni cambió un proyecto.
-- `npm run build` pasó con Node 24.22.2 y `npm audit --omit=dev` reportó cero vulnerabilidades. Vite mantiene su aviso por un bundle principal de 505,63 kB. La ruta de normalización oculta detalles para 5xx; la respuesta 5xx y el manejo visual del ID de correlación aún requieren recorrido específico. La configuración y carpetas temporales se dejaron aisladas y el servicio se detuvo.
+- `npm run build` pasó con Node 24.22.2 y `npm audit --omit=dev` reportó cero vulnerabilidades. Vite mantiene su aviso por un bundle principal de 505,63 kB. Las comprobaciones posteriores del fallo 5xx se detallan a continuación. La configuración y carpetas temporales se dejaron aisladas y el servicio se detuvo.
 
 ### Contrato persistido del proyecto — T-004 — 2026-11-16
 
@@ -421,3 +421,10 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Fixture sintético persistido bajo directorio temporal aislado: 1.005.189 bytes, 1.000 nodos, 999 relaciones, 100 diapositivas y 100 mensajes de conversación. Windows clasificó el volumen local de prueba como fijo/NVMe en la comprobación previa del entorno.
 - Se midió directamente la llamada del servicio `saveProject`, incluyendo lectura/validación de la revisión vigente, copia previa, validación de la copia, escritura durable (sync, lectura/validación temporal y rename) y mantenimiento de copias. Tras la compilación con Node 24.22.0, ocho guardados dieron 63–142 ms. El objetivo local de 1 MB en menos de 1 s se cumple en este fixture y equipo.
 - La medición excluye serialización de la petición y transporte HTTP/UI. En una tentativa separada, PowerShell tardó 7.8 s y el tiempo de respuesta del endpoint fue 2.82 s, por lo que no se usa como métrica del servicio: el coste del cliente y de transferir/responder 1 MB contaminó el recorrido. No se generaliza a otros equipos/discos ni a cancelación o arranque en frío. Los datos de prueba permanecen en Temp, no en el repositorio.
+
+
+### Fallo 503 del proveedor por JSON y SSE — T-004 — 2026-11-16
+
+- El mock local respondió HTTP 503 y un cuerpo con `FAIL_RESPONSE_SENTINEL`. Por JSON, la ruta devolvió HTTP 502, `UPSTREAM_ERROR`, `correlationId` y mensaje genérico; el texto del proveedor no apareció en la respuesta.
+- Por SSE, la conexión estableció HTTP 200 y terminó con un evento `error` que incluía `UPSTREAM_ERROR`, ID de correlación y mensaje genérico; el cuerpo del proveedor no apareció en los eventos. Los registros de traza indicaron fin con error/código, sin mensaje o cuerpo del upstream.
+- El recorrido registró `sessionRoutes`, `projectRoutes`, `providerRoutes` y `aiRoutes` en un arnés Fastify aislado sobre datos temporales. No se usó un modelo real. Dos intentos de iniciar `apps/server/src/index.ts` fallaron cerrados porque la consulta `Get-Volume` no devolvió respuesta dentro del límite; no se omitió esa comprobación para arrancar el servicio. Por tanto, falta repetir el mismo flujo a través del arranque completo tras recuperarse Windows Storage.
