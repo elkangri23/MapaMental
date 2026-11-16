@@ -3,10 +3,14 @@ import type { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequest
 
 export class OidcStepExpiredError extends Error {}
 
-async function checkOidcStep(response: Response, headers: Record<string, string>) {
-  if (response.status !== 401) return;
+async function checkOidcStep(response: Response, headers: Record<string, string>, duringRecovery = false) {
+  if (response.status !== 401 && !(duringRecovery && response.status === 403)) return;
   const status = await fetch('/api/session/status', { headers, credentials: 'same-origin' }).catch(() => null);
-  if (status?.status === 401) throw new OidcStepExpiredError('La verificación OIDC caducó. Vuelve a iniciar sesión.');
+  if (status?.status === 401) {
+    throw new OidcStepExpiredError(duringRecovery
+      ? 'La recuperación caducó. Vuelve a iniciar sesión para comenzarla de nuevo.'
+      : 'La verificación OIDC caducó. Vuelve a iniciar sesión.');
+  }
 }
 
 export interface OidcConfigurationView {
@@ -97,17 +101,21 @@ export const authApi = {
     const current = await status.json().catch(() => ({})) as { message?: string; active?: boolean };
     if (!status.ok) throw new Error(current.message ?? 'No se pudo comprobar la recuperación.');
     if (!current.active) {
+      if (!code) throw new OidcStepExpiredError('La recuperación ya no está activa. Vuelve a iniciar sesión para comenzarla de nuevo.');
       const verify = await fetch('/api/session/recovery/totp/verify', { method: 'POST', credentials: 'same-origin', headers, body: JSON.stringify({ code }) });
       const verified = await verify.json().catch(() => ({})) as { message?: string; recovery?: boolean };
+      await checkOidcStep(verify, headers, true);
       if (!verify.ok || !verified.recovery) throw new Error(verified.message ?? 'No se pudo iniciar la recuperación.');
     }
     const optionsResponse = await fetch('/api/session/passkeys/registration/options', { method: 'POST', credentials: 'same-origin', headers, body: JSON.stringify({ name }) });
     const options = await optionsResponse.json().catch(() => ({})) as PublicKeyCredentialCreationOptionsJSON & { message?: string };
+    await checkOidcStep(optionsResponse, headers, true);
     if (!optionsResponse.ok) throw new Error(options.message ?? 'No se pudo iniciar el alta de la nueva passkey.');
     const { startRegistration } = await import('@simplewebauthn/browser');
     const credential = await startRegistration({ optionsJSON: options });
     const result = await fetch('/api/session/passkeys/registration/verify', { method: 'POST', credentials: 'same-origin', headers, body: JSON.stringify(credential) });
     const output = await result.json().catch(() => ({})) as { message?: string; passkeyCount?: number };
+    await checkOidcStep(result, headers, true);
     if (!result.ok) throw new Error(output.message ?? 'No se pudo registrar la passkey de recuperación.');
     return output;
   },

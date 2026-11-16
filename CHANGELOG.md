@@ -1,5 +1,7 @@
 # Cambios
 
+- La recuperación ofrece volver a iniciar sesión si caduca. Si el alta de passkey se interrumpe y la recuperación sigue activa, puedes retomarla sin introducir de nuevo el código TOTP.
+
 - Una recuperación TOTP activa se puede retomar tras recargar para registrar la passkey de reemplazo.
 
 - Si el paso OIDC caduca mientras se confirma la passkey, la interfaz ofrece volver a iniciar sesión.
@@ -387,6 +389,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- La recuperación ofrece volver a iniciar sesión si caduca. Si el alta de passkey se interrumpe y la recuperación sigue activa, puedes retomarla sin introducir de nuevo el código TOTP.
 
 - Una recuperación TOTP activa se puede retomar tras recargar para registrar la passkey de reemplazo.
 

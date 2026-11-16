@@ -1355,7 +1355,23 @@ export default function App() {
     try {
       await authApi.recoverWithTotp(recoveryCode.trim(), recoveryPasskeyName.trim());
       window.location.replace(window.location.pathname);
-    } catch (error) { setProtectedLoginMessage(error instanceof Error ? error.message : 'No se pudo recuperar el acceso.'); setProtectedLoginBusy(false); }
+    } catch (error) {
+      if (error instanceof OidcStepExpiredError) {
+        setProtectedLoginPending(false);
+        setRecoveryFormOpen(false);
+        setRecoveryCode('');
+        setOidcRetryMessage(error.message);
+      } else {
+        const active = await authApi.hasRecoverySession().catch(() => null);
+        if (active) {
+          setRecoveryOnly(true);
+          setRecoveryResuming(true);
+          setRecoveryCode('');
+        }
+        setProtectedLoginMessage(error instanceof Error ? error.message : 'No se pudo recuperar el acceso.');
+      }
+      setProtectedLoginBusy(false);
+    }
   }, [recoveryCode, recoveryPasskeyName, recoveryResuming]);
 
   useEffect(() => {
