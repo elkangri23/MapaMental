@@ -26,7 +26,7 @@
 ## Reanudación de recuperación (T-023)
 
 - Con Fastify aislado y una sesión de recuperación de prueba, el estado general respondió HTTP 428 e indicó recuperación activa. La API del perfil siguió devolviendo HTTP 403.
-- Al consumir la sesión, el estado dejó de ofrecer la reanudación. Queda recorrer desde Chrome la recarga tras introducir TOTP y el alta de la passkey de reemplazo con un autenticador real.
+- Al consumir la sesión, el estado dejó de ofrecer la reanudación. Con la web compilada y un servidor simulado, Chrome enfocó Continuar recuperación al abrir y al recargar. Intro abrió el formulario y movió el foco al nombre de la passkey. El formulario no volvió a pedir el código TOTP. Queda completar el recorrido con una aplicación TOTP y un autenticador reales.
 
 ## Aceptación pendiente del modo protegido (T-021 y T-023 a T-026)
 
