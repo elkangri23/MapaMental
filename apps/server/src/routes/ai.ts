@@ -116,6 +116,11 @@ function isSlideSuggestionFormat(value: unknown): value is NonNullable<AiSuggest
   return value === 'table' || value === 'diagram' || value === 'mock-form';
 }
 
+function explicitlyRequestsTable(value: string): boolean {
+  const text = value.normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('es');
+  return /^(?:crea(?:r)?|genera(?:r)?|diseña(?:r)?|prepara(?:r)?|elabora(?:r)?|propón|proponer) (?:una )?(?:diapositiva con (?:una )?)?tabla(?:\s|[.:,]|$)/u.test(text);
+}
+
 function sanitizeSuggestions(value: unknown, nodes: IdeaNode[], canCreateSlide: boolean): AiSuggestion[] {
   if (!Array.isArray(value)) return [];
   const ids = new Set(nodes.map((node) => node.id));
@@ -131,7 +136,11 @@ function sanitizeSuggestions(value: unknown, nodes: IdeaNode[], canCreateSlide: 
     const prompt = entry.prompt.trim().slice(0, 700);
     const key = JSON.stringify([entry.targetNodeId, title.normalize('NFC').toLocaleLowerCase('es')]);
     if (!title || !prompt || titles.has(key)) continue;
-    const format = entry.kind === 'create-slide' && isSlideSuggestionFormat(entry.format) ? entry.format : undefined;
+    const format = entry.kind === 'create-slide'
+      ? isSlideSuggestionFormat(entry.format)
+        ? entry.format
+        : explicitlyRequestsTable(title) || explicitlyRequestsTable(prompt) ? 'table' : undefined
+      : undefined;
     const action = entry.kind === 'create-slide' ? 'slide' : 'map';
     const normalizedPrompt = prompt.normalize('NFC').replace(/\s+/g, ' ').trim().toLocaleLowerCase('es');
     const actionKey = JSON.stringify([entry.targetNodeId, action, format, normalizedPrompt]);

@@ -1,5 +1,7 @@
 # Cambios
 
+- Si una sugerencia de diapositiva pide expresamente crear una tabla y el modelo omite el formato, la tarjeta anuncia y exige una tabla.
+
 - Las tablas de borradores de diapositiva se pueden editar antes de aplicarlas al proyecto.
 
 - La generación de tablas pide respetar el tipo de dato de cada encabezado y marcar los datos pendientes en su celda.
@@ -409,6 +411,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Si una sugerencia de diapositiva pide expresamente crear una tabla y el modelo omite el formato, la tarjeta anuncia y exige una tabla.
 
 - Las tablas de borradores de diapositiva se pueden editar antes de aplicarlas al proyecto.
 
