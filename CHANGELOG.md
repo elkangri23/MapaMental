@@ -1,5 +1,7 @@
 # Cambios
 
+- Cuando la expansión no contiene ideas nuevas, el chat explica el resultado y permite pedir otro enfoque.
+
 - Las expansiones de IA admiten una sola idea nueva, incluso si las demás se descartan por repetidas.
 
 - Al ampliar una idea con IA, la vista previa omite etiquetas repetidas dentro del borrador o entre la idea principal y sus hijas directas.
@@ -327,6 +329,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Cuando la expansión no contiene ideas nuevas, el chat explica el resultado y permite pedir otro enfoque.
 
 - Las expansiones de IA admiten una sola idea nueva, incluso si las demás se descartan por repetidas.
 

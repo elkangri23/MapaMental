@@ -301,7 +301,10 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
       .filter(({ id }) => id === parent.id || childIds.has(id))
       .map(({ data }) => data.label);
     const ideas = sanitizedIdeas(parsed.ideas, parent, existingLabels);
-    if (ideas.length < 1 || typeof parsed.message !== 'string') throw Object.assign(new Error('La propuesta no contiene suficientes ideas válidas.'), { statusCode: 502 });
+    if (typeof parsed.message !== 'string') throw Object.assign(new Error('La propuesta no incluye un mensaje válido.'), { statusCode: 502 });
+    if (ideas.length === 0) {
+      throw Object.assign(new Error('El modelo no propuso ideas nuevas para esta rama. Prueba a pedir otro enfoque.'), { statusCode: 422 });
+    }
     const proposal: AiProposal = { baseRevision: project.revision, parentNodeId: parent.id, message: parsed.message.trim().slice(0, 1200), ideas };
     return { proposal, provider: provider.profile.name };
   }));
