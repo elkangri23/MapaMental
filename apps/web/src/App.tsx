@@ -1427,6 +1427,9 @@ export default function App() {
     discard();
   };
 
+  const deckLinkedIdeaIds = new Set(deckProposal?.proposal.slides.flatMap(({ sourceNodeIds }) => sourceNodeIds));
+  const deckUnlinkedIdeaCount = deckProposal?.scope.filter((id) => !deckLinkedIdeaIds.has(id)).length ?? 0;
+
   const slideBeingRevised = aiSlideProposal && aiSlideProposal.sourceNodeId === undefined
     ? slides.find(({ id }) => id === aiSlideProposal.slideId)
     : undefined;
@@ -1729,6 +1732,10 @@ export default function App() {
                 </p>
               )}
               {deckProposal.proposal.message && <p>{deckProposal.proposal.message}</p>}
+              <small>
+                {deckProposal.proposal.provider} · {deckLinkedIdeaIds.size} de {deckProposal.scope.length} ideas del mapa vinculadas al borrador.
+                {deckUnlinkedIdeaCount > 0 && ' Abre cada diapositiva para consultar sus ideas vinculadas.'}
+              </small>
               {deckProposal.proposal.slides.map((slide, index) => {
                 const visualBlocks = [
                   slide.table ? 'Tabla' : '',

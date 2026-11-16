@@ -1,5 +1,7 @@
 # Cambios
 
+- El borrador de presentación muestra el proveedor y cuántas ideas del ámbito quedaron vinculadas a sus diapositivas.
+
 - El índice del borrador de presentación anuncia qué diapositivas contienen tablas, recorridos o formularios ficticios.
 
 - El borrador de una presentación indica cuántas diapositivas tiene la presentación que se sustituirá y cómo recuperarla.
@@ -353,6 +355,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- El borrador de presentación muestra el proveedor y cuántas ideas del ámbito quedaron vinculadas a sus diapositivas.
 
 - El índice del borrador de presentación anuncia qué diapositivas contienen tablas, recorridos o formularios ficticios.
 
