@@ -3,6 +3,10 @@ import type { ProjectDocument } from './project.js';
 export interface AiContextNode { id: string; label: string; tone: string }
 export interface AiContextRelation { from: string; to: string; sourceLabel: string; targetLabel: string }
 
+const relatedSlideLimit = 20;
+const relatedSlideExcerptLimit = 500;
+const relatedSlideTotalLimit = 6000;
+
 /** Builds the bounded project context shared by the UI preview and AI routes. */
 export function buildProjectAiContext(project: ProjectDocument, requestedScopeIds: string[]) {
   const nodes = project.map.nodes.flatMap((value) => {
@@ -52,19 +56,46 @@ export function buildProjectAiContext(project: ProjectDocument, requestedScopeId
       const targetLabel = nodesById.get(edge.target)?.label;
       return sourceLabel && targetLabel ? [{ from: edge.source, to: edge.target, sourceLabel, targetLabel }] : [];
     });
-  const relatedSlideTitles = project.presentation.slides.flatMap((value) => {
+  let relatedSlideCharacters = 0;
+  const relatedSlides = project.presentation.slides.flatMap((value) => {
     if (!value || typeof value !== 'object') return [];
-    const slide = value as { title?: unknown; sourceNodeIds?: unknown };
+    const slide = value as {
+      title?: unknown; sourceNodeIds?: unknown; body?: unknown; bullets?: unknown;
+      diagramSteps?: unknown; mockFields?: unknown; table?: unknown;
+    };
     if (typeof slide.title !== 'string' || !Array.isArray(slide.sourceNodeIds)) return [];
-    return slide.sourceNodeIds.some((id) => typeof id === 'string' && contextIds.has(id)) ? [slide.title] : [];
-  }).slice(0, 20);
+    if (!slide.sourceNodeIds.some((id) => typeof id === 'string' && contextIds.has(id))) return [];
+    const parts: string[] = [];
+    const append = (value: unknown) => {
+      if (typeof value === 'string' && value.trim()) parts.push(value.trim());
+    };
+    append(slide.body);
+    if (Array.isArray(slide.bullets)) slide.bullets.forEach(append);
+    if (Array.isArray(slide.diagramSteps)) slide.diagramSteps.forEach(append);
+    if (Array.isArray(slide.mockFields)) for (const field of slide.mockFields) {
+      if (!field || typeof field !== 'object') continue;
+      const item = field as { label?: unknown; value?: unknown };
+      append(item.label);
+      append(item.value);
+    }
+    if (slide.table && typeof slide.table === 'object') {
+      const table = slide.table as { headers?: unknown; rows?: unknown };
+      if (Array.isArray(table.headers)) table.headers.forEach(append);
+      if (Array.isArray(table.rows)) for (const row of table.rows) if (Array.isArray(row)) row.forEach(append);
+    }
+    const remaining = relatedSlideTotalLimit - relatedSlideCharacters;
+    const excerpt = parts.join('\n').slice(0, Math.min(relatedSlideExcerptLimit, Math.max(0, remaining)));
+    relatedSlideCharacters += excerpt.length;
+    return [{ title: slide.title, excerpt }];
+  }).slice(0, relatedSlideLimit);
 
   return {
     project: project.name,
     projectSummary: { ideaCount: nodes.length, connectionCount: edges.length, slideCount: project.presentation.slides.length },
     map: { nodes: mapNodes(scopeIds), relations },
     ancestors: mapNodes(ancestors),
-    relatedSlideTitles: [...new Set(relatedSlideTitles)],
+    relatedSlideTitles: [...new Set(relatedSlides.map((slide) => slide.title))].slice(0, relatedSlideLimit),
+    relatedSlideExcerpts: relatedSlides.filter((slide) => slide.excerpt.length > 0),
     restOfMapCount: Math.max(0, nodes.length - contextIds.size),
     omittedAncestorCount: Math.max(0, allAncestors.length - ancestors.length),
   };

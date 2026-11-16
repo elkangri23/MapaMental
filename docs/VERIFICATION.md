@@ -390,3 +390,9 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Se cotejaron `ProjectDocument`, `PresentationSlide`, validadores y uso de almacenamiento con el modelo descrito en la especificación.
 - ADR-0015 fija el JSON v3 existente como contrato canónico y documenta las diferencias de representación. No se modificó el esquema ni se requiere migración.
 - Esta resolución documental no sustituye recorridos de volumen, calidad de contexto IA, trazabilidad de operaciones ni medición de capacidad; siguen pendientes en T-004.
+
+### Fragmentos acotados de diapositivas en contexto IA — 2026-11-16
+
+- `buildProjectAiContext` agrega cuerpo, viñetas, pasos, campos ficticios y tablas solo de diapositivas vinculadas al ámbito. Limita el contenido a 20 diapositivas, 500 caracteres por diapositiva y 6.000 en total.
+- Las vistas previas de chat/sugerencias y de presentación muestran títulos y fragmentos; el servidor usa la misma función compartida para formar el payload.
+- `npm run build` valida tipos y compilación. Sigue pendiente un recorrido dinámico que compare el contenido de la vista previa con la petición real a un proveedor simulado; no se afirma verificación E2E para este cambio.

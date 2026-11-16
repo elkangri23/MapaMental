@@ -20,7 +20,7 @@ Actualizado: 2026-11-16. El estado se refiere a la documentación, no a que la f
 | [`2026-11-16_DRIFT_REPORT.md`](2026-11-16_DRIFT_REPORT.md) | Diferencias entre diseño aprobado y README frente al código | Incluye persistencia, contratos, contexto, errores, trazabilidad IA, dirección loopback y capacidad |
 | [`ROADMAP.md`](ROADMAP.md) | Hitos y condiciones de salida | T-011 completada; T-004 y las validaciones externas/locales siguen pendientes |
 | [`TASKS.md`](TASKS.md) | Estado detallado de trabajo | Fuente única de progreso; T-013 en curso |
-| [`decisions/README.md`](decisions/README.md) | Índice de ADR y su estado | ADR-0012, ADR-0014 y ADR-0015 aceptados; identidad/MFA parcial y contrato de error implementado |
+| [`decisions/README.md`](decisions/README.md) | Índice de ADR y su estado | ADR-0012 y ADR-0014–0016 aceptados; identidad/MFA parcial, errores comunes y contexto de diapositivas documentados |
 | [`reviews/2026-11-14/`](reviews/2026-11-14/) | Informes de revisión Goldfish del diseño | Completados; hallazgos registrados |
 | [`reviews/2026-11-15-code-audit.md`](reviews/2026-11-15-code-audit.md) | Auditoría estática de implementación, correcciones y pendientes | Correcciones compiladas; recorridos dinámicos pendientes |
 | [`reviews/2026-11-16-auth-mfa-audit.md`](reviews/2026-11-16-auth-mfa-audit.md) | Revisión estática de OIDC, MFA, passkeys y accesibilidad | Correcciones compiladas; recorridos reales y lector de pantalla pendientes |

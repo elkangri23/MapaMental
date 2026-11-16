@@ -271,3 +271,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 
 - ADR-0015 documenta el formato JSON v3 que usa `ProjectDocument`, incluidas las formas reales de nodos, relaciones, conversación y diapositivas.
 - Se aclaró que las estructuras conceptuales del diseño no implican cambios de serialización ni migración.
+
+## Contexto acotado de diapositivas vinculadas — 2026-11-16
+
+- El chat, las sugerencias y las propuestas IA reciben fragmentos de diapositivas relacionadas con el ámbito: hasta 20 diapositivas, 500 caracteres cada una y 6.000 en total.
+- La vista previa del contexto muestra esos fragmentos antes de enviarlos al proveedor. ADR-0016 registra los límites y el motivo.
