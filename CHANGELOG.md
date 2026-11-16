@@ -1,5 +1,7 @@
 # Cambios
 
+- El perfil compatible con FreeLLMAPI puede leer su clave del archivo local .env.
+
 - Ajustadas las instrucciones de las sugerencias y expansiones tras la primera evaluación real con FreeLLMAPI.
 
 - El alta de passkey comprueba otra vez la sesión y la verificación de usuario antes de guardar la credencial.
@@ -403,6 +405,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- El perfil compatible con FreeLLMAPI puede leer su clave del archivo local .env.
 
 - Ajustadas las instrucciones de las sugerencias y expansiones tras la primera evaluación real con FreeLLMAPI.
 

@@ -1,5 +1,12 @@
 # Proveedores de modelos
 
+## FreeLLMAPI y clave en .env
+
+En la carpeta principal de MapaMental, crea un archivo `.env` a partir de `.env.example` y rellena `FREELLMAPI_API_KEY`. En **Proveedores de IA**, crea o selecciona un perfil **Compatible con OpenAI** con URL base `http://127.0.0.1:31415/v1`. Deja vacío el campo de clave y usa **Probar conexión** para cargar los modelos.
+
+La clave del archivo tiene prioridad para esa URL exacta. El servicio vuelve a leerla en cada conexión o generación, así que puedes reemplazarla sin reiniciar. Git excluye `.env` y solo versiona la plantilla vacía. FreeLLMAPI puede enviar peticiones a proveedores remotos aunque la URL de entrada sea local.
+
+
 **Estado: configuración y prueba de conexión implementadas; chat, sugerencias contextuales y propuesta de expansión del mapa están implementados parcialmente en T-010.**
 
 ## Proveedores previstos

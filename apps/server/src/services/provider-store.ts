@@ -4,6 +4,7 @@ import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
+import { parseEnv } from 'node:util';
 import { Entry } from '@napi-rs/keyring';
 import { Agent, fetch as undiciFetch } from 'undici';
 import type { CustomFetch } from 'openid-client';
@@ -48,6 +49,24 @@ function isKind(value: unknown): value is ProviderKind {
 
 function credentialEntry(id: string) { return new Entry(serviceName, `provider:${id}`); }
 
+const freeLlmEnvFile = new URL('../../../../.env', import.meta.url);
+const freeLlmBaseUrl = 'http://127.0.0.1:31415/v1';
+
+async function readProviderKey(profile: StoredProfile): Promise<string | undefined> {
+  if (profile.kind === 'openai-compatible' && profile.baseUrl === freeLlmBaseUrl) {
+    try {
+      const key = parseEnv(await readFile(freeLlmEnvFile, 'utf8')).FREELLMAPI_API_KEY?.trim();
+      if (key) return key;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        throw Object.assign(new Error('No se pudo leer el archivo .env de FreeLLMAPI.'), { statusCode: 409 });
+      }
+    }
+  }
+  try { return credentialEntry(profile.id).getPassword() ?? undefined; }
+  catch { return undefined; }
+}
+
 async function readConfiguration(): Promise<StoredConfiguration> {
   try {
     const text = await readFile(configFile, 'utf8');
@@ -84,8 +103,7 @@ async function writeConfiguration(value: StoredConfiguration) {
 }
 
 async function publicProfile(profile: StoredConfiguration['profiles'][number]): Promise<ProviderProfile> {
-  let credentialConfigured = false;
-  try { credentialConfigured = !!credentialEntry(profile.id).getPassword(); } catch { /* No credential stored. */ }
+  const credentialConfigured = Boolean(await readProviderKey(profile).catch(() => undefined));
   const usage = isLocalProviderUrl(profile.baseUrl) ? undefined : await getProviderUsage(profile.id).catch(() => undefined);
   return { ...profile, credentialConfigured, usage, usageUnavailable: !isLocalProviderUrl(profile.baseUrl) && !usage };
 }
@@ -100,8 +118,7 @@ export async function getActiveProviderForRequest() {
   const profile = stored.profiles.find((item) => item.id === stored.activeId);
   if (!profile) throw Object.assign(new Error('Selecciona un proveedor en Ajustes antes de usar el chat.'), { statusCode: 409 });
   if (!profile.model) throw Object.assign(new Error('Elige un modelo en Ajustes antes de usar el chat.'), { statusCode: 409 });
-  let apiKey: string | undefined;
-  try { apiKey = credentialEntry(profile.id).getPassword() ?? undefined; } catch { /* Credential is optional for local-compatible servers. */ }
+  const apiKey = await readProviderKey(profile);
   if ((profile.kind === 'openai' || profile.kind === 'anthropic') && !apiKey) throw Object.assign(new Error('Guarda la clave API de este proveedor en Ajustes antes de continuar.'), { statusCode: 409 });
   return { profile, apiKey };
 }
@@ -300,8 +317,7 @@ export async function testProviderConnection(id: string) {
   const stored = await readConfiguration();
   const profile = stored.profiles.find((item) => item.id === id);
   if (!profile) throw Object.assign(new Error('No existe ese perfil de proveedor.'), { statusCode: 404 });
-  let apiKey: string | undefined;
-  try { apiKey = credentialEntry(id).getPassword() ?? undefined; } catch { /* Optional for local servers. */ }
+  const apiKey = await readProviderKey(profile);
   if (profile.kind === 'anthropic' && !apiKey) throw Object.assign(new Error('Guarda una clave de API para probar Anthropic.'), { statusCode: 400 });
   const safeProfile = { ...profile, baseUrl: validatedBaseUrl(profile.kind, profile.baseUrl) };
   const url = modelEndpoint(safeProfile.baseUrl, safeProfile.kind);
