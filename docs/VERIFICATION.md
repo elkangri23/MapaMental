@@ -58,6 +58,15 @@ Este recorrido está pendiente con un modelo real. Usa un proyecto de prueba lla
 
 Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos tarjetas útiles y distintas para el mapa completo, una recomendación pertinente para la rama seleccionada y se puedan recorrer la expansión y la diapositiva con sus formatos anunciados. Si algún criterio falla, conserva los resultados para ajustar el comportamiento y repetir el recorrido.
 
+### Primera evaluación real con FreeLLMAPI
+
+- Se usó el conector compatible con OpenAI de MapaMental y el mapa ficticio de siembra en proyectos temporales. El catálogo de FreeLLMAPI respondió HTTP 200. Una consulta de chat a gemini-flash devolvió HTTP 502 tras unos 60 segundos. El alias gpt-oss-120b respondió en ambas rondas, con cuatro peticiones de chat entre 1,7 y 15,2 segundos. El alias identifica el modelo solicitado al intermediario.
+- En las dos rondas de mapa completo se obtuvieron tres tarjetas. Se propusieron acciones sobre el calendario y un recorrido de cultivo. Al seleccionar Siembra, las tarjetas apuntaron a esa rama. Una tarjeta que pedía un recorrido se clasificó como expansión de mapa. En la primera ronda la selección devolvió una sola tarjeta y pidió una tabla sin marcar ese formato.
+- Las expansiones se aplicaron y deshicieron correctamente. La cantidad de nodos volvió a cinco en ambos casos. La calidad falló porque los borradores rellenaron la ubicación y el clima con datos que el ejemplo no proporcionaba.
+- En una ronda, la tarjeta pidió cinco columnas y la validación rechazó la tabla. En la otra, FreeLLMAPI devolvió HTTP 429 al generar la diapositiva. Queda por confirmar un borrador de tabla aplicable y su deshacer con un modelo real.
+- Se ajustaron las instrucciones para respetar el máximo de cuatro columnas, pedir el formato de tarjeta correspondiente y marcar los datos ausentes. Estos resultados son anteriores al ajuste. Queda repetir el recorrido para medir su efecto. El perfil temporal se retiró al terminar.
+
+
 ## Presentación completa con IA
 
 - Chrome y Ollama simulado, con proyectos temporales. Se pidió un borrador de cuatro diapositivas y, en modo automático, se aceptó un borrador de cinco. El servidor rechazó una cantidad distinta de la solicitada y referencias fuera del mapa enviado.
