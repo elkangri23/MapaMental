@@ -1,5 +1,7 @@
 # Cambios
 
+- Si el paso temporal de OIDC caduca, la aplicación ofrece reiniciar el acceso. La passkey se solicita cuando el servidor confirma el segundo factor pendiente.
+
 - Si falla la preparación del inicio OIDC, el aviso muestra el motivo y permite reintentar.
 
 - Tras cancelar o fallar un inicio OIDC, la aplicación espera a que el usuario pulse Reintentar inicio de sesión.
@@ -381,6 +383,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Si el paso temporal de OIDC caduca, la aplicación ofrece reiniciar el acceso. La passkey se solicita cuando el servidor confirma el segundo factor pendiente.
 
 - Si falla la preparación del inicio OIDC, el aviso muestra el motivo y permite reintentar.
 

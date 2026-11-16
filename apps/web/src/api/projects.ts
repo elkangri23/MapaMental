@@ -21,9 +21,11 @@ async function ensureSession() {
       fragment.delete('oidc-step');
       const nextHash = fragment.toString();
       window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}${nextHash ? `#${nextHash}` : ''}`);
-      const exchange = await fetch('/api/session/oidc/step/exchange', { method: 'POST', headers, credentials: 'same-origin', body: JSON.stringify({ step: oidcStep }) });
+      const exchange = await fetch('/api/session/oidc/step/exchange', {
+        method: 'POST', headers, credentials: 'same-origin', body: JSON.stringify({ step: oidcStep }),
+      }).catch(() => requireOidcRetry('No se pudo conectar con el servicio local para completar el acceso.'));
       const result = await exchange.json().catch(() => ({})) as { message?: string };
-      if (!exchange.ok) throw new Error(result.message ?? 'No se pudo completar el paso temporal de autenticación.');
+      if (!exchange.ok) requireOidcRetry(result.message ?? 'No se pudo completar el paso temporal de autenticación.');
     }
     const status = await fetch('/api/session/status', { headers, credentials: 'same-origin' });
     if (status.status === 200) return;
@@ -33,6 +35,9 @@ async function ensureSession() {
         requireOidcRetry(initialOidcResult === 'cancelled'
           ? 'Se canceló el acceso con el proveedor de identidad.'
           : 'No se pudo validar la respuesta OIDC.');
+      }
+      if (initialOidcResult === 'second-factor') {
+        requireOidcRetry('El paso temporal de autenticación ya no está disponible.');
       }
       const start = await fetch('/api/session/oidc/start', {
         method: 'POST', headers, credentials: 'same-origin', body: JSON.stringify({ purpose: 'login' }),
@@ -44,7 +49,10 @@ async function ensureSession() {
     }
     if (status.status === 428 || status.status === 403) {
       const result = await status.json().catch(() => ({})) as { message?: string };
-      if (status.status === 428) window.dispatchEvent(new CustomEvent('espacio-visual:passkey-required'));
+      if (status.status === 428) {
+        oidcRetryMessage = null;
+        window.dispatchEvent(new CustomEvent('espacio-visual:passkey-required'));
+      }
       throw new Error(result.message ?? 'La autenticación protegida necesita atención.');
     }
     if (status.status !== 204) throw new Error('No se pudo comprobar la sesión local. Cierra y vuelve a abrir la aplicación.');

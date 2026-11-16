@@ -1354,20 +1354,24 @@ export default function App() {
       'identity-linked': 'Identidad OIDC vinculada. Registra ahora tu primera passkey para habilitar el acceso protegido.',
       cancelled: 'Se canceló el acceso con el proveedor de identidad.',
       failed: 'No se pudo validar la respuesta OIDC. Revisa la configuración e inténtalo de nuevo.',
-      'second-factor': 'Identidad OIDC validada. Falta completar la passkey para entrar en modo protegido.',
     };
-    if (result && messages[result]) {
-      if (result === 'second-factor') setProtectedLoginPending(true);
-      setNotice(messages[result]);
+    if (result && (result === 'second-factor' || Object.hasOwn(messages, result))) {
+      if (result !== 'second-factor') setNotice(messages[result]);
       const url = new URL(window.location.href); url.searchParams.delete('auth');
       window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
     }
   }, []);
 
   useEffect(() => {
-    const requirePasskey = () => setProtectedLoginPending(true);
+    const requirePasskey = () => {
+      setOidcRetryMessage('');
+      setProtectedLoginPending(true);
+    };
     const requireOidcRetry = (event: Event) => {
-      if (event instanceof CustomEvent && typeof event.detail === 'string') setOidcRetryMessage(event.detail);
+      if (event instanceof CustomEvent && typeof event.detail === 'string') {
+        setProtectedLoginPending(false);
+        setOidcRetryMessage(event.detail);
+      }
     };
     window.addEventListener('espacio-visual:passkey-required', requirePasskey);
     window.addEventListener('espacio-visual:oidc-retry-required', requireOidcRetry);
