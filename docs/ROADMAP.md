@@ -48,6 +48,10 @@ En T-011 se mejoró la semántica del documento de impresión: cada diapositiva 
 
 En T-017 se provocó un fallo controlado en la escritura de la copia previa al guardado: la API devolvió 500 sin cambiar la revisión 1 y el reintento guardó revisión 2 al retirar el bloqueo. La restauración de una copia JSON malformada también devolvió 500 y conservó la revisión 2; una copia válida restauró el documento en revisión 3. Quedan permisos ACL, disco lleno, otros fallos a mitad de escritura y los escenarios de auditoría aún abiertos.
 
+### Continuación de T-011 — 2026-11-16
+
+Se repitió el recorrido con perfil de navegador, proyecto y almacenamiento temporales. La presentación contenía tres diapositivas y el visor de impresión mostró tres páginas con contenido accesible, incluidos tabla, recorrido y campos ficticios. Se intentó usar «Guardar como PDF»; la ventana nativa se cerró durante la recuperación de la automatización, así que no se generó ni inspeccionó un archivo. T-011 sigue parcial. Siguiente paso: repetir el guardado con un medio fiable de controlar el cuadro nativo y examinar el PDF resultante, incluida la paginación y el orden de lectura.
+
 También se corrompió de forma controlada `project.json` después de crear una copia válida. La lectura respondió 409 sin reescribir el original dañado; el endpoint de copias ofreció la versión recuperable. Restaurarla con revisión esperada cero creó revisión 2 y guardó el archivo dañado en `backups/*.invalid`. Quedan pendientes ACL, disco lleno y errores físicos.
 
 ### Pausa solicitada — 2026-11-15

@@ -351,6 +351,12 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - En la compilación de producción se abrió el proyecto predeterminado en una instancia y almacenamiento aislados, se generaron tres diapositivas y se esperó a que el autosave confirmara «Guardado local». Se abrió el diálogo nativo de impresión; la vista de impresión expuso un documento PDF de tres páginas y su árbol accesible mostró los títulos/subtítulos y el texto de las ideas de cada página. Se canceló el diálogo sin enviar nada a la impresora física seleccionada por defecto.
 - Esta observación confirma que la interfaz abre el diálogo nativo y crea una vista de tres páginas con texto detectable; no confirma que «Guardar como PDF» finalice ni que el archivo guardado conserve etiquetas PDF completas. No se guardó archivo desde el diálogo; queda pendiente el recorrido final de guardado y revisar las etiquetas/orden de lectura del PDF exportado.
 
+### Reintento de guardado desde impresión — T-011 — 2026-11-16
+
+- Se retomó el proyecto sintético aislado «Huerto de balcón», con tabla Cultivo/Mes de siembra, recorrido de tres pasos y formulario de ejemplo con datos ficticios. Chrome confirmó autosave local y abrió la vista de impresión con tres páginas.
+- El árbol del visor expuso los textos de la diapositiva y los bloques de tabla, recorrido y formulario. Se activó «Guardar como PDF», pero el cuadro nativo dejó de estar disponible al actualizar el estado de la ventana para continuar la automatización; no se guardó un archivo ni se tocó la impresora física.
+- Por tanto, la estructura observada es la vista previa HTML/PDF de Chromium, no el archivo final. La revisión del PDF descargado y sus marcadores/etiquetas y orden de lectura sigue sin verificar; T-011 permanece parcial.
+
 ### Transparencia del historial enviado — T-010 — 2026-11-16
 
 - El panel de contexto del chat ahora renderiza los últimos diez mensajes que usa el cliente al llamar chat/sugerencias, indica «Tú» o «Asistente» y aplica el mismo recorte de 3.000 caracteres por entrada que `sanitizeHistory` en el servidor. También avisa que el texto actual del compositor se enviará al pulsar «Enviar».
