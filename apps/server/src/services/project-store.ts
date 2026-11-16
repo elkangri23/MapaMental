@@ -2,12 +2,57 @@ import { constants } from 'node:fs';
 import { copyFile, mkdir, open, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
-import { isDeepStrictEqual } from 'node:util';
+import { execFile } from 'node:child_process';
+import { isDeepStrictEqual, promisify } from 'node:util';
 import { migrateProjectDocument, PROJECT_SCHEMA_VERSION, summarizeProject, validateProject, type FutureProjectPreview, type ProjectDocument } from '@espacio-visual/domain';
 
 const root = resolve(process.env.ESPACIO_VISUAL_PROJECTS_DIR ?? join(homedir(), 'Documents', 'EspacioVisual', 'Proyectos'));
+const execFileAsync = promisify(execFile);
 const backupLimit = 20;
 const projectMutationQueues = new Map<string, Promise<unknown>>();
+
+/** Fail closed on Windows unless the resolved storage volume is fixed and local. */
+export async function validateProjectStorageRoot() {
+  if (process.platform !== 'win32') return;
+  if (root.startsWith('\\\\')) throw Object.assign(new Error('La carpeta de proyectos no puede estar en una ruta UNC o de red.'), { code: 'PROJECT_STORAGE_VOLUME_INVALID' });
+
+  const probe = `
+$ErrorActionPreference = 'Stop'
+try {
+  $probePath = $env:ESPACIO_VISUAL_VOLUME_PATH
+  while (!(Test-Path -LiteralPath $probePath)) {
+    $parentPath = Split-Path -Parent $probePath
+    if (!$parentPath -or $parentPath -eq $probePath) { throw 'No existe un directorio padre accesible.' }
+    $probePath = $parentPath
+  }
+  $volumes = @(Get-Volume -FilePath $probePath -ErrorAction Stop)
+  if ($volumes.Count -ne 1 -or $volumes[0].DriveType -ne 'Fixed') { [Console]::Out.Write('REJECTED'); exit 0 }
+  $partitions = @(Get-Partition -Volume $volumes[0] -ErrorAction Stop)
+  if ($partitions.Count -eq 0) { throw 'No se pudo asociar el volumen a un disco local.' }
+  $disks = @($partitions | ForEach-Object { Get-Disk -Number $_.DiskNumber -ErrorAction Stop } | Sort-Object Number -Unique)
+  $localBusTypes = @('SCSI', 'ATAPI', 'ATA', 'RAID', 'SAS', 'SATA', 'Virtual', 'File Backed Virtual', 'Spaces', 'NVMe', 'SCM')
+  if ($disks.Count -eq 0 -or @($disks | Where-Object { $localBusTypes -notcontains $_.BusType }).Count -gt 0) {
+    [Console]::Out.Write('REJECTED'); exit 0
+  }
+  [Console]::Out.Write('FIXED')
+  exit 0
+} catch {
+  [Console]::Error.Write('No se pudo comprobar el volumen de proyectos.')
+  exit 1
+}`;
+  let stdout: string;
+  try {
+    ({ stdout } = await execFileAsync('powershell.exe', ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command', probe], {
+      windowsHide: true,
+      timeout: 15_000,
+      maxBuffer: 64 * 1024,
+      env: { ...process.env, ESPACIO_VISUAL_VOLUME_PATH: root },
+    }));
+  } catch {
+    throw Object.assign(new Error('No se pudo comprobar que la carpeta de proyectos esté en un volumen local fijo.'), { code: 'PROJECT_STORAGE_VOLUME_INVALID' });
+  }
+  if (stdout.trim() !== 'FIXED') throw Object.assign(new Error('La carpeta de proyectos debe estar en un volumen local fijo; no se admiten unidades de red, extraíbles ni desconocidas.'), { code: 'PROJECT_STORAGE_VOLUME_INVALID' });
+}
 
 function serializeProjectMutation<T>(id: string, action: () => Promise<T>): Promise<T> {
   const previous = projectMutationQueues.get(id) ?? Promise.resolve();

@@ -7,7 +7,7 @@
 - **Web:** React y TypeScript con Vite. React Flow (`@xyflow/react`) aporta interacción de nodos, conexiones, selección, zoom y desplazamiento. La aplicación define su propio estilo y tipos de nodo.
 - **Servicio local:** Node.js 24 LTS con Fastify. El servicio escucha solo en loopback, expone API de sesión/proyectos/IA, sirve la SPA compilada en producción, guarda proyectos y se conecta a los proveedores configurados.
 - **Dominio compartido:** `packages/domain` compila a JavaScript y declaraciones TypeScript en `dist`; el build raíz lo ejecuta antes que web y servidor. Contiene el contrato JSON v3 de proyectos/mapas/diapositivas y sus validadores. `ProjectDocument` es el formato persistido canónico (ADR-0015); vistas conceptuales no cambian el archivo sin una nueva versión/migración.
-- **Persistencia:** carpetas de proyecto con JSON versionado (actual v3), migraciones desde 0, 1 y 2 a 3, copias rotativas. El último cambio IA añade un inverso mínimo persistido. Los perfiles viven en `%APPDATA%\EspacioVisual\providers.json`; las credenciales quedan en Windows Credential Manager mediante `@napi-rs/keyring`, nunca en el proyecto ni en respuestas de configuración.
+- **Persistencia:** carpetas de proyecto con JSON versionado (actual v3), migraciones desde 0, 1 y 2 a 3, copias rotativas. En Windows, el servicio valida al inicio que la raíz esté en un volumen local fijo y rechaza UNC, red, USB/SD/MMC y buses no reconocidos (ADR-0017). El último cambio IA añade un inverso mínimo persistido. Los perfiles viven en `%APPDATA%\EspacioVisual\providers.json`; las credenciales quedan en Windows Credential Manager mediante `@napi-rs/keyring`, nunca en el proyecto ni en respuestas de configuración.
 
 ```mermaid
 flowchart LR

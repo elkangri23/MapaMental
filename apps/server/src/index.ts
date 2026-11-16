@@ -11,6 +11,7 @@ import { sessionRoutes } from './routes/session.js';
 import { requiredSessionMode } from './services/session.js';
 import { pruneSecurityEvents, recordSecurityEvent } from './services/security-audit.js';
 import { normalizeApiErrorPayload, sendApiError } from './services/api-errors.js';
+import { validateProjectStorageRoot } from './services/project-store.js';
 
 requiredSessionMode();
 
@@ -89,6 +90,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+await validateProjectStorageRoot();
 const port = Number(process.env.MYMAP_LOCAL_PORT ?? 3180);
 await app.listen({ host: '::1', port });
 

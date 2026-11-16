@@ -22,4 +22,5 @@ Estados: **Aceptado**, **Propuesto**, **Reemplazado**. Un ADR reemplazado se con
 | [0014](ADR-0014-contrato-de-error-api.md) | Contrato común `{code,message,correlationId}` para errores JSON y SSE | Aceptado |
 | [0015](ADR-0015-formato-persistido-proyecto-v3.md) | Contrato serializado v3 de mapa, conversación y presentación | Aceptado; no modifica el esquema actual |
 | [0016](ADR-0016-fragmentos-de-diapositivas-en-contexto-ia.md) | Fragmentos acotados de diapositivas relevantes en contexto IA | Aceptado; visible en la vista previa |
+| [0017](ADR-0017-volumen-local-para-proyectos.md) | Validar volumen local fijo antes de iniciar el servicio | Aceptado; comprobación Windows al arranque |
 

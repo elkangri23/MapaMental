@@ -20,3 +20,5 @@ Guardar cada proyecto en una carpeta con `project.json`, `schemaVersion`, revisi
 
 El documento será inspeccionable y copiable. El servicio gestiona operaciones atómicas y recuperación; las versiones antiguas no sobrescriben esquemas más nuevos. Se excluyen rutas UNC y unidades extraíbles para mantener predecible el comportamiento de reemplazo y recuperación en v1.
 
+La comprobación implementada al inicio de Windows y sus límites están documentados en [ADR-0017](ADR-0017-volumen-local-para-proyectos.md).
+

@@ -389,10 +389,17 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 
 - Se cotejaron `ProjectDocument`, `PresentationSlide`, validadores y uso de almacenamiento con el modelo descrito en la especificación.
 - ADR-0015 fija el JSON v3 existente como contrato canónico y documenta las diferencias de representación. No se modificó el esquema ni se requiere migración.
-- Esta resolución documental no sustituye recorridos de volumen, calidad de contexto IA, trazabilidad de operaciones ni medición de capacidad; siguen pendientes en T-004.
+- Esta resolución documental no sustituye calidad de contexto IA, trazabilidad de operaciones ni medición de capacidad; siguen pendientes en T-004.
 
 ### Fragmentos acotados de diapositivas en contexto IA — 2026-11-16
 
 - En una instancia aislada con perfil Chrome, almacenamiento temporal y un mock OpenAI-compatible en `127.0.0.1`, se creó un mapa con una diapositiva enlazada a «Validar aprendizaje» y otra enlazada a una rama ajena. El panel abierto para la rama mostró el cuerpo, viñeta, pasos, campos ficticios y tabla de la diapositiva pertinente; no mostró el marcador secreto de la otra.
 - Se envió una petición de chat desde la rama seleccionada. El proveedor capturó `DETAIL_BODY`, `DETAIL_BULLET`, `DETAIL_STEP`, `DETAIL_FIELD` y `DETAIL_TABLE`; no recibió `UNRELATED_SECRET_SENTINEL`. La respuesta simulada produjo HTTP 200 y una sugerencia con destino válido. Esto confirma la coincidencia de contenido relevante entre la vista previa y la petición en este escenario.
 - `buildProjectAiContext` limita a 20 diapositivas, 500 caracteres por diapositiva y 6.000 en total; estos topes no se estresaron con contenido largo en el recorrido. No se usó un modelo real. El servidor, proveedor, perfil y proyectos temporales se detuvieron o quedaron aislados fuera del repositorio.
+
+### Validación de volumen local para proyectos — T-004 — 2026-11-16
+
+- El build de producción pasó con Node 24.22.1. Se invocó la función compilada de validación con una ruta temporal bajo C:; Windows Storage la resolvió como `Fixed` sobre bus NVMe y fue aceptada.
+- Se invocó la misma validación con `\\invalid-host\share\projects`; la ruta UNC fue rechazada con `PROJECT_STORAGE_VOLUME_INVALID` antes de una consulta de red.
+- No se conectó unidad extraíble/USB ni volumen de red asignado, por lo que no se afirma verificación física de esos tipos. La comprobación se ejecuta una vez al inicio y falla cerrada si PowerShell Storage no puede resolver volumen, particiones o discos.
+- `npm audit --omit=dev` reportó cero vulnerabilidades y `git diff --check` pasó. No se ejecutó la suite automatizada.
