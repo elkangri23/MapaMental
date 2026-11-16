@@ -99,6 +99,12 @@ Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos ta
 - Dos peticiones de borrador mediante FreeLLMAPI con gpt-oss-120b solicitaron meses para tomate y lechuga con ubicación y clima ausentes. Una pedía estimarlos si era posible. Ambas devolvieron HTTP 200 y las seis celdas de meses quedaron como «Pendiente de confirmar». El texto y las viñetas tampoco atribuyeron fechas al huerto.
 - La comprobación cubre dos peticiones de diapositiva por API. En Chrome con un proyecto temporal, una tarjeta para Siembra anunció «Diapositiva con tabla». La primera generación falló y el reintento desde la misma tarjeta produjo seis filas de meses. En las doce celdas de Tomate y Lechuga apareció «Pendiente de confirmar». Se añadió la diapositiva desde la vista previa y Deshacer la retiró. Quedan otras variaciones del mapa y modelos por evaluar.
 
+### Recorridos y formularios ficticios con FreeLLMAPI
+
+- La API de MapaMental, con FreeLLMAPI y el modelo solicitado gpt-oss-120b, obtuvo dos tarjetas para un huerto ficticio. La tarjeta de recorrido apuntó a Cosecha y la de formulario a su ficha de ejemplo. Ambas anunciaron el formato correcto.
+- El borrador de recorrido incluyó seis pasos ordenados, desde revisar la madurez hasta registrar la cosecha. El de formulario incluyó cultivo, cantidad, fecha y destino, todos rellenados con valores ficticios.
+- Las dos diapositivas se aplicaron y se deshicieron por separado en el proyecto temporal. La presentación volvió a quedar vacía en ambos casos. El modelo describió los valores como típicos en el cuerpo del segundo borrador. Se añadió un rótulo visible a la vista previa para identificarlos como ficticios. Queda comprobar la rotulación en Chrome y ampliar la evaluación a otros modelos.
+
 ## Presentación completa con IA
 
 - Chrome y Ollama simulado, con proyectos temporales. Se pidió un borrador de cuatro diapositivas y, en modo automático, se aceptó un borrador de cinco. El servidor rechazó una cantidad distinta de la solicitada y referencias fuera del mapa enviado.

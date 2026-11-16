@@ -1580,7 +1580,14 @@ export default function App() {
       {aiSlideProposal.draft.body && <p>{aiSlideProposal.draft.body}</p>}
       {aiSlideProposal.draft.bullets.length > 0 && <ul>{aiSlideProposal.draft.bullets.map((bullet, index) => <li key={index}>{bullet}</li>)}</ul>}
       {!!aiSlideProposal.draft.diagramSteps?.length && <div className="slide-flow-preview" aria-label="Recorrido propuesto">{aiSlideProposal.draft.diagramSteps.map((step, index, steps) => <span className="slide-flow-preview__item" key={index}>{step}{index < steps.length - 1 && <b aria-hidden="true">→</b>}</span>)}</div>}
-      {!!aiSlideProposal.draft.mockFields?.length && <div className="slide-mock-form__preview" aria-label="Formulario ficticio propuesto">{aiSlideProposal.draft.mockFields.map((field, index) => <div className="slide-mock-form__sample" key={index}><span>{field.label}</span><div>{field.value || 'Valor de ejemplo'}</div></div>)}</div>}
+      {!!aiSlideProposal.draft.mockFields?.length && <section aria-labelledby="mock-form-proposal-title">
+        <p id="mock-form-proposal-title" className="slide-mock-form__notice">Formulario de ejemplo con datos ficticios</p>
+        <div className="slide-mock-form__preview">
+          {aiSlideProposal.draft.mockFields.map((field, index) => <div className="slide-mock-form__sample" key={index}>
+            <span>{field.label}</span><div>{field.value || 'Valor de ejemplo'}</div>
+          </div>)}
+        </div>
+      </section>}
       {aiSlideProposal.draft.table && <>
         <p>Revisa la tabla y corrige las celdas antes de aplicar el borrador.</p>
         <SlideTableBlock table={editedSlideTable ?? aiSlideProposal.draft.table} disabled={aiBusy}

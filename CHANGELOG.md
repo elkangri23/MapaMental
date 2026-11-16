@@ -1,5 +1,7 @@
 # Cambios
 
+- La vista previa de diapositivas muestra un rótulo visible para los formularios con datos ficticios.
+
 - Las instrucciones de tabla piden marcar cada celda que depende de datos pendientes, aunque la tarjeta sugiera una estimación.
 
 - Si una sugerencia de diapositiva pide expresamente crear una tabla y el modelo omite el formato, la tarjeta anuncia y exige una tabla.
@@ -413,6 +415,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- La vista previa de diapositivas muestra un rótulo visible para los formularios con datos ficticios.
 
 - Las instrucciones de tabla piden marcar cada celda que depende de datos pendientes, aunque la tarjeta sugiera una estimación.
 
