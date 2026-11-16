@@ -1447,10 +1447,10 @@ export default function App() {
 
   const deckLinkedIdeaIds = new Set(deckProposal?.proposal.slides.flatMap(({ sourceNodeIds }) => sourceNodeIds));
   const deckUnlinkedIdeaIds = deckProposal?.scope.filter((id) => !deckLinkedIdeaIds.has(id)) ?? [];
-  const deckIdeaLabels = deckProposal ? new Map(nodes.map(({ id, data }) => [id, data.label])) : null;
+  const sourceIdeaLabels = deckProposal || workspaceView === 'slides' ? new Map(nodes.map(({ id, data }) => [id, data.label])) : null;
 
-  const renderDeckSourceIdea = (id: string) => {
-    const label = deckIdeaLabels?.get(id);
+  const renderSourceIdea = (id: string) => {
+    const label = sourceIdeaLabels?.get(id);
     return <li key={id}>{label === undefined ? 'Idea eliminada' : (
       <button type="button" className="quiet-button" disabled={aiBusy || loading}
         aria-label={`Seleccionar en el mapa: ${label}`} aria-current={selectedNodeId === id ? 'true' : undefined}
@@ -1664,7 +1664,12 @@ export default function App() {
                       {aiSlideProposal?.slideId === slides[activeSlideIndex].id && slideProposalPreview}
                     </>}
                   </div>
-                  <div className="slide-source">Ideas vinculadas: {slides[activeSlideIndex]?.sourceNodeIds.map((id) => nodes.find((node) => node.id === id)?.data.label).filter(Boolean).join(' · ') || 'ninguna'}</div>
+                  <div className="slide-source">
+                    <span>Ideas vinculadas</span>
+                    {slides[activeSlideIndex]?.sourceNodeIds.length
+                      ? <ul aria-label="Ideas vinculadas">{slides[activeSlideIndex].sourceNodeIds.map(renderSourceIdea)}</ul>
+                      : <span> · Ninguna</span>}
+                  </div>
                 </div>
                 <SlidePrintDeck slides={slides} />
                 <nav className="slide-navigation" aria-label="Navegación de diapositivas"><button type="button" className="quiet-button" aria-label="Mover antes" title="Mover antes" onClick={() => moveSlide(-1)} disabled={activeSlideIndex === 0}>Mover antes</button><button type="button" className="quiet-button" onClick={() => setActiveSlideIndex((index) => Math.max(0, index - 1))} disabled={activeSlideIndex === 0}>← Anterior</button><span role="status" aria-live="polite" aria-atomic="true">Diapositiva {activeSlideIndex + 1} de {slides.length}</span><button type="button" className="quiet-button" onClick={() => setActiveSlideIndex((index) => Math.min(slides.length - 1, index + 1))} disabled={activeSlideIndex >= slides.length - 1}>Siguiente →</button><button type="button" className="quiet-button" aria-label="Mover después" title="Mover después" onClick={() => moveSlide(1)} disabled={activeSlideIndex >= slides.length - 1}>Mover después</button></nav>
@@ -1770,7 +1775,7 @@ export default function App() {
                 <details>
                   <summary>{deckUnlinkedIdeaIds.length} {deckUnlinkedIdeaIds.length === 1 ? 'idea del ámbito sin vínculo' : 'ideas del ámbito sin vínculo'}</summary>
                   <ul>
-                    {deckUnlinkedIdeaIds.map(renderDeckSourceIdea)}
+                    {deckUnlinkedIdeaIds.map(renderSourceIdea)}
                   </ul>
                 </details>
               )}
@@ -1792,7 +1797,7 @@ export default function App() {
                   {!!slide.diagramSteps?.length && <ol aria-label="Recorrido">{slide.diagramSteps.map((step, item) => <li key={item}>{step}</li>)}</ol>}
                   {!!slide.mockFields?.length && <dl aria-label="Formulario de ejemplo">{slide.mockFields.map((field, item) => <div key={item}><dt>{field.label}</dt><dd>{field.value}</dd></div>)}</dl>}
                   <small>Ideas vinculadas</small>
-                  <ul aria-label="Ideas vinculadas">{slide.sourceNodeIds.map(renderDeckSourceIdea)}</ul>
+                  <ul aria-label="Ideas vinculadas">{slide.sourceNodeIds.map(renderSourceIdea)}</ul>
                 </details>;
               })}
               <button type="button" className="slide-ai-panel__submit" disabled={aiBusy || project?.revision !== deckProposal.proposal.baseRevision}
