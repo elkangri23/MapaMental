@@ -19,4 +19,5 @@ Estados: **Aceptado**, **Propuesto**, **Reemplazado**. Un ADR reemplazado se con
 | [0011](ADR-0011-eventos-de-generacion-en-la-peticion.md) | Eventos SSE en la petición de generación | Aceptado |
 | [0012](ADR-0012-identidad-oauth-mfa-passkeys.md) | Modo protegido local con OIDC y segundo factor WebAuthn | Aceptado; implementación parcial en T-020–T-025 y revisión pendiente en T-026 |
 | [0013](ADR-0013-loopback-ipv6-y-webauthn.md) | Origen localhost y escucha loopback IPv6 | Aceptado; sustituye la dirección y el host de navegador anteriores |
+| [0014](ADR-0014-contrato-de-error-api.md) | Contrato común `{code,message,correlationId}` para errores JSON y SSE | Aceptado |
 

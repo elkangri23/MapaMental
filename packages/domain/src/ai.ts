@@ -1,11 +1,12 @@
 import type { SlideTable } from './project.js';
+import type { ApiErrorResponse } from './api.js';
 
 export type AiGenerationStage = 'preparing' | 'waiting-for-provider' | 'validating';
 
 export type AiGenerationEvent<T> =
   | { type: 'stage'; stage: AiGenerationStage }
   | { type: 'result'; result: T }
-  | { type: 'error'; message: string };
+  | ({ type: 'error' } & ApiErrorResponse);
 
 export interface AiChatMessage {
   role: 'user' | 'assistant';

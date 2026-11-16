@@ -1,5 +1,10 @@
 # Cambios
 
+## Contrato de error correlacionable — 2026-11-16
+
+- Las respuestas JSON de error y los eventos terminales SSE ahora incluyen código estable y `correlationId` alineado con `reqId` del servicio. Se preservan campos de estado como `mode`, y el texto de errores 5xx se redacta.
+- Se añadió ADR-0014. En producción aislada se comprobaron el 404 API, rechazo 403 de sesión y evento terminal SSE por proyecto inexistente (sin contactar un proveedor). Un fallo SSE real del proveedor y la respuesta 5xx quedan pendientes.
+
 ## Verificación del PDF desde impresión nativa — 2026-11-16
 
 - Se guardó «Huerto-balcon-vista.pdf» desde el diálogo de Chrome en una carpeta temporal aislada. `pdfinfo` confirmó tres páginas A4 apaisadas y PDF etiquetado; el árbol lógico conserva títulos H1, listas, tabla con encabezados asociados y orden secuencial.

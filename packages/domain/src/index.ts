@@ -7,6 +7,7 @@ export interface IdeaNodeData extends Record<string, unknown> {
 }
 
 export * from './project.js';
+export * from './api.js';
 export * from './ai-context.js';
 export * from './provider.js';
 export * from './ai.js';

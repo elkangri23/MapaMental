@@ -22,7 +22,7 @@ async function readGeneration<T>(body: ReadableStream<Uint8Array>, options: Gene
         try { event = JSON.parse(data.slice(5)) as AiGenerationEvent<T>; }
         catch { throw new Error('El servidor devolvió un evento de generación no válido.'); }
         if (event?.type === 'stage') options.onStage(event.stage);
-        if (event?.type === 'error') throw new Error(event.message);
+        if (event?.type === 'error') throw new Error(`${event.message} (referencia: ${event.correlationId})`);
         if (event?.type === 'result') return event.result;
       }
     }

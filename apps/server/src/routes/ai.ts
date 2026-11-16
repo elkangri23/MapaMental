@@ -5,6 +5,7 @@ import type { AiChatMessage, AiDeckProposal, AiDeckSlide, AiGenerationEvent, AiG
 import { generateProviderText, getActiveProviderForRequest } from '../services/provider-store.js';
 import { getProject, saveProject } from '../services/project-store.js';
 import { isExpectedHost, isExpectedOrigin, isValidSession, requiredSessionMode } from '../services/session.js';
+import { apiErrorCode } from '../services/api-errors.js';
 
 type IdeaNode = { id: string; type?: string; position: { x: number; y: number }; data: { label: string; tone?: string } };
 type IdeaEdge = { id: string; source: string; target: string; type?: string; [key: string]: unknown };
@@ -48,7 +49,8 @@ async function streamGeneration<T>(
       const failure = error as { statusCode?: number; code?: string };
       const clientError = typeof failure.statusCode === 'number' && failure.statusCode >= 400 && failure.statusCode < 500;
       if (!clientError) request.log.error({ reqId: request.id, code: failure.code }, 'Error durante la generación de IA.');
-      send({ type: 'error', message: (clientError && error instanceof Error) || error instanceof InvalidDeckOutput
+      const statusCode = typeof failure.statusCode === 'number' ? failure.statusCode : 502;
+      send({ type: 'error', code: apiErrorCode(statusCode), correlationId: request.id, message: (clientError && error instanceof Error) || error instanceof InvalidDeckOutput
         ? error.message
         : 'El proveedor no completó una respuesta válida. Revisa la conexión o vuelve a intentarlo.' });
     }

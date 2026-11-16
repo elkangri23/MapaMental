@@ -101,7 +101,7 @@ La generación comunica sus etapas por SSE en la petición que inició el chat o
 * `POST /api/projects/:id/ai-actions` y `/ai/slides/apply`: aplican propuestas confirmadas con revisión esperada y respuesta JSON.
 * `POST /api/projects/:id/ai/deck/apply` y `/undo-last-ai-deck`: sustituyen o recuperan la presentación con revisión esperada.
 * `POST /api/projects/:id/undo-last-ai`: cuerpo `{expectedRevision}`; devuelve la nueva revisión o `409 UNDO_EXPIRED` si una edición posterior invalidó el inverso.
-* `/api/providers`: perfiles, conexión, modelo, tarifas y límites. Las respuestas usarán `{code, message, correlationId}` para errores accionables.
+* `/api/providers`: perfiles, conexión, modelo, tarifas y límites. Toda respuesta JSON de error usa `{code, message, correlationId}`; los eventos SSE terminales `error` incluyen el mismo contrato. Las respuestas exitosas no cambian. Véase ADR-0014.
 
 **Seguridad de sesión propuesta:** la UI de producción y la API compartirán origen. El launcher iniciará el servidor bajo el usuario actual con un nonce de un solo uso; la UI lo intercambiará por una sesión HttpOnly/SameSite y lo quitará de la URL. Mutaciones exigirán sesión, `Origin` exacto permitido y `Host` de loopback esperado; no habrá CORS abierto. En desarrollo solo se permitirá el origen Vite local configurado. Las solicitudes con origen ausente o distinto se rechazarán.
 
