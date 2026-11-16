@@ -1,3 +1,4 @@
+import { PersonalProfileButton } from './PersonalProfileButton.js';
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import {
   addEdge,
@@ -1549,7 +1550,7 @@ export default function App() {
           }}>＋ Proyecto</button>
           <span className={`local-status local-status--${health}`}><i />{health === 'online' ? 'Servicio local conectado' : health === 'checking' ? 'Conectando…' : 'Servicio local desconectado'}</span>
           <button className="icon-button" aria-label="Proveedores de IA" title="Configurar proveedor de IA" disabled={aiBusy} onClick={() => void openProviderDialog()}>⚙</button>
-          <div className="avatar" role="img" aria-label="Espacio personal">A</div>
+          <PersonalProfileButton />
         </div>
       </header>
 

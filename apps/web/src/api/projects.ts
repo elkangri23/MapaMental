@@ -74,3 +74,15 @@ export const projectsApi = {
   backups: (id: string) => request<{ backups: Array<{ file: string; revision: number; updatedAt: string }> }>(`/api/projects/${id}/backups`),
   restore: (id: string, file: string, expectedRevision: number) => request<{ project: ProjectDocument }>(`/api/projects/${id}/restore`, { method: 'POST', body: JSON.stringify({ file, expectedRevision }) }),
 };
+
+export interface PersonalProfile {
+  name: string;
+  email: string;
+}
+
+export const profileApi = {
+  get: () => request<{ profile: PersonalProfile }>('/api/profile'),
+  save: (profile: PersonalProfile) => request<{ profile: PersonalProfile }>('/api/profile', {
+    method: 'PUT', body: JSON.stringify(profile),
+  }),
+};

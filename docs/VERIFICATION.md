@@ -1,5 +1,20 @@
 # Criterios de aceptación
 
+## Perfil personal y sesión (T-027)
+
+- Comprobado con Fastify y almacenamiento temporal. Sin sesión se rechazó la lectura. Un origen ajeno se rechazó al guardar y se comprobó el tipo de contenido, el correo mal formado y la cabecera no-store.
+- Una sesión local guardó y recuperó el perfil, con recorte de espacios y comprobación del archivo persistido. En modo protegido se rechazó la cookie local. Una sesión protegida creada para la comprobación pudo consultar y vaciar el perfil. Tras revocarla, dejó de tener acceso.
+- En Chrome, la compilación de producción abrió el diálogo con sus dos campos etiquetados. Guardar cerró el diálogo y devolvió el foco a Mi perfil. La conexión de Chrome se reinició durante la recarga. Queda reabrir el diálogo tras recargar y recorrer la cancelación con teclado y el acceso en pantalla estrecha.
+
+## Aceptación pendiente del modo protegido (T-020 a T-026)
+
+1. Desde el modo local, vincular un proveedor OIDC real, registrar una passkey y reiniciar en modo protegido. Verificar que el inicio exige OIDC y verificación de usuario con passkey.
+2. Registrar una segunda passkey, revocarla tras reautenticarse y comprobar la invalidación de sesiones y el rechazo de la credencial revocada. Comprobar caducidad y reinicio.
+3. Configurar TOTP con una aplicación autenticadora. Conservar una sesión de prueba controlada, simular la pérdida de la passkey y recuperar con OIDC y TOTP. Comprobar que la sesión temporal solo permite registrar una passkey, y que al terminar se revocan las anteriores.
+4. Verificar cancelación, reintentos, caducidad y reutilización en un perfil aislado. Revisar el registro local y recorrer los diálogos con teclado y lector de pantalla. Anotar proveedor, autenticador, resultado y límites de cada recorrido.
+
+La guía operativa está en [AUTH_OPERATIONS.md](AUTH_OPERATIONS.md). Las sesiones simuladas del perfil cubren las guardas de la API. La aceptación de OIDC, passkeys y TOTP requiere los dispositivos y el proveedor indicados.
+
 ## Calidad de las sugerencias con el mapa de siembra (T-010)
 
 Este recorrido está pendiente con un modelo real. Usa un proyecto de prueba llamado «Huerto de balcón». Añade a la idea central las ramas «Prueba A — Siembra» y «Prueba B — Cosecha». Bajo Siembra, añade tomate y lechuga. Deja Cosecha sin ideas hijas. Crea una diapositiva vinculada a Siembra titulada «Calendario de siembra», con los dos cultivos y los meses por concretar.

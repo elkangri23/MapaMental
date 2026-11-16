@@ -1,5 +1,7 @@
 # Cambios
 
+- Añadido un perfil personal local con nombre y correo editables desde la barra superior.
+
 - Las diapositivas guardadas permiten volver al mapa y seleccionar sus ideas de origen.
 
 - Desde cada diapositiva del borrador puedes seleccionar en el mapa sus ideas de origen.
@@ -369,6 +371,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Añadido un perfil personal local con nombre y correo editables desde la barra superior.
 
 - Las diapositivas guardadas permiten volver al mapa y seleccionar sus ideas de origen.
 

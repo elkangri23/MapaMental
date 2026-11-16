@@ -34,6 +34,7 @@ El inventario de diferencias entre los contratos aprobados y el comportamiento i
 - `GET /api/projects` y `POST /api/projects`: listar y crear proyecto.
 - `GET /api/projects/:id` y `PUT /api/projects/:id`: abrir y guardar con revisión.
 - `POST /api/projects/:id/ai/chat`: respuesta contextual y sugerencias.
+- GET /api/profile y PUT /api/profile: consultan y guardan el nombre y correo del perfil personal con una sesión válida del modo activo.
 - `POST /api/projects/:id/ai/proposals`: generar propuesta de ideas en una rama.
 - `POST /api/projects/:id/ai-actions`: validar y aplicar la propuesta a una revisión.
 - `POST /api/projects/:id/undo-last-ai`: deshacer la última operación IA si no hubo una edición posterior.

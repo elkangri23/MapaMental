@@ -5,6 +5,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { healthRoutes } from './routes/health.js';
 import { projectRoutes } from './routes/projects.js';
+import { profileRoutes } from './routes/profile.js';
 import { providerRoutes } from './routes/providers.js';
 import { aiRoutes } from './routes/ai.js';
 import { sessionRoutes } from './routes/session.js';
@@ -64,6 +65,7 @@ await app.register(healthRoutes, { prefix: '/api' });
 await app.register(sessionRoutes, { prefix: '/api' });
 await app.register(projectRoutes, { prefix: '/api' });
 await app.register(providerRoutes, { prefix: '/api' });
+await app.register(profileRoutes, { prefix: '/api' });
 await app.register(aiRoutes, { prefix: '/api' });
 
 if (!await pruneSecurityEvents()) app.log.warn('No se pudo depurar el registro local de eventos de seguridad.');

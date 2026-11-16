@@ -14,7 +14,7 @@ Actualizado: 2026-11-16. El estado se refiere a la documentación, no a que la f
 | [`STORAGE.md`](STORAGE.md) | Archivo de proyecto, guardado, copias y migraciones | Contrato JSON v3 en ADR-0015; volumen fijo validado al inicio en ADR-0017; migración 2→3 y esquema futuro de solo lectura verificados |
 | [`SECURITY.md`](SECURITY.md) | Límites locales, credenciales, datos remotos y registros | Volumen local fijo validado al inicio; contexto de diapositivas visible; recorridos de seguridad pendientes |
 | [`AUTH_OAUTH_MFA_PASSKEYS.md`](AUTH_OAUTH_MFA_PASSKEYS.md) | Contrato y tareas para login OIDC, MFA y passkeys | T-018/T-019 cerradas; T-020–T-025 parciales; T-026 con revisión estática y registro local parcial; falta recorrido real |
-| [`AUTH_OPERATIONS.md`](AUTH_OPERATIONS.md) | Configurar modo protegido, recuperar y desvincular la identidad | Guía escrita; flujos de IdP y autenticadores reales pendientes |
+| [`AUTH_OPERATIONS.md`](AUTH_OPERATIONS.md) | Gestionar el perfil, configurar el modo protegido y recuperar o desvincular la identidad | Guía escrita; flujos de IdP y autenticadores reales pendientes |
 | [`COMPLIANCE.md`](COMPLIANCE.md) | Cruce inicial de OWASP Top 10:2025 y WCAG 2.0 AA | Línea base parcial; auditoría de código documentada y verificación manual pendiente |
 | [`VERIFICATION.md`](VERIFICATION.md) | Criterios de aceptación y escenarios de revisión | Contexto de diapositivas recorrido con proveedor simulado; PDF final guardado y estructura etiquetada inspeccionada |
 | [`2026-11-16_DRIFT_REPORT.md`](2026-11-16_DRIFT_REPORT.md) | Diferencias entre diseño aprobado y README frente al código | Incluye persistencia, contratos, contexto, errores, trazabilidad IA, dirección loopback y capacidad |

@@ -62,12 +62,17 @@ Este procedimiento elimina la vinculación OIDC local y el secreto TOTP. No borr
 
 Una copia antigua de `auth.json` puede volver a registrar claves públicas que se habían revocado. No restaures una copia anterior después de recuperar una cuenta: conserva únicamente la configuración actualizada o repite el restablecimiento. Eliminar la configuración de esta app tampoco revoca sesiones ni consentimiento guardados por el IdP; hazlo desde el propio proveedor si quieres retirar ese acceso.
 
+## Perfil personal
+
+Abre **Perfil** en la barra superior para guardar tu nombre y correo. Ambos campos son opcionales. Para borrar los datos, vacía los dos campos y guarda. La misma ficha está disponible con una sesión válida en modo local o protegido. El correo es un dato de perfil, no se verifica ni se usa para iniciar sesión o vincular una cuenta OIDC.
+
 ## Datos que permanecen separados
 
 | Dato | Ubicación | ¿Lo elimina el restablecimiento de identidad? |
 |---|---|---|
 | Issuer, client ID, identidad y passkeys públicas | `%APPDATA%\EspacioVisual\auth.json` | Sí |
 | Secreto TOTP y estado anti-replay/bloqueo | Credencial genérica `auth:totp-recovery.EspacioVisual` | Sí, al borrar ese destino |
+| Nombre y correo del perfil personal | %APPDATA%\EspacioVisual\profile.json | No |
 | Perfiles/configuración de proveedores | `%APPDATA%\EspacioVisual\providers.json` | No |
 | Claves API de proveedores | Credenciales `provider:<UUID>.EspacioVisual` | No |
 | Proyectos y copias | `Documents\EspacioVisual\Proyectos` | No |
