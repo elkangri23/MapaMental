@@ -1,5 +1,10 @@
 # Cambios
 
+## Recorrido de contexto IA con proveedor simulado — 2026-11-16
+
+- T-010: se comprobó en Chrome que «Ver contexto» coincide con el cuerpo HTTP recibido por un mock local; rama, ancestro, relaciones, diapositiva vinculada, conteos y exclusiones coincidieron.
+- La respuesta del mock produjo una tarjeta de sugerencia con destino válido y esta apareció en el chat. No se contactó un modelo real.
+
 ## Contexto IA de rama ampliado — 2026-11-16
 
 - T-010 parcial: un constructor compartido por dominio, UI y servidor añade hasta 50 ancestros, relaciones acotadas, títulos de hasta 20 diapositivas vinculadas y un resumen cuantitativo del proyecto al contexto.
