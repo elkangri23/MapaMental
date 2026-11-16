@@ -177,6 +177,8 @@ export default function App() {
   const [deckPrompt, setDeckPrompt] = useState('');
   const [deckProposal, setDeckProposal] = useState<{ proposal: AiDeckProposal; scope: string[] } | null>(null);
   const deckDialogRef = useRef<HTMLDialogElement>(null);
+  const deckDialogTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const deckProposalTriggerRef = useRef<HTMLButtonElement | null>(null);
   const mapPreviewRef = useRef<HTMLElement>(null);
   const slidePreviewRef = useRef<HTMLElement>(null);
   const mapProposalTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -1022,11 +1024,12 @@ export default function App() {
     finally { setAiBusy(false); }
   }, [aiBusy, flushPendingSave, loadProjectList, project]);
 
-  const openDeckDialog = () => {
+  const openDeckDialog = (trigger: HTMLButtonElement) => {
     if (!project || !nodes.length || aiBusy || loading) return;
     setDeckMode('local');
     setDeckPrompt('');
     setDeckCount(String(suggestedSlideCount(nodes.length)));
+    deckDialogTriggerRef.current = trigger;
     deckDialogRef.current?.showModal();
   };
 
@@ -1041,10 +1044,12 @@ export default function App() {
     if (deckMode === 'ai') {
       if (!aiReady || !aiContextPreview.nodes.length) return;
       const scope = aiContextPreview.nodes.map((node) => node.id);
+      const trigger = deckDialogTriggerRef.current;
       deckDialogRef.current?.close();
       await runGeneration(project.id, 'Generando el borrador de la presentación…', async (options) => {
         const { proposal } = await aiApi.proposeDeck(project.id, automaticDeckCount ? undefined : requestedSlides, scope, deckPrompt, options);
         options.signal.throwIfAborted();
+        deckProposalTriggerRef.current = trigger;
         setDeckProposal({ proposal, scope });
       });
       return;
@@ -1503,7 +1508,7 @@ export default function App() {
             <div className="canvas-actions">
               {workspaceView === 'map' ? <>
                 <button className="quiet-button" onClick={() => setWorkspaceView('slides')} disabled={!slides.length}>Ver diapositivas{slides.length ? ` · ${slides.length}` : ''}</button>
-                <button className="quiet-button" onClick={openDeckDialog} disabled={!nodes.length || loading || aiBusy}><span>✦</span> Crear presentación</button>
+                <button className="quiet-button" onClick={(event) => openDeckDialog(event.currentTarget)} disabled={!nodes.length || loading || aiBusy}><span>✦</span> Crear presentación</button>
                 <button className="quiet-button" onClick={organizeMap} disabled={!nodes.length} title="Ordenar el mapa"><span>⤢</span> Ordenar</button>
                 <button className="round-button" aria-label="Eliminar la rama seleccionada y sus ideas descendientes" onClick={deleteSelectedBranch} disabled={!selectedNodeId || selectedNodeId === 'root'} title="Eliminar la rama seleccionada y sus ideas descendientes">⌫</button>
                 <button className="quiet-button" aria-pressed={mapListView} onClick={() => setMapListView((view) => !view)}>{mapListView ? 'Volver al lienzo' : 'Vista de lista'}</button>
@@ -1523,7 +1528,7 @@ export default function App() {
           </div>
           <div className={`canvas-wrap${workspaceView === 'map' && mapListView ? ' canvas-wrap--list' : ''}${workspaceView === 'slides' ? ' canvas-wrap--slides' : ''}`} inert={aiBusy}>
             {workspaceView === 'slides' ? <>
-              {slides.length === 0 ? <div className="slides-empty"><strong>Aún no hay diapositivas</strong><p>Genera una presentación a partir de las ideas del mapa o añade una en blanco.</p><button className="quiet-button" onClick={openDeckDialog} disabled={!nodes.length || loading || aiBusy}>Crear desde el mapa</button></div> : <>
+              {slides.length === 0 ? <div className="slides-empty"><strong>Aún no hay diapositivas</strong><p>Genera una presentación a partir de las ideas del mapa o añade una en blanco.</p><button className="quiet-button" onClick={(event) => openDeckDialog(event.currentTarget)} disabled={!nodes.length || loading || aiBusy}>Crear desde el mapa</button></div> : <>
                 <div className="slide-editor">
                   <div className="slide-editor__canvas" key={slides[activeSlideIndex]?.id}>
                     {slides[activeSlideIndex] && <>
@@ -1658,7 +1663,7 @@ export default function App() {
             {deckProposal && <section ref={deckPreviewRef} className="slide-ai-proposal deck-preview" tabIndex={-1} aria-label="Revisar presentación propuesta">
               <div className="slide-block-editor__heading">
                 <strong>Borrador de {deckProposal.proposal.slides.length} diapositivas</strong>
-                <button type="button" className="slide-block-remove" onClick={() => setDeckProposal(null)}>Descartar</button>
+                <button type="button" className="slide-block-remove" onClick={() => { setDeckProposal(null); deckProposalTriggerRef.current?.focus(); }}>Descartar</button>
               </div>
               {deckProposal.proposal.message && <p>{deckProposal.proposal.message}</p>}
               {deckProposal.proposal.slides.map((slide, index) => <details key={index}>

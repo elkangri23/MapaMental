@@ -1,5 +1,7 @@
 # Cambios
 
+- Al descartar un borrador de presentación completo, el foco vuelve al botón que abrió el diálogo de creación si sigue disponible.
+
 - Al descartar una propuesta de ideas o diapositiva, el foco vuelve al botón que la generó si sigue disponible.
 
 - Las vistas previas de ideas y diapositivas de IA reciben el foco al aparecer, para llegar a sus controles con el teclado.
@@ -317,6 +319,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Al descartar un borrador de presentación completo, el foco vuelve al botón que abrió el diálogo de creación si sigue disponible.
 
 - Al descartar una propuesta de ideas o diapositiva, el foco vuelve al botón que la generó si sigue disponible.
 
