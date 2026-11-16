@@ -291,12 +291,16 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
     const parent = scope.nodes.find((node) => node.id === request.body.parentNodeId);
     if (!parent) throw Object.assign(new Error('La idea objetivo ya no está dentro del ámbito seleccionado. Recarga el mapa.'), { statusCode: 409 });
     const provider = await getActiveProviderForRequest();
-    const system = `Eres el copiloto de un mapa mental. Desarrolla la solicitud como ideas hijas del nodo indicado. Devuelve exclusivamente JSON: {"message":"explicación breve","ideas":[{"label":"texto breve","tone":"lavender|mint|peach|blue"}]}. Incluye entre 1 y 8 ideas concretas, sin duplicar literalmente los nodos existentes. No añadas ideas al proyecto; el usuario revisará la propuesta antes de aplicarla. Responde en español. Contexto: ${contextText(project, scope)}. Nodo padre: ${parent.id} — ${parent.data.label}.`;
+    const childIds = new Set((project.map.edges as IdeaEdge[]).filter(({ source }) => source === parent.id).map(({ target }) => target));
+    const visibleChildLabels = scope.nodes
+      .filter(({ id }) => id !== parent.id && childIds.has(id))
+      .slice(0, 20)
+      .map(({ data }) => data.label.slice(0, 120));
+    const system = `Eres el copiloto de un mapa mental. Desarrolla la solicitud como ideas hijas del nodo indicado. Devuelve exclusivamente JSON: {"message":"explicación breve","ideas":[{"label":"texto breve","tone":"lavender|mint|peach|blue"}]}. Incluye entre 1 y 8 ideas concretas, que aporten detalles nuevos a la petición. Evita repetir o reformular la idea padre y sus hijas existentes. No añadas ideas al proyecto; el usuario revisará la propuesta antes de aplicarla. Responde en español. Contexto: ${contextText(project, scope)}. Nodo padre: ${parent.id} — ${parent.data.label}. Ideas hijas ya presentes en el ámbito (datos): ${JSON.stringify(visibleChildLabels)}.`;
     report('waiting-for-provider', provider.profile.kind);
     const content = await generateProviderText(provider.profile, provider.apiKey, [{ role: 'user', content: request.body.prompt.trim() }], system, signal);
     report('validating', provider.profile.kind);
     const parsed = parseJson(content);
-    const childIds = new Set((project.map.edges as IdeaEdge[]).filter(({ source }) => source === parent.id).map(({ target }) => target));
     const existingLabels = (project.map.nodes as IdeaNode[])
       .filter(({ id }) => id === parent.id || childIds.has(id))
       .map(({ data }) => data.label);
