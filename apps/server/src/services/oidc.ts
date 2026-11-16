@@ -28,6 +28,7 @@ interface OidcTransaction {
 }
 
 const transactions = new Map<string, OidcTransaction>();
+let preparingTransactions = 0;
 let cachedClient: { key: string; config: Configuration } | null = null;
 
 async function configuredClient(auth: AuthConfiguration) {
@@ -58,36 +59,41 @@ export async function beginOidcAuthorization(input: { purpose: OidcPurpose; loca
     throw Object.assign(new Error('La vinculación inicial requiere una sesión local y una instalación sin identidad vinculada.'), { statusCode: 403 });
   }
 
-  const config = await configuredClient(auth);
-  const codeVerifier = randomPKCECodeVerifier();
-  const codeChallenge = await calculatePKCECodeChallenge(codeVerifier);
-  const state = randomState();
-  const nonce = randomNonce();
-  const redirectUri = callbackUri();
-  const authorizationUrl = buildAuthorizationUrl(config, {
-    redirect_uri: redirectUri,
-    scope: 'openid',
-    state,
-    nonce,
-    code_challenge: codeChallenge,
-    code_challenge_method: 'S256',
-  });
   const now = Date.now();
   for (const [state, transaction] of transactions) if (transaction.expiresAt <= now) transactions.delete(state);
-  if (transactions.size >= 8) throw Object.assign(new Error('Hay demasiados inicios de sesión pendientes. Espera unos minutos e inténtalo otra vez.'), { statusCode: 429 });
+  if (transactions.size + preparingTransactions >= 8) throw Object.assign(new Error('Hay demasiados inicios de sesión pendientes. Espera unos minutos e inténtalo otra vez.'), { statusCode: 429 });
 
-  transactions.set(state, {
-    purpose: input.purpose,
-    state,
-    nonce,
-    codeVerifier,
-    redirectUri,
-    issuer: auth.issuer,
-    clientId: auth.clientId,
-    localSessionId: input.localSessionId,
-    expiresAt: now + transactionLifetimeMs,
-  });
-  return authorizationUrl.href;
+  preparingTransactions++;
+  try {
+    const config = await configuredClient(auth);
+    const codeVerifier = randomPKCECodeVerifier();
+    const codeChallenge = await calculatePKCECodeChallenge(codeVerifier);
+    const state = randomState();
+    const nonce = randomNonce();
+    const redirectUri = callbackUri();
+    const authorizationUrl = buildAuthorizationUrl(config, {
+      redirect_uri: redirectUri,
+      scope: 'openid',
+      state,
+      nonce,
+      code_challenge: codeChallenge,
+      code_challenge_method: 'S256',
+    });
+    transactions.set(state, {
+      purpose: input.purpose,
+      state,
+      nonce,
+      codeVerifier,
+      redirectUri,
+      issuer: auth.issuer,
+      clientId: auth.clientId,
+      localSessionId: input.localSessionId,
+      expiresAt: Date.now() + transactionLifetimeMs,
+    });
+    return authorizationUrl.href;
+  } finally {
+    preparingTransactions--;
+  }
 }
 
 export function consumeOidcTransaction(state: string) {
