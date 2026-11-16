@@ -1427,12 +1427,24 @@ export default function App() {
     discard();
   };
 
+  const slideBeingRevised = aiSlideProposal && aiSlideProposal.sourceNodeId === undefined
+    ? slides.find(({ id }) => id === aiSlideProposal.slideId)
+    : undefined;
+  const removedSlideBlocks: string[] = [];
+  if (slideBeingRevised && aiSlideProposal) {
+    const { draft } = aiSlideProposal;
+    if (slideBeingRevised.table && draft.table === null) removedSlideBlocks.push('la tabla');
+    if (slideBeingRevised.diagramSteps?.length && draft.diagramSteps?.length === 0) removedSlideBlocks.push('el recorrido');
+    if (slideBeingRevised.mockFields?.length && draft.mockFields?.length === 0) removedSlideBlocks.push('el formulario ficticio');
+  }
+
   const slideProposalPreview = aiSlideProposal && <section ref={slidePreviewRef} onKeyDown={(event) => discardProposalOnEscape(event, discardSlideProposal)} className="slide-ai-proposal" tabIndex={-1} aria-label="Revisar borrador de IA">
       <div className="slide-block-editor__heading"><strong>Borrador propuesto</strong><button type="button" className="slide-block-remove" aria-keyshortcuts="Escape" disabled={aiBusy} onClick={discardSlideProposal}>Descartar</button></div>
       <p>{aiSlideProposal.message}</p>
       <small>{aiSlideProposal.provider} · {aiSlideProposal.sourceNodeId
         ? `Se añadirá una diapositiva al final de la presentación a partir de «${nodes.find((node) => node.id === aiSlideProposal.sourceNodeId)?.data.label ?? 'Idea de origen'}».`
         : 'Solo cambiará esta diapositiva.'}</small>
+      {removedSlideBlocks.length > 0 && <p>Al aplicar el borrador se retirará lo siguiente: {removedSlideBlocks.join(' · ')}.</p>}
       <h3>{aiSlideProposal.draft.title}</h3>
       {aiSlideProposal.draft.subtitle && <p className="slide-ai-proposal__subtitle">{aiSlideProposal.draft.subtitle}</p>}
       {aiSlideProposal.draft.body && <p>{aiSlideProposal.draft.body}</p>}
