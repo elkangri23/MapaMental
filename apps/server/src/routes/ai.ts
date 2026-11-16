@@ -124,7 +124,7 @@ function sanitizeSuggestions(value: unknown, nodes: IdeaNode[], canCreateSlide: 
     if (entry.kind === 'create-slide' && !canCreateSlide) continue;
     const title = entry.title.trim().replace(/\s+/g, ' ').slice(0, 90);
     const prompt = entry.prompt.trim().slice(0, 700);
-    const key = title.toLocaleLowerCase('es');
+    const key = JSON.stringify([entry.targetNodeId, title.normalize('NFC').toLocaleLowerCase('es')]);
     if (!title || !prompt || titles.has(key)) continue;
     const format = entry.kind === 'create-slide' && entry.format === 'table' ? 'table' : undefined;
     const action = entry.kind === 'create-slide' ? 'slide' : 'map';

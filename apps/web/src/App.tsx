@@ -1663,7 +1663,7 @@ export default function App() {
                 if (!target) return null;
                 const createsSlide = suggestion.kind === 'create-slide';
                 return (
-                  <button type="button" key={suggestion.title} className={`suggestion-card suggestion-card--${createsSlide ? 'peach' : 'violet'}`} onClick={() => void runSuggestion(suggestion)} disabled={aiBusy || !aiReady || (createsSlide && slides.length >= PROJECT_SLIDE_LIMIT)}>
+                  <button type="button" key={JSON.stringify([suggestion.targetNodeId, suggestion.title])} className={`suggestion-card suggestion-card--${createsSlide ? 'peach' : 'violet'}`} onClick={() => void runSuggestion(suggestion)} disabled={aiBusy || !aiReady || (createsSlide && slides.length >= PROJECT_SLIDE_LIMIT)}>
                     <span className="suggestion-card__icon" aria-hidden="true">{createsSlide ? '▤' : '✧'}</span>
                     <span className="suggestion-card__text"><strong>{suggestion.title}</strong><small>{suggestion.format === 'table' ? 'Diapositiva con tabla' : createsSlide ? 'Nueva diapositiva' : 'Ideas para la rama'} · {target.data.label}</small></span>
                     <span className="suggestion-card__arrow" aria-hidden="true">↗</span>

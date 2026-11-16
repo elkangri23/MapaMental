@@ -1,5 +1,7 @@
 # Cambios
 
+- Dos sugerencias con el mismo título pueden aparecer juntas si apuntan a ideas distintas. Cada tarjeta muestra su destino.
+
 - Las tarjetas de IA con la misma instrucción, destino y tipo de resultado se muestran una sola vez aunque el modelo cambie el título.
 
 - El chat muestra las sugerencias en la selección para la que se generaron, aunque otra rama incluya alguna de las mismas ideas.
@@ -309,6 +311,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Dos sugerencias con el mismo título pueden aparecer juntas si apuntan a ideas distintas. Cada tarjeta muestra su destino.
 
 - Las tarjetas de IA con la misma instrucción, destino y tipo de resultado se muestran una sola vez aunque el modelo cambie el título.
 
