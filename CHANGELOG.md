@@ -1,5 +1,7 @@
 # Cambios
 
+- El chat puede sugerir diapositivas con recorridos estáticos o formularios ya rellenados con datos ficticios.
+
 - Al aplicar una expansión, el servidor comprueba los nombres de las ideas y rechaza el borrador si contiene duplicados.
 
 - Al ampliar una rama, la petición señala sus ideas hijas que están dentro del contexto para que el modelo aporte detalles nuevos.
@@ -333,6 +335,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- El chat puede sugerir diapositivas con recorridos estáticos o formularios ya rellenados con datos ficticios.
 
 - Al aplicar una expansión, el servidor comprueba los nombres de las ideas y rechaza el borrador si contiene duplicados.
 

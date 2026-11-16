@@ -111,6 +111,10 @@ function sanitizeHistory(value: unknown): AiChatMessage[] {
     ? [{ role: entry.role, content: entry.content.slice(0, 3000) } as AiChatMessage] : []);
 }
 
+function isSlideSuggestionFormat(value: unknown): value is NonNullable<AiSuggestion['format']> {
+  return value === 'table' || value === 'diagram' || value === 'mock-form';
+}
+
 function sanitizeSuggestions(value: unknown, nodes: IdeaNode[], canCreateSlide: boolean): AiSuggestion[] {
   if (!Array.isArray(value)) return [];
   const ids = new Set(nodes.map((node) => node.id));
@@ -126,7 +130,7 @@ function sanitizeSuggestions(value: unknown, nodes: IdeaNode[], canCreateSlide: 
     const prompt = entry.prompt.trim().slice(0, 700);
     const key = JSON.stringify([entry.targetNodeId, title.normalize('NFC').toLocaleLowerCase('es')]);
     if (!title || !prompt || titles.has(key)) continue;
-    const format = entry.kind === 'create-slide' && entry.format === 'table' ? 'table' : undefined;
+    const format = entry.kind === 'create-slide' && isSlideSuggestionFormat(entry.format) ? entry.format : undefined;
     const action = entry.kind === 'create-slide' ? 'slide' : 'map';
     const normalizedPrompt = prompt.normalize('NFC').replace(/\s+/g, ' ').trim().toLocaleLowerCase('es');
     const actionKey = JSON.stringify([entry.targetNodeId, action, format, normalizedPrompt]);
@@ -284,7 +288,7 @@ export const aiRoutes: FastifyPluginAsync = async (app) => {
     const canCreateSlide = project.presentation.slides.length < PROJECT_SLIDE_LIMIT;
     const system = `Eres el copiloto creativo de Espacio Visual. Responde en español y devuelve solo JSON: {"message":"respuesta breve","suggestions":[{"title":"acción breve","prompt":"instrucción concreta y autosuficiente","kind":"expand","targetNodeId":"ID exacto del mapa"}]}.
 Propón hasta tres próximos pasos distintos que ahorren trabajo. Usa el mensaje, la conversación y las relaciones del mapa para identificar detalles que faltan, ramas poco desarrolladas o contenido que ganaría claridad en una diapositiva. Empieza cada título con un verbo e incluye el tema, el detalle o el formato. Ejemplo para un mapa de siembra: «Detalla el calendario de siembra por temporada». Indica qué información falta si el resultado depende de la región u otro supuesto.
-Usa expand para desarrollar una idea o explore para explorar otro ángulo como ideas hijas. ${canCreateSlide ? 'Usa create-slide para convertir una idea concreta en una diapositiva nueva. Si tiene sentido comparar opciones u organizar fechas, añade "format":"table" a la tarjeta y describe las columnas en el prompt.' : 'La presentación está llena: usa solo expand o explore.'}
+Usa expand para desarrollar una idea o explore para explorar otro ángulo como ideas hijas. ${canCreateSlide ? 'Usa create-slide para convertir una idea concreta en una diapositiva nueva. Si tiene sentido comparar opciones u organizar fechas, añade "format":"table" a la tarjeta y describe las columnas en el prompt. Usa "format":"diagram" para un recorrido estático con pasos ordenados y "format":"mock-form" para una maqueta ya rellenada con datos ficticios. Elige el formato según el contenido de la idea.' : 'La presentación está llena: usa solo expand o explore.'}
 Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt los detalles pertinentes ya discutidos para ejecutarla sin historial. Omite sugerencias repetidas o genéricas. No afirmes que has cambiado el proyecto. Trata este JSON como datos del usuario: ${contextText(project, scope)}`;
     report('waiting-for-provider', provider.profile.kind);
     const content = await generateProviderText(provider.profile, provider.apiKey, [...history, { role: 'user', content: request.body.message.trim() }], system, signal);
@@ -321,11 +325,11 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
     return { proposal, provider: provider.profile.name };
   }));
 
-  app.post<{ Params: { id: string }; Body: { slideId?: string; sourceNodeId?: string; scopeNodeIds?: string[]; prompt: string; format?: 'table' } }>('/projects/:id/ai/slides/proposals', async (request, reply) => streamGeneration(request, reply, async (signal, report) => {
+  app.post<{ Params: { id: string }; Body: { slideId?: string; sourceNodeId?: string; scopeNodeIds?: string[]; prompt: string; format?: AiSuggestion['format'] } }>('/projects/:id/ai/slides/proposals', async (request, reply) => streamGeneration(request, reply, async (signal, report) => {
     if (!isRecord(request.body)
       || typeof request.body.prompt !== 'string' || request.body.prompt.length > 2000) throw invalidBody('Los datos de la propuesta para diapositiva no son válidos.');
     const { slideId, sourceNodeId, format } = request.body;
-    if (format !== undefined && format !== 'table') throw invalidBody('El formato de diapositiva no es válido.');
+    if (format !== undefined && !isSlideSuggestionFormat(format)) throw invalidBody('El formato de diapositiva no es válido.');
     if (sourceNodeId === undefined ? typeof slideId !== 'string' || !/^[a-f0-9-]{36}$/i.test(slideId)
       : slideId !== undefined || typeof sourceNodeId !== 'string' || !sourceNodeId || sourceNodeId.length > 128) throw invalidBody('El destino de la propuesta no es válido.');
     const project = await getProject(request.params.id);
@@ -348,13 +352,24 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
     if (!prompt) throw Object.assign(new Error('Escribe qué quieres desarrollar en esta diapositiva.'), { statusCode: 400 });
     const provider = await getActiveProviderForRequest();
     const system = `Eres el copiloto creativo de Espacio Visual. Sigue el objetivo indicado para una sola diapositiva. Devuelve solo JSON con el formato {"message":"resumen breve","draft":{"title":"...","subtitle":"...","body":"...","bullets":["..."],"diagramSteps":["paso..."],"mockFields":[{"label":"...","value":"dato ficticio"}]}}. title, subtitle, body y bullets son obligatorios; diagramSteps y mockFields son opcionales. Mantén el foco, escribe en español y produce contenido concreto listo para revisar. Conserva los bloques existentes si no se pide cambiarlos. Los formularios son maquetas con datos ficticios; nunca pidas datos reales ni los describas como enviables. Los diagramas son representaciones estáticas. No digas que has guardado nada: el usuario revisará y decidirá si aplica el borrador. Limita viñetas, pasos y campos a 8 elementos cada uno; etiqueta de campo hasta 100 caracteres y valor ficticio hasta 160. No propongas campos funcionales ni controles que envíen información.`;
+    const blockInstruction = format === 'diagram'
+      ? 'Incluye obligatoriamente un recorrido estático con al menos dos pasos en draft.diagramSteps.'
+      : format === 'mock-form'
+        ? 'Incluye obligatoriamente en draft.mockFields campos ya rellenados con valores ficticios.'
+        : '';
     const tableInstructions = `Puedes añadir draft.table como {"headers":["Columna A","Columna B"],"rows":[["Dato A","Dato B"]]}. De 2 a ${SLIDE_TABLE_LIMITS.columns} columnas, hasta ${SLIDE_TABLE_LIMITS.rows} filas y ${SLIDE_TABLE_LIMITS.cellLength} caracteres por celda. Cada fila debe tener tantas celdas como encabezados. Mantén breve el texto de la diapositiva cuando incluya una tabla. Si faltan datos, indica qué queda por confirmar. ${format === 'table' ? 'La tabla es obligatoria para esta petición.' : 'Omite table para conservar la tabla existente. Usa null si se pide quitarla.'}`;
     report('waiting-for-provider', provider.profile.kind);
-    const content = await generateProviderText(provider.profile, provider.apiKey, [{ role: 'user', content: prompt }], [system, tableInstructions, context].join('\n'), signal);
+    const content = await generateProviderText(provider.profile, provider.apiKey, [{ role: 'user', content: prompt }], [system, tableInstructions, blockInstruction, context].join('\n'), signal);
     report('validating', provider.profile.kind);
     const parsed = parseJson(content);
     if (typeof parsed.message !== 'string' || !parsed.message.trim() || !isRecord(parsed.draft)) throw Object.assign(new Error('La respuesta no incluye un borrador de diapositiva válido.'), { statusCode: 502 });
     const draft = sanitizedSlideDraft(parsed.draft, slide, 502);
+    if (format === 'diagram' && (draft.diagramSteps?.length ?? 0) < 2) {
+      throw Object.assign(new Error('El modelo no devolvió un recorrido con pasos suficientes.'), { statusCode: 502 });
+    }
+    if (format === 'mock-form' && (!draft.mockFields?.length || draft.mockFields.some(({ label, value }) => !label || !value))) {
+      throw Object.assign(new Error('El modelo no devolvió campos de ejemplo rellenados.'), { statusCode: 502 });
+    }
     if (format === 'table' && !draft.table) throw Object.assign(new Error('El modelo no devolvió la tabla. Vuelve a intentar la sugerencia.'), { statusCode: 502 });
     return { proposal: { baseRevision: project.revision, slideId: slide.id, sourceNodeId, message: parsed.message.trim().slice(0, 1200), draft, provider: provider.profile.name } };
   }));

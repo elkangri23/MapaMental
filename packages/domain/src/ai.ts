@@ -18,7 +18,7 @@ export interface AiSuggestion {
   prompt: string;
   kind: 'explore' | 'expand' | 'create-slide';
   targetNodeId?: string;
-  format?: 'table';
+  format?: 'table' | 'diagram' | 'mock-form';
 }
 
 export interface AiIdeaProposal {
