@@ -1,5 +1,7 @@
 # Cambios
 
+- Las vistas previas de ideas y diapositivas de IA reciben el foco al aparecer, para llegar a sus controles con el teclado.
+
 - Al volver a generar sugerencias, el chat pide alternativas a las tarjetas anteriores de la misma selección.
 
 - Dos sugerencias con el mismo título pueden aparecer juntas si apuntan a ideas distintas. Cada tarjeta muestra su destino.
@@ -313,6 +315,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Las vistas previas de ideas y diapositivas de IA reciben el foco al aparecer, para llegar a sus controles con el teclado.
 
 - Al volver a generar sugerencias, el chat pide alternativas a las tarjetas anteriores de la misma selección.
 

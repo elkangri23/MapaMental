@@ -177,6 +177,8 @@ export default function App() {
   const [deckPrompt, setDeckPrompt] = useState('');
   const [deckProposal, setDeckProposal] = useState<{ proposal: AiDeckProposal; scope: string[] } | null>(null);
   const deckDialogRef = useRef<HTMLDialogElement>(null);
+  const mapPreviewRef = useRef<HTMLElement>(null);
+  const slidePreviewRef = useRef<HTMLElement>(null);
   const deckPreviewRef = useRef<HTMLElement>(null);
   const [project, setProject] = useState<ProjectDocument | null>(null);
   const [futureProject, setFutureProject] = useState<FutureProjectPreview | null>(null);
@@ -1057,6 +1059,16 @@ export default function App() {
   };
 
   useEffect(() => {
+    mapPreviewRef.current?.scrollIntoView({ block: 'nearest' });
+    mapPreviewRef.current?.focus({ preventScroll: true });
+  }, [aiProposal]);
+
+  useEffect(() => {
+    slidePreviewRef.current?.scrollIntoView({ block: 'nearest' });
+    slidePreviewRef.current?.focus({ preventScroll: true });
+  }, [aiSlideProposal]);
+
+  useEffect(() => {
     deckPreviewRef.current?.scrollIntoView({ block: 'nearest' });
     deckPreviewRef.current?.focus({ preventScroll: true });
   }, [deckProposal]);
@@ -1386,7 +1398,7 @@ export default function App() {
   const editingRates = ratesForModel(providerForm);
   const savedProvider = providerConfiguration.profiles.find((profile) => profile.id === providerForm.id);
 
-  const slideProposalPreview = aiSlideProposal && <section className="slide-ai-proposal" aria-label="Revisar borrador de IA">
+  const slideProposalPreview = aiSlideProposal && <section ref={slidePreviewRef} className="slide-ai-proposal" tabIndex={-1} aria-label="Revisar borrador de IA">
       <div className="slide-block-editor__heading"><strong>Borrador propuesto</strong><button type="button" className="slide-block-remove" onClick={() => setAiSlideProposal(null)}>Descartar</button></div>
       <p>{aiSlideProposal.message}</p>
       <small>{aiSlideProposal.provider} · {aiSlideProposal.sourceNodeId
@@ -1629,7 +1641,7 @@ export default function App() {
             <div className="chat-transcript" role="log" aria-label="Conversación con el asistente" aria-live="polite" aria-relevant="additions">
               {chatMessages.map((message, index) => <div key={`${index}-${message.role}`} className={`chat-message chat-message--${message.role}`}><span aria-hidden="true">{message.role === 'assistant' ? '✦' : 'Tú'}</span><p><span className="sr-only">{message.role === 'assistant' ? 'Asistente: ' : 'Tú: '}</span>{message.content}</p></div>)}
             </div>
-            {aiProposal && <section className="ai-proposal" aria-label="Revisar propuesta de ideas">
+            {aiProposal && <section ref={mapPreviewRef} className="ai-proposal" tabIndex={-1} aria-label="Revisar propuesta de ideas">
               <div className="ai-proposal__head"><strong>Propuesta de {aiProposal.ideas.length} ideas</strong><button type="button" className="quiet-button" onClick={() => setAiProposal(null)}>Descartar</button></div>
               <p>{aiProposal.message}</p>
               <small>Se añadirán bajo «{nodes.find((node) => node.id === aiProposal.parentNodeId)?.data.label ?? 'la idea seleccionada'}». Otras ramas quedan intactas.</small>
