@@ -1,6 +1,7 @@
 import type { FutureProjectPreview, ProjectDocument, ProjectSummary } from '@espacio-visual/domain';
 
 let sessionPromise: Promise<void> | null = null;
+const initialOidcResult = new URLSearchParams(window.location.search).get('auth');
 
 async function ensureSession() {
   if (sessionPromise) return sessionPromise;
@@ -19,6 +20,12 @@ async function ensureSession() {
     const status = await fetch('/api/session/status', { headers, credentials: 'same-origin' });
     if (status.status === 200) return;
     if (status.status === 401) {
+      if (initialOidcResult === 'cancelled' || initialOidcResult === 'failed') {
+        window.dispatchEvent(new CustomEvent('espacio-visual:oidc-retry-required'));
+        throw new Error(initialOidcResult === 'cancelled'
+          ? 'Se canceló el acceso con el proveedor de identidad.'
+          : 'No se pudo validar la respuesta OIDC.');
+      }
       const start = await fetch('/api/session/oidc/start', { method: 'POST', headers, credentials: 'same-origin', body: JSON.stringify({ purpose: 'login' }) });
       const result = await start.json().catch(() => ({})) as { authorizationUrl?: string; message?: string };
       if (!start.ok || !result.authorizationUrl) throw new Error(result.message ?? 'No se pudo iniciar el acceso OIDC.');

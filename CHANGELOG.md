@@ -1,5 +1,7 @@
 # Cambios
 
+- Tras cancelar o fallar un inicio OIDC, la aplicación espera a que el usuario pulse Reintentar inicio de sesión.
+
 - El límite de inicios OIDC incluye las solicitudes que todavía se están preparando y libera su plaza si la preparación falla.
 
 - El inicio OIDC aplica el límite de operaciones pendientes aunque varias peticiones coincidan, y el plazo empieza cuando se completa la preparación del enlace.
@@ -377,6 +379,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Tras cancelar o fallar un inicio OIDC, la aplicación espera a que el usuario pulse Reintentar inicio de sesión.
 
 - El límite de inicios OIDC incluye las solicitudes que todavía se están preparando y libera su plaza si la preparación falla.
 

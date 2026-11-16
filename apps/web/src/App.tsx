@@ -211,6 +211,7 @@ export default function App() {
   const [oidcBusy, setOidcBusy] = useState(false);
   const [protectedLoginBusy, setProtectedLoginBusy] = useState(false);
   const [protectedLoginPending, setProtectedLoginPending] = useState(false);
+  const [oidcRetryRequired, setOidcRetryRequired] = useState(false);
   const [protectedLoginMessage, setProtectedLoginMessage] = useState('');
   const [recoveryFormOpen, setRecoveryFormOpen] = useState(false);
   const [recoveryResuming, setRecoveryResuming] = useState(false);
@@ -1365,8 +1366,13 @@ export default function App() {
 
   useEffect(() => {
     const requirePasskey = () => setProtectedLoginPending(true);
+    const requireOidcRetry = () => setOidcRetryRequired(true);
     window.addEventListener('espacio-visual:passkey-required', requirePasskey);
-    return () => window.removeEventListener('espacio-visual:passkey-required', requirePasskey);
+    window.addEventListener('espacio-visual:oidc-retry-required', requireOidcRetry);
+    return () => {
+      window.removeEventListener('espacio-visual:passkey-required', requirePasskey);
+      window.removeEventListener('espacio-visual:oidc-retry-required', requireOidcRetry);
+    };
   }, []);
 
   const saveProvider = useCallback(async () => {
@@ -1553,6 +1559,14 @@ export default function App() {
           <PersonalProfileButton />
         </div>
       </header>
+
+      {oidcRetryRequired && <section className="protected-login-notice" aria-labelledby="oidc-retry-title">
+        <div>
+          <strong id="oidc-retry-title">Inicio protegido sin completar</strong>
+          <p>Vuelve a iniciar sesión cuando quieras continuar.</p>
+        </div>
+        <button type="button" className="quiet-button" onClick={() => window.location.reload()}>Reintentar inicio de sesión</button>
+      </section>}
 
       {protectedLoginPending && <section className="protected-login-notice" role="region" aria-labelledby="protected-login-title">
         <div><strong id="protected-login-title">Completa el acceso con tu passkey</strong><p>La identidad OIDC se verificó. Confirma ahora con Windows Hello, una llave FIDO2 u otra passkey registrada.</p>{protectedLoginMessage && <p role="status">{protectedLoginMessage}</p>}</div>
