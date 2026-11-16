@@ -1,5 +1,6 @@
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
 import { PassThrough } from 'node:stream';
+import { isDeepStrictEqual } from 'node:util';
 import { AI_DECK_SLIDE_LIMIT, buildProjectAiContext, isValidSlideTable, PROJECT_NODE_LIMIT, PROJECT_SLIDE_LIMIT, SLIDE_TABLE_LIMITS } from '@espacio-visual/domain';
 import type { ProviderKind } from '@espacio-visual/domain';
 import type { AiChatMessage, AiDeckProposal, AiDeckSlide, AiGenerationEvent, AiGenerationStage, AiIdeaProposal, AiProposal, AiSlideDraft, AiSuggestion, ProjectDocument, PresentationSlide } from '@espacio-visual/domain';
@@ -177,6 +178,15 @@ function sanitizedIdeas(value: unknown, parent: IdeaNode, existingLabels: string
     return [{ id, label, tone: tones.has(String(entry.tone)) ? entry.tone as AiIdeaProposal['tone'] : 'blue' as const }];
   });
   return ideas.map((idea, index) => ({ ...idea, position: ideaPosition(parent, index, ideas.length) }));
+}
+
+function normalizeSlideBlocks(slide: PresentationSlide): PresentationSlide {
+  return {
+    ...slide,
+    table: slide.table ?? null,
+    diagramSteps: slide.diagramSteps ?? [],
+    mockFields: slide.mockFields ?? [],
+  };
 }
 
 function sanitizedSlideDraft(value: unknown, current: Pick<AiSlideDraft, 'diagramSteps' | 'mockFields' | 'table'>, failureStatus: number): AiSlideDraft {
@@ -446,6 +456,9 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
       : slides[index];
     const draft = sanitizedSlideDraft(request.body.draft, existing, 400);
     const updated: PresentationSlide = { ...existing, ...draft };
+    if (!creating && isDeepStrictEqual(normalizeSlideBlocks(existing), normalizeSlideBlocks(updated))) {
+      throw Object.assign(new Error('El borrador conserva el contenido actual de la diapositiva.'), { statusCode: 422 });
+    }
     const nextSlides = [...slides];
     if (creating) nextSlides.push(updated); else nextSlides[index] = updated;
     const next: ProjectDocument = { ...current, revision: current.revision + 1, presentation: { slides: nextSlides }, lastAiSlideUndo: { appliedAtRevision: current.revision + 1, slide: creating ? updated : existing, created: creating ? true : undefined, description: creating ? `Quitar «${updated.title}»` : `Deshacer mejora IA de «${existing.title || 'diapositiva'}»` } };
