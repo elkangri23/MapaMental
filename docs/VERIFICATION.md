@@ -4,7 +4,7 @@
 
 - Comprobado con Fastify y almacenamiento temporal. Sin sesión se rechazó la lectura. Un origen ajeno se rechazó al guardar y se comprobó el tipo de contenido, el correo mal formado y la cabecera no-store.
 - Una sesión local guardó y recuperó el perfil, con recorte de espacios y comprobación del archivo persistido. En modo protegido se rechazó la cookie local. Una sesión protegida creada para la comprobación pudo consultar y vaciar el perfil. Tras revocarla, dejó de tener acceso.
-- En Chrome, la compilación de producción abrió el diálogo con sus dos campos etiquetados. Guardar cerró el diálogo y devolvió el foco a Mi perfil. La conexión de Chrome se reinició durante la recarga. Queda reabrir el diálogo tras recargar y recorrer la cancelación con teclado y el acceso en pantalla estrecha.
+- En Chrome, la compilación de producción abrió el diálogo con sus dos campos etiquetados. Guardar cerró el diálogo y devolvió el foco a Mi perfil. En un segundo recorrido aislado se guardaron nombre y correo ficticios, se recargó la página y ambos valores reaparecieron. Con una ventana emulada de 320 píxeles CSS, el diálogo abrió sin desbordamiento horizontal. Escape descartó una edición sin guardar y devolvió el foco a Mi perfil. Intro reabrió el diálogo con los valores persistidos.
 
 ## Aceptación pendiente del modo protegido (T-020 a T-026)
 
