@@ -1,5 +1,7 @@
 # Cambios
 
+- La vista previa distingue las tablas, recorridos y formularios ficticios que se añadirán, actualizarán o quitarán de una diapositiva existente.
+
 - La vista previa de una mejora de diapositiva indica si el borrador retirará una tabla, un recorrido o un formulario ficticio.
 
 - Al convertir una idea en diapositiva, la petición al modelo indica que aproveche las ideas y fragmentos vinculados pertinentes y señale los datos que falten.
@@ -341,6 +343,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- La vista previa distingue las tablas, recorridos y formularios ficticios que se añadirán, actualizarán o quitarán de una diapositiva existente.
 
 - La vista previa de una mejora de diapositiva indica si el borrador retirará una tabla, un recorrido o un formulario ficticio.
 
