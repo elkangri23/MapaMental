@@ -11,7 +11,7 @@ import { apiErrorCode } from '../services/api-errors.js';
 type IdeaNode = { id: string; type?: string; position: { x: number; y: number }; data: { label: string; tone?: string } };
 type IdeaEdge = { id: string; source: string; target: string; type?: string; [key: string]: unknown };
 
-class InvalidDeckOutput extends Error {
+class InvalidModelOutput extends Error {
   readonly statusCode = 502;
 }
 
@@ -64,7 +64,7 @@ async function streamGeneration<T>(
     if (!stream) throw error;
     if (!controller.signal.aborted) {
       const clientError = typeof failure.statusCode === 'number' && failure.statusCode >= 400 && failure.statusCode < 500;
-      send({ type: 'error', code: apiErrorCode(statusCode), correlationId: request.id, message: (clientError && error instanceof Error) || error instanceof InvalidDeckOutput
+      send({ type: 'error', code: apiErrorCode(statusCode), correlationId: request.id, message: (clientError && error instanceof Error) || error instanceof InvalidModelOutput
         ? error.message
         : 'El proveedor no completó una respuesta válida. Revisa la conexión o vuelve a intentarlo.' });
     }
@@ -206,7 +206,7 @@ function sanitizedSlideDraft(value: unknown, current: Pick<AiSlideDraft, 'diagra
 }
 
 function sanitizeDeckSlides(value: unknown, scope: ReturnType<typeof scopeFor>, statusCode: number, count?: number): AiDeckSlide[] {
-  const invalid = (message: string) => statusCode === 502 ? new InvalidDeckOutput(message) : invalidBody(message);
+  const invalid = (message: string) => statusCode === 502 ? new InvalidModelOutput(message) : invalidBody(message);
   if (!Array.isArray(value) || value.length < 1 || value.length > AI_DECK_SLIDE_LIMIT) {
     throw invalid('La respuesta no contiene una presentación válida. Vuelve a generar el borrador.');
   }
@@ -365,12 +365,12 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
     if (typeof parsed.message !== 'string' || !parsed.message.trim() || !isRecord(parsed.draft)) throw Object.assign(new Error('La respuesta no incluye un borrador de diapositiva válido.'), { statusCode: 502 });
     const draft = sanitizedSlideDraft(parsed.draft, slide, 502);
     if (format === 'diagram' && (draft.diagramSteps?.length ?? 0) < 2) {
-      throw Object.assign(new Error('El modelo no devolvió un recorrido con pasos suficientes.'), { statusCode: 502 });
+      throw new InvalidModelOutput('El modelo no devolvió un recorrido con al menos dos pasos. Vuelve a intentar la sugerencia.');
     }
     if (format === 'mock-form' && (!draft.mockFields?.length || draft.mockFields.some(({ label, value }) => !label || !value))) {
-      throw Object.assign(new Error('El modelo no devolvió campos de ejemplo rellenados.'), { statusCode: 502 });
+      throw new InvalidModelOutput('El modelo no rellenó todos los campos con datos de ejemplo. Vuelve a intentar la sugerencia.');
     }
-    if (format === 'table' && !draft.table) throw Object.assign(new Error('El modelo no devolvió la tabla. Vuelve a intentar la sugerencia.'), { statusCode: 502 });
+    if (format === 'table' && !draft.table) throw new InvalidModelOutput('El modelo no devolvió la tabla. Vuelve a intentar la sugerencia.');
     return { proposal: { baseRevision: project.revision, slideId: slide.id, sourceNodeId, message: parsed.message.trim().slice(0, 1200), draft, provider: provider.profile.name } };
   }));
 
