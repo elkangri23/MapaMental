@@ -175,7 +175,7 @@ export default function App() {
   const [deckCount, setDeckCount] = useState('');
   const [deckMode, setDeckMode] = useState<'local' | 'ai'>('local');
   const [deckPrompt, setDeckPrompt] = useState('');
-  const [deckProposal, setDeckProposal] = useState<{ proposal: AiDeckProposal; scope: string[] } | null>(null);
+  const [deckProposal, setDeckProposal] = useState<{ proposal: AiDeckProposal; scope: string[]; prompt: string; countInput: string } | null>(null);
   const deckDialogRef = useRef<HTMLDialogElement>(null);
   const deckDialogTriggerRef = useRef<HTMLButtonElement | null>(null);
   const deckProposalTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -1033,6 +1033,15 @@ export default function App() {
     deckDialogRef.current?.showModal();
   };
 
+  const reviseDeckRequest = () => {
+    if (!deckProposal || !aiReady || aiBusy || loading || !nodes.length) return;
+    setDeckMode('ai');
+    setDeckPrompt(deckProposal.prompt);
+    setDeckCount(deckProposal.countInput);
+    deckDialogTriggerRef.current = deckProposalTriggerRef.current;
+    deckDialogRef.current?.showModal();
+  };
+
   const requestedSlides = Number(deckCount);
   const deckLimit = deckMode === 'ai' ? AI_DECK_SLIDE_LIMIT : PROJECT_SLIDE_LIMIT;
   const automaticDeckCount = deckMode === 'ai' && deckCount === '';
@@ -1050,7 +1059,7 @@ export default function App() {
         const { proposal } = await aiApi.proposeDeck(project.id, automaticDeckCount ? undefined : requestedSlides, scope, deckPrompt, options);
         options.signal.throwIfAborted();
         deckProposalTriggerRef.current = trigger;
-        setDeckProposal({ proposal, scope });
+        setDeckProposal({ proposal, scope, prompt: deckPrompt, countInput: deckCount });
       });
       return;
     }
@@ -1733,6 +1742,7 @@ export default function App() {
                 </p>
               )}
               {deckProposal.proposal.message && <p>{deckProposal.proposal.message}</p>}
+              <button type="button" className="quiet-button" disabled={!aiReady || aiBusy || loading || !nodes.length} onClick={reviseDeckRequest}>Ajustar instrucciones</button>
               <small>
                 {deckProposal.proposal.provider} · {deckLinkedIdeaIds.size} de {deckProposal.scope.length} ideas del mapa vinculadas al borrador.
               </small>

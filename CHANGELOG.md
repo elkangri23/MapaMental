@@ -1,5 +1,7 @@
 # Cambios
 
+- Desde el borrador de una presentación se pueden ajustar las instrucciones y recuperar la cantidad solicitada o el modo automático.
+
 - La generación de presentaciones pide agrupar ideas relacionadas, repartir temas entre diapositivas y señalar las omisiones relevantes.
 
 - El borrador de presentación permite consultar qué ideas del ámbito quedaron sin vínculo con una diapositiva.
@@ -359,6 +361,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Desde el borrador de una presentación se pueden ajustar las instrucciones y recuperar la cantidad solicitada o el modo automático.
 
 - La generación de presentaciones pide agrupar ideas relacionadas, repartir temas entre diapositivas y señalar las omisiones relevantes.
 
