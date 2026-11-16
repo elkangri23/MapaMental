@@ -1,0 +1,65 @@
+# Estado del proyecto
+
+**Actualizado:** 2026-11-16  
+**Hito actual:** M3 — Presentaciones, con M4 pendiente del compilador
+**Estado del roadmap:** T-011 genera presentaciones completas con IA y permite revisarlas antes de aplicarlas. Un PDF de prueba de dos diapositivas se generó en modo impresión de Chromium: 2 páginas A4 apaisadas; el render visual mostró todos los bloques sin cortes visibles. En una instancia aislada el visor nativo expuso tres páginas de texto y se canceló antes de imprimir. T-013 ya tiene un paquete portátil y un proyecto Inno Setup. T-010 ahora comparte un constructor de contexto entre UI y servicio: rama, ancestros acotados, relaciones, títulos vinculados y resumen cuantitativo; falta recorrido de vista previa/payload y proveedor real.
+**En curso:** T-011 (PDF A4 validado por generación directa; estructura accesible de páginas, recorridos y campos añadida. Falta guardar y examinar PDF final/etiquetas), T-010 (contexto compartido UI/servidor ampliado; falta recorrido de navegador, verificación del payload y modelo real), T-015 (matriz OWASP incompleta) y T-016 (WCAG 2.0 AA parcial). Se corrigieron contrastes/nombres visibles de presentaciones, instrucciones inglesas de React Flow y anuncios del chat/guardado; el recorrido de teclado y reflujo móvil pasó, pero no se probó lector de pantalla real. T-015 tiene recorridos aislados de sesión/cookie, rechazo de host/origen, carga sobredimensionada, configuración de proveedor corrupta y fallos de almacenamiento; el filtro IPv6 bloquea `2001::/23` y `3fff::/20`, con fixtures de los prefijos y sus límites; faltan permisos de disco, otros errores y amenazas. En T-017 se probaron fallos `EPERM` de guardado y restauración: el guardado mantuvo la revisión previa, y se corrigió una colisión `EEXIST` al reintentar restauración mediante nombres únicos para la copia previa; el reintento creó revisión 3 y conservó una copia válida. ACL, disco lleno e interrupciones físicas siguen pendientes.
+**T-007:** completada: migración 2→3 con copia previa byte por byte y apertura de esquemas futuros en solo lectura, verificada con fixtures compatibles e incompatibles en almacenamiento aislado.
+**T-017:** si falla el reemplazo durante el guardado, conserva y reutiliza la copia válida previa; restauraciones con nombres únicos permiten reintentar tras `EPERM`. Ver [`VERIFICATION.md`](VERIFICATION.md).
+**Siguiente:** guardar un PDF desde el diálogo nativo y revisar las etiquetas/orden de lectura de ese archivo (T-011); el diálogo ya se abrió en una instancia aislada y su visor expuso tres páginas con texto, luego se canceló sin imprimir. Después resolver las diferencias de contrato y arquitectura anotadas en el informe EGM actualizado (T-004). El instalador no se puede compilar en este entorno hasta disponer de Inno Setup (`ISCC.exe`).
+
+**Ampliación M5:** T-018/T-019 están cerradas y ADR-0012 aceptado. T-020/T-021 siguen parciales. T-021 implementa discovery, Authorization Code + PKCE `S256`, state/nonce, callback IPv6 loopback, traspaso temporal al origen UI y enlace explícito `(iss, sub)`. La sesión protegida exige OIDC + WebAuthn con UV. T-023 ya tiene implementación parcial: alta TOTP reautenticada, almacenamiento en Windows Credential Manager, ventana de ±1 paso, límite de intentos y anti-replay; recuperar con OIDC + TOTP solo permite registrar una passkey nueva mediante cookie temporal limitada; al completarla revoca las passkeys previas y sesiones activas, sin acceso a proyectos/IA. T-025 también está parcial: alta múltiple, renombrado/revocación tras reautenticación reciente y bloqueo de baja de la última passkey. Build de producción correcto; no se ha recorrido con IdP, aplicación TOTP ni autenticadores reales. Siguientes pasos: validar esos recorridos y los límites/expiraciones, incluyendo que el token de recuperación solo autoriza registro WebAuthn. T-026 tiene revisión estática parcial y mejoras accesibles en los formularios de alta TOTP/recuperación; la guía de operación ya está escrita; se registra auditoría local acotada; falta recorrerla en Windows, junto con lector de pantalla, pruebas dinámicas y operación real. Informe: [`reviews/2026-11-16-auth-mfa-audit.md`](reviews/2026-11-16-auth-mfa-audit.md). El modo local continúa separado. Ver [`AUTH_OAUTH_MFA_PASSKEYS.md`](AUTH_OAUTH_MFA_PASSKEYS.md).
+
+## Hecho
+
+- Investigación observacional de MyMap con REA y una prueba autenticada con Chrome.
+- Brief de concepto y siete lentes Goldfish revisadas; especificación técnica revisada y hallazgos registrados.
+- Alcance y decisiones principales acordadas en conversación.
+- Repositorio Git local inicializado.
+- Estructura inicial de documentos, nueve ADR y archivos fuente del shell React/React Flow y servicio Fastify creados. Dependencias instaladas con Node portátil 24.22.2; el build completo pasa. En Chromium se comprobó la shell, handshake autenticado, cookie de sesión y recuperación de un proyecto tras recarga.
+- Persistencia inicial de proyectos implementada y conectada: lista/alta/lectura/guardado JSON, selector, autosave serializado, revisión optimista, hasta 20 copias válidas y panel de restauración confirmada. En Chromium se recorrieron alta, edición, movimiento, recarga, migración 0→1 con copia previa y restauración desde UI en almacenamiento temporal aislado. Restaurar creó una revisión nueva y conservó el estado anterior como copia.
+- Handshake de nonce de un solo uso por cookie `HttpOnly` y `SameSite=Strict`; el bootstrap queda limitado a desarrollo y al origen configurado. En Chromium se verificó un canje válido, limpieza del fragmento, sesión persistente tras recarga y rechazo de nonce repetido/inválido. El bootstrap de producción 404 y origen distinto 403.
+- El workspace de dominio ahora publica JavaScript compilado y declaraciones; los scripts raíz lo compilan antes de web/servicio.
+- El servidor de producción sirve la SPA compilada; `scripts/start-local.ps1` inició el servicio y abrió Chrome. Para recorrer UI se usó Chrome DevTools al fallar la captura de monitor. El instalador sigue pendiente.
+- T-008 queda cerrada: en un grafo temporal con ciclo y nodo compartido, la rama seleccionada se eliminó, el nodo compartido siguió unido a la rama hermana y no hubo bloqueo. La revisión guardada siguió disponible tras parar y volver a iniciar el servicio.
+- T-009 tiene perfiles de proveedor, selección activa, almacén de credenciales de Windows, consulta de modelos y prueba de conexión. Chromium guardó y eliminó un perfil temporal; un servidor Ollama simulado devolvió dos modelos. El marcador de credencial no apareció en `providers.json`. En esta sesión no se encontró el comando Ollama ni un listener en el puerto 11434, así que no se intentó enviar contenido a un modelo real.
+- T-010 tiene un primer recorrido completo contra un Ollama simulado: chat devolvió respuesta y sugerencias dinámicas; pulsar una sugerencia produjo vista previa de expansión de la rama seleccionada; aplicar añadió ideas y el botón deshacer las retiró como una nueva revisión. Se comprobó cambio de mapa 5→7→5 y copias 0→1→2 en almacenamiento temporal aislado. La calidad con un modelo real sigue pendiente. El historial, la cancelación HTTP y el progreso SSE se verificaron en recorridos posteriores.
+- Añadido un control expandible junto al compositor para inspeccionar el proveedor/modelo, el tipo local/remoto, el proyecto, las ideas/relaciones compartidas, contenido omitido y el uso de historial según chat o sugerencia.
+- Recorrido visual aislado del control: con el mapa completo mostró 5 ideas y sus 4 relaciones; al seleccionar una idea hija mostró solo esa idea y señaló las otras 4 como fuera del ámbito. Se usó un perfil local simulado sin enviar mensajes ni cambiar el mapa; el proceso de prueba se detuvo y la configuración permaneció en la carpeta temporal aislada.
+- El botón Cancelar informa que no se aplicaron cambios, cancela la petición en el servidor y aborta su `fetch` hacia el proveedor en chat y propuestas. Chrome confirmó el cierre HTTP ante un proveedor lento simulado y la ausencia de cambios tardíos.
+- Línea base OWASP Top 10:2025/WCAG 2.0 AA implementada parcialmente: cabeceras, CSP, límites, redacción, validación de documentos, manejo común de errores y DNS fijado a las IP revisadas; skip link, foco, diálogos, alternativa textual y reflujo. Matriz e informe vigente en `COMPLIANCE.md` y `reviews/2026-11-15-security-audit.md`; falta evaluación manual completa.
+- Verificación visual anterior a la auditoría: Lighthouse móvil y desktop dieron 100 en Accessibility/Best Practices/SEO y pasaron las 50 comprobaciones disponibles; móvil 375 px sin scroll horizontal, campos nombrados y consola limpia. Skip link, vista textual, diálogo de proveedores y CSP/handshake se recorrieron en producción temporal. La auditoría de seguridad posterior está documentada en `reviews/2026-11-15-security-audit.md`.
+
+## Pendiente
+
+- Completar y revisar el registro documental y los ADR.
+- Probar conectores con Ollama/LM Studio y credenciales reales remotas; completar T-010 y contrastar el cálculo de coste de T-012 con un proveedor real.
+- Completar el instalador Windows y cerrar T-011: guardar y revisar el PDF de prueba y completar la revisión visual/accesible.
+- Completar T-015/T-016 con evaluación manual de rutas, CSP, contraste, teclado, lector de pantalla y zoom; no afirmar conformidad AA hasta entonces.
+
+La lista de tareas con criterios y dependencias está en [`TASKS.md`](TASKS.md).
+
+### Correcciones de code-audit.md — 2026-11-15
+
+Aplicadas las correcciones de la auditoría: el flujo IA bloquea cambios antes de sincronizar el autosave y fija su ámbito/destino; el ordenamiento usa componentes fuertemente conectados y recorrido iterativo; las invariantes de `lastAiUndo` y la limpieza al guardar/recuperar se endurecieron; la bifurcación por conflicto limpia ambos inversos. Restauración ante archivo principal ausente y guardado como copia ya existían en el código auditado. `npm run build` pasó con Node 24.22.2. No se ejecutaron pruebas automatizadas ni recorridos manuales de los escenarios pendientes. Detalle: [`reviews/2026-11-15-code-audit.md`](reviews/2026-11-15-code-audit.md).
+
+### Pausa de roadmap: estabilización de código — 2026-11-15
+
+Se detuvo el trabajo de producto para corregir riesgos de guardado concurrente, operaciones de proyecto en paralelo, revisiones de deshacer, contexto IA en mapas grandes y errores engañosos tras mutaciones exitosas. La auditoría enlazada conserva la lista de escenarios dinámicos pendientes. Esta estabilización no cierra hitos del roadmap.
+
+
+## Auditoría de seguridad (2026-11-15)
+
+Se corrigieron hallazgos de SSRF por DNS rebinding, perfiles manipulados, validación incompleta de documentos y exposición de errores. `npm run build` y `npm audit --omit=dev` pasan. El informe detallado está en [`reviews/2026-11-15-security-audit.md`](reviews/2026-11-15-security-audit.md). T-015 sigue parcial hasta completar recorridos negativos, revisión de coste y análisis de amenazas. No es un pentest ni una certificación.
+
+### Avance de roadmap — 2026-11-15
+
+Se añadieron validaciones de cuerpo/identificador para las rutas de proyectos, proveedores, sesión e IA. En el servidor de desarrollo, con nonce temporal, cuerpos nulos/primitivos y UUID inválidos fueron rechazados con HTTP 400 en ocho rutas; no se usó modelo ni se modificó un proyecto existente. Un proyecto vacío temporal creado accidentalmente al probar el cuerpo `{}` fue identificado y eliminado. T-015 continúa parcial. El próximo bloque de producto es T-011, presentaciones.
+
+### Avance T-011 — Presentaciones (bloques y persistencia recorridos)
+
+Implementados desde el mapa el editor con autosave, bloques visuales estáticos, propuestas IA revisables con aplicación/deshacer persistente y exportación PNG de la diapositiva activa. El PDF A4 apaisado se verificó con texto denso, tablas, recorridos y formularios; Chromium produjo una página por diapositiva y el PDF conserva todo el contenido de muestra. El diálogo nativo y la revisión accesible completa siguen pendientes; T-011 permanece parcial.
+
+### Avance de T-011 — PDF A4 (2026-11-15)
+
+La impresión ya mantiene las diapositivas densas en una sola página y distribuye texto y bloques visuales en columnas. Build correcto con Node 24.22.2; PDF renderizado y contenido extraído para comprobar paginación y conservación de bloques. El diálogo nativo de guardar/imprimir sigue pendiente.
