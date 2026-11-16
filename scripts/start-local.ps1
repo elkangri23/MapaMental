@@ -1,4 +1,4 @@
-﻿param(
+param(
   [switch]$NoBrowser,
   [switch]$Stop,
   [switch]$PassThru
@@ -59,8 +59,10 @@ function Start-VisualService {
 
   $baseUrl = "$uiOrigin/"
   $ready = $false
-  for ($attempt = 0; $attempt -lt 40; $attempt++) {
-    if ($serverProcess.HasExited) { throw "El servicio local terminó con código $($serverProcess.ExitCode)." }
+  # La comprobación de volumen del servidor puede tardar hasta 15 segundos.
+  $startup = [Diagnostics.Stopwatch]::StartNew()
+  while ($startup.Elapsed.TotalSeconds -lt 25) {
+    if ($serverProcess.HasExited) { break }
     try {
       $response = Invoke-WebRequest -Uri "$uiOrigin/api/health" -TimeoutSec 1 -UseBasicParsing
       if ($response.StatusCode -eq 200) { $ready = $true; break }
@@ -68,6 +70,12 @@ function Start-VisualService {
     catch { Start-Sleep -Milliseconds 250 }
   }
   if (!$ready) {
+    if ($serverProcess.HasExited) {
+      if ($serverProcess.ExitCode -eq 78) {
+        throw 'Windows no pudo validar la carpeta de proyectos como almacenamiento local fijo. Comprueba que esté en un disco interno y vuelve a iniciar Espacio Visual.'
+      }
+      throw "El servicio local terminó con código $($serverProcess.ExitCode)."
+    }
     Stop-Process -Id $serverProcess.Id -Force -ErrorAction SilentlyContinue
     throw 'El servicio local no respondió a tiempo.'
   }

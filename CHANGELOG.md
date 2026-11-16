@@ -1,5 +1,7 @@
 # Cambios
 
+- El lanzador de Windows da tiempo a la comprobación de almacenamiento y explica cuándo Windows no puede validar el volumen de proyectos.
+
 ## Paquete portátil reconstruido — 2026-11-16
 
 - El empaquetado offline pasó e incluyó runtime y componentes esperados. La revalidación de arranque quedó bloqueada por `Get-Volume`/`PROJECT_STORAGE_VOLUME_INVALID`; no se desactivó la comprobación de almacenamiento ni se compiló el instalador Inno Setup, que requiere `ISCC.exe`.
@@ -298,7 +300,9 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Añadido servidor de estáticos de producción y lanzador Windows inicial con puerto loopback libre, nonce de sesión por fragmento y apertura del navegador. `npm run build` pasa con Node 24.
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
-# Cambios — 2026-11-16
+# Cambios
+
+- El lanzador de Windows da tiempo a la comprobación de almacenamiento y explica cuándo Windows no puede validar el volumen de proyectos. — 2026-11-16
 
 - Los proyectos creados con una versión futura aparecen como solo lectura. Si los campos conocidos pasan validación, se puede consultar su proyección; si el contenido no es compatible, se conserva únicamente la información básica y se evita mostrar un mapa incompleto.
 - Se actualizaron las tareas, estado, almacenamiento, roadmap, índice de documentación y evidencias de verificación para cerrar T-007 y conservar las diferencias de diseño aún abiertas.

@@ -8,6 +8,8 @@
 
 Volver a iniciar desde la misma carpeta abre la instancia que ya está en marcha. Si la sesión del navegador caducó o abriste otro perfil de navegador, guarda los cambios en la ventana original, detén el servicio y vuelve a iniciarlo para renovar la sesión.
 
+Si Windows no puede verificar el volumen al arrancar, el lanzador muestra un aviso sobre la carpeta de proyectos. Comprueba que la carpeta esté en un disco interno y vuelve a iniciar la aplicación.
+
 ### Modo protegido experimental
 
 El modo local es el predeterminado. Después de configurar OIDC y registrar la primera passkey en Ajustes, puedes iniciar el modo protegido desde PowerShell en la raíz del repositorio:

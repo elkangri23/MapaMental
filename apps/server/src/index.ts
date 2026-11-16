@@ -90,7 +90,14 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-await validateProjectStorageRoot();
+try {
+  await validateProjectStorageRoot();
+} catch (error) {
+  if ((error as { code?: string } | null)?.code !== 'PROJECT_STORAGE_VOLUME_INVALID') throw error;
+  app.log.error('No se pudo validar la carpeta de proyectos como almacenamiento local fijo.');
+  // El lanzador de Windows interpreta este código sin leer los registros del servicio.
+  process.exit(78);
+}
 const port = Number(process.env.MYMAP_LOCAL_PORT ?? 3180);
 await app.listen({ host: '::1', port });
 
