@@ -67,6 +67,14 @@ Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos ta
 - Se ajustaron las instrucciones para respetar el máximo de cuatro columnas, pedir el formato de tarjeta correspondiente y marcar los datos ausentes. Estos resultados son anteriores al ajuste. Queda repetir el recorrido para medir su efecto. El perfil temporal se retiró al terminar.
 
 
+### Repetición tras ajustar las instrucciones
+
+- Dos proyectos temporales repitieron el caso mediante el conector compatible con OpenAI, FreeLLMAPI y el modelo solicitado gpt-oss-120b. La clave se leyó del archivo local. Las cuatro consultas de chat devolvieron HTTP 200 entre 1,6 y 12,8 segundos.
+- En ambas rondas salieron tres tarjetas para el mapa completo y dos para Siembra. Los destinos de estas últimas estaban dentro de la rama. Las tarjetas de tabla pidieron entre dos y cuatro columnas. La segunda ronda repitió el tema del calendario al cambiar de ámbito y una expansión sugirió solicitar fotografías. Queda afinar el encaje entre la acción anunciada y el resultado que se puede producir en el mapa.
+- Los dos borradores de expansión evitaron atribuir una ciudad o un clima concretos al huerto. El primero propuso rangos como objetivos y el segundo propuso preguntas de comprobación. Aplicar y deshacer devolvió el mapa a cinco nodos en ambos casos.
+- La primera ronda generó una tabla de tres columnas y dos filas. El texto marcó la ubicación y el clima como pendientes. Aplicar añadió una diapositiva y deshacer recuperó la presentación original. Algunas celdas tituladas Mes de inicio y Mes de fin contenían estaciones, un punto pendiente de calidad semántica.
+- En la segunda ronda, el proveedor devolvió HTTP 502 al generar la diapositiva. Se confirma el flujo completo de la tabla en una ronda. La aceptación de dos rondas completas y el recorrido desde Chrome siguen abiertos.
+
 ## Presentación completa con IA
 
 - Chrome y Ollama simulado, con proyectos temporales. Se pidió un borrador de cuatro diapositivas y, en modo automático, se aceptó un borrador de cinco. El servidor rechazó una cantidad distinta de la solicitada y referencias fuera del mapa enviado.
