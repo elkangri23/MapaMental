@@ -441,10 +441,17 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 
 - Fixture sintético: idea central, diez ramas principales, una rama seleccionada, 40 diapositivas vinculadas con cuerpos de 700 caracteres y viñetas de 600, más una diapositiva enlazada a otra rama.
 - `buildProjectAiContext` devolvió 20 títulos como máximo, 12 extractos de 500 caracteres y 6.000 caracteres totales. El resumen incluyó ocho ramas más el tema central, limitó las etiquetas a 120 caracteres e indicó que quedaban dos ramas; omitió el título y el marcador de la diapositiva ajena.
-- Se recorrió el constructor compartido del dominio con datos sintéticos; no se llamó al LLM ni se repitió el recorrido de red. La coincidencia vista previa/payload se confirmó en E2E previos. Calidad semántica con un modelo real y concurrencia entre ventanas siguen pendientes.
+- Se recorrió el constructor compartido del dominio con datos sintéticos; no se llamó al LLM ni se repitió el recorrido de red. La coincidencia vista previa/payload se confirmó en E2E previos. Calidad semántica con un modelo real sigue pendiente; la concurrencia de API y el recorrido visual en dos pestañas se registran en entradas posteriores.
 
 ### Aplicación concurrente de propuesta IA — T-010 — 2026-11-16
 
 - En el servicio completo con proyecto, perfil y almacenamiento aislados, un mock OpenAI-compatible devolvió una propuesta válida de dos ideas.
 - Se enviaron al mismo tiempo dos solicitudes `/ai-actions` con idéntica propuesta y revisión base. Una respondió HTTP 200 y guardó la revisión 3; la otra recibió HTTP 409 por conflicto. La lectura final confirmó exactamente tres nodos (raíz y dos ideas), por lo que no hubo aplicación duplicada ni pérdida silenciosa.
 - No se probaron dos ventanas de navegador ni un proveedor/modelo real. El servidor, mock, proyecto y configuración temporales se detuvieron o conservaron fuera del repositorio.
+
+### Conflicto de propuestas en dos pestañas — T-010 — 2026-11-16
+
+- Servicio, proyectos, configuración de proveedor y navegador aislados en carpetas/contexto temporales. Se creó un perfil compatible con OpenAI apuntando a un mock local; no se llamó a servicios externos ni a un LLM real.
+- Dos pestañas autenticadas abrieron el mismo proyecto de ejemplo en revisión 1. Ambas generaron y mostraron la misma tarjeta sugerida, con una propuesta revisable de dos ideas todavía sin guardar.
+- En la primera pestaña, aplicar la tarjeta creó la revisión 2 y el mapa pasó de cinco a siete ideas. En la segunda, aplicar la propuesta antigua fue rechazado con HTTP 409; la interfaz mostró un aviso accesible: «El mapa cambió desde que se generó la propuesta. Recarga antes de aplicarla.» No se duplicaron ideas.
+- Al recargar la segunda pestaña, se recuperaron las siete ideas guardadas y la opción de deshacer IA. Las páginas de prueba y los procesos de servicio/mock se cerraron; los datos permanecen en Temp, fuera del repositorio.

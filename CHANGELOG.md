@@ -1,5 +1,9 @@
 # Cambios
 
+## Conflictos de sugerencias entre pestañas — 2026-11-16
+
+- Recorrido visual con dos pestañas: una aplicó una propuesta IA (5→7 ideas); la otra recibió HTTP 409 y un aviso para recargar. Al recargar, mostró el estado persistido, sin duplicar ideas.
+
 ## Concurrencia de propuestas IA — 2026-11-16
 
 - Dos solicitudes simultáneas que intentaron aplicar la misma propuesta y revisión produjeron un solo guardado (HTTP 200) y un conflicto claro (HTTP 409). El documento terminó con una única copia de las ideas propuestas.
