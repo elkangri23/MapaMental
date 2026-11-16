@@ -1,5 +1,7 @@
 # Cambios
 
+- El panel de sugerencias explica cuándo el modelo no propone acciones para la selección y permite volver a pedirlas.
+
 - La interfaz retira las propuestas de IA obsoletas y ofrece cargar la versión guardada tras un conflicto. Si hay cambios locales que no se pueden guardar, mantiene la opción de recuperarlos.
 
 - El lanzador de Windows da tiempo a la comprobación de almacenamiento y explica cuándo Windows no puede validar el volumen de proyectos.
@@ -303,6 +305,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- El panel de sugerencias explica cuándo el modelo no propone acciones para la selección y permite volver a pedirlas.
 
 - La interfaz retira las propuestas de IA obsoletas y ofrece cargar la versión guardada tras un conflicto. Si hay cambios locales que no se pueden guardar, mantiene la opción de recuperarlos.
 

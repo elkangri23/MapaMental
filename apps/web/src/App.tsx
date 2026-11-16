@@ -212,6 +212,7 @@ export default function App() {
   const [chatDraft, setChatDraft] = useState('');
   const [aiContextExpanded, setAiContextExpanded] = useState(false);
   const [chatSuggestions, setChatSuggestions] = useState<AiSuggestion[]>([]);
+  const [emptySuggestionsScope, setEmptySuggestionsScope] = useState<string | null>(null);
   const [aiBusy, setAiBusy] = useState(false);
   const [generationStatus, setGenerationStatus] = useState('');
   const [restoreBusy, setRestoreBusy] = useState(false);
@@ -365,6 +366,7 @@ export default function App() {
     chatMessagesRef.current = conversation;
     setChatMessages(conversation);
     setChatSuggestions([]);
+    setEmptySuggestionsScope(null);
     setAiProposal(null);
     setAiSlideProposal(null);
     setDeckProposal(null);
@@ -862,7 +864,7 @@ export default function App() {
         setChatMessages((current) => [...current, userMessage, { role: 'assistant' as const, content: result.message }].slice(-PROJECT_CHAT_MESSAGE_LIMIT));
       }
       setChatSuggestions(result.suggestions);
-      if (suggestionsOnly && !result.suggestions.length) setNotice('El modelo no devolvió sugerencias con un destino válido. Puedes volver a intentarlo.');
+      setEmptySuggestionsScope(result.suggestions.length ? null : selectedNodeId ?? '');
     });
   }, [aiBusy, aiReady, chatMessages, project, runGeneration, selectedBranchIds, selectedNodeId]);
 
@@ -1653,6 +1655,9 @@ export default function App() {
               <span>PRÓXIMOS CAMINOS</span>
               <button type="button" className="quiet-button" disabled={!aiReady || aiBusy || !nodes.length} onClick={() => void runChat('Sugiere próximos pasos para el ámbito actual. Ten en cuenta lo ya desarrollado y prioriza acciones nuevas.', true)}>Generar sugerencias</button>
             </div>
+            {!aiBusy && aiReady && emptySuggestionsScope === (selectedNodeId ?? '') && (
+              <p className="suggestion-empty" role="status">El modelo no propuso acciones para esta selección. Puedes generar sugerencias de nuevo o pedir un cambio concreto en el chat.</p>
+            )}
             <div className="suggestion-list">
               {chatSuggestions.map((suggestion) => {
                 const target = aiContextPreview.nodes.find((node) => node.id === suggestion.targetNodeId);

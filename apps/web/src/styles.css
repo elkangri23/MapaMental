@@ -172,6 +172,7 @@ kbd { border: 1px solid #e5e6ed; border-radius: 4px; padding: 2px 4px; backgroun
 .assistant-copy p { color: #858a9b; font-size: 11px; line-height: 1.65; margin: 8px 0 0; }
 .suggestion-label { margin: 27px 0 10px; display: flex; align-items: center; justify-content: space-between; color: #a1a4b2; font-size: 8px; font-weight: 800; letter-spacing: 1px; }
 .suggestion-live { font-size: 7px; padding: 3px 5px; border-radius: 4px; background: #f5f3ff; color: #8a7ad7; letter-spacing: .6px; }
+.suggestion-empty { margin: 8px 0; color: #5d6173; font-size: 12px; line-height: 1.5; }
 .suggestion-list { display: grid; gap: 8px; }
 .suggestion-card { width: 100%; display: flex; align-items: center; gap: 10px; padding: 11px 10px; border: 1px solid #eeeef4; border-radius: 10px; text-align: left; background: #fff; cursor: pointer; transition: border-color .15s, transform .15s, box-shadow .15s; }
 .suggestion-card:hover { transform: translateY(-1px); border-color: #d9d4f7; box-shadow: 0 4px 12px rgba(52,44,100,.06); }
