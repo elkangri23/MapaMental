@@ -300,6 +300,7 @@ type SaveProjectInput = {
   preserveAiUndo?: boolean;
   preserveAiSlideUndo?: boolean;
   preserveAiDeckUndo?: boolean;
+  onValidated?: () => void;
 };
 
 async function saveProjectUnlocked(id: string, input: SaveProjectInput) {
@@ -335,6 +336,7 @@ async function saveProjectUnlocked(id: string, input: SaveProjectInput) {
       : input.preserveAiDeckUndo && input.project.lastAiDeckUndo?.appliedAtRevision === nextRevision ? input.project.lastAiDeckUndo : null,
   };
   if (!validateProject(next)) throw Object.assign(new Error('El documento actualizado del proyecto no es válido.'), { statusCode: 400 });
+  input.onValidated?.();
   const directory = projectDirectory(id);
   const file = join(directory, 'project.json');
   const backupDirectory = join(directory, 'backups');

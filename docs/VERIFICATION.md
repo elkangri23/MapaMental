@@ -409,3 +409,8 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - En Chrome, la vista previa de «Huerto de balcón» mostró la idea central y cuatro ramas principales, además del contenido pertinente de la rama seleccionada. También indicó que el detalle del resto del mapa queda fuera, mientras el resumen menciona las ramas principales.
 - Se envió el mensaje a un mock OpenAI-compatible local. El payload capturado contenía la idea central, las cuatro ramas y el extracto «Sembrar tomate en marzo»; no contenía `MARKET_DETAIL_SENTINEL`, que pertenecía a otro tema. La respuesta simulada fue HTTP 200.
 - El constructor limita el resumen a ocho etiquetas de hasta 120 caracteres y se comparte entre vista previa y servidor; no genera prosa con el modelo. El recorrido no evalúa calidad semántica con un modelo real ni estresa los límites con proyectos extensos. Los datos y proveedor fueron aislados.
+
+### Instrumentación de trazabilidad IA — T-004 — 2026-11-16
+
+- El código añade eventos estructurados para inicio, etapas y resultado de generación, además de validación previa, inicio y resultado del guardado de mapa/diapositiva/presentación. Incluye ID de petición, plantilla de ruta, UUID de proyecto validado, tipo de proveedor cuando se conoce, operación, código estable, revisiones y duración. No incorpora texto del proyecto, prompt/respuesta, nombre ni URL del proveedor o credenciales.
+- Revisión estática y build de producción confirmados. No se capturaron registros de una operación simulada en ejecución; falta comprobar la forma final de los eventos y que no aparezcan campos sensibles en los logs reales.

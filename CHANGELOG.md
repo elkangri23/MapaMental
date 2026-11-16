@@ -1,5 +1,9 @@
 # Cambios
 
+## Trazabilidad técnica de operaciones IA — 2026-11-16
+
+- Se añadieron eventos estructurados de generación, proveedor, validación y guardado correlacionados por ID de petición, sin registrar prompts ni contenido del proyecto. ADR-0019 documenta los campos y límites; falta recorrer/capturar los logs con un proveedor simulado.
+
 ## Resumen global en contexto IA — 2026-11-16
 
 - Vista previa y solicitudes IA comparten un resumen estructural con la idea central y hasta ocho ramas principales, limitadas a 120 caracteres por etiqueta. El detalle de diapositivas ajenas sigue excluido; la vista previa informa que se comparten los nombres principales.
