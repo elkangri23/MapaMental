@@ -925,7 +925,7 @@ export default function App() {
       revisionRef.current = saved.revision; savedMapRef.current = JSON.stringify(serializeMap(nextNodes, nextEdges));
       projectRef.current = saved;
       setProject(saved); setNodes(nextNodes); setEdges(nextEdges); setSelectedNodeId(proposal.parentNodeId); setAiProposal(null);
-      setNotice(`Se añadieron ${aiProposal.ideas.length} ideas. Puedes deshacer esta acción desde el pie del mapa.`);
+      setNotice(`${proposal.ideas.length === 1 ? 'Se añadió una idea.' : `Se añadieron ${proposal.ideas.length} ideas.`} Puedes deshacer esta acción desde el pie del mapa.`);
       projectsApi.backups(saved.id).then(({ backups: recoverable }) => setBackups(recoverable)).catch(() => undefined);
       loadProjectList().then(setProjectList).catch(() => undefined);
     } catch (error) {
@@ -1671,12 +1671,12 @@ export default function App() {
               {chatMessages.map((message, index) => <div key={`${index}-${message.role}`} className={`chat-message chat-message--${message.role}`}><span aria-hidden="true">{message.role === 'assistant' ? '✦' : 'Tú'}</span><p><span className="sr-only">{message.role === 'assistant' ? 'Asistente: ' : 'Tú: '}</span>{message.content}</p></div>)}
             </div>
             {aiProposal && <section ref={mapPreviewRef} onKeyDown={(event) => discardProposalOnEscape(event, discardMapProposal)} className="ai-proposal" tabIndex={-1} aria-label="Revisar propuesta de ideas">
-              <div className="ai-proposal__head"><strong>Propuesta de {aiProposal.ideas.length} ideas</strong><button type="button" className="quiet-button" aria-keyshortcuts="Escape" disabled={aiBusy} onClick={discardMapProposal}>Descartar</button></div>
+              <div className="ai-proposal__head"><strong>Propuesta de {aiProposal.ideas.length} {aiProposal.ideas.length === 1 ? 'idea' : 'ideas'}</strong><button type="button" className="quiet-button" aria-keyshortcuts="Escape" disabled={aiBusy} onClick={discardMapProposal}>Descartar</button></div>
               <p>{aiProposal.message}</p>
               <small>Se añadirán bajo «{nodes.find((node) => node.id === aiProposal.parentNodeId)?.data.label ?? 'la idea seleccionada'}». Otras ramas quedan intactas.</small>
               <ul>{aiProposal.ideas.map((idea) => <li key={idea.id}>{idea.label}</li>)}</ul>
               {nodes.length + aiProposal.ideas.length > PROJECT_NODE_LIMIT && <p role="alert">Esta propuesta superaría el límite de {PROJECT_NODE_LIMIT.toLocaleString('es-ES')} ideas. Elimina ideas o genera una propuesta más pequeña.</p>}
-              <button className="provider-test ai-proposal__apply" disabled={aiBusy || project?.revision !== aiProposal.baseRevision || nodes.length + aiProposal.ideas.length > PROJECT_NODE_LIMIT} onClick={() => void applyAiProposal()}>{project?.revision !== aiProposal.baseRevision ? 'El mapa cambió · regenera' : 'Añadir estas ideas al mapa'}</button>
+              <button className="provider-test ai-proposal__apply" disabled={aiBusy || project?.revision !== aiProposal.baseRevision || nodes.length + aiProposal.ideas.length > PROJECT_NODE_LIMIT} onClick={() => void applyAiProposal()}>{project?.revision !== aiProposal.baseRevision ? 'El mapa cambió · regenera' : aiProposal.ideas.length === 1 ? 'Añadir esta idea al mapa' : 'Añadir estas ideas al mapa'}</button>
             </section>}
             {aiSlideProposal?.sourceNodeId && slideProposalPreview}
             {deckProposal && <section ref={deckPreviewRef} onKeyDown={(event) => discardProposalOnEscape(event, discardDeckProposal)} className="slide-ai-proposal deck-preview" tabIndex={-1} aria-label="Revisar presentación propuesta">

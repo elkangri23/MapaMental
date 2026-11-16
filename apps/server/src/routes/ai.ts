@@ -291,7 +291,7 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
     const parent = scope.nodes.find((node) => node.id === request.body.parentNodeId);
     if (!parent) throw Object.assign(new Error('La idea objetivo ya no está dentro del ámbito seleccionado. Recarga el mapa.'), { statusCode: 409 });
     const provider = await getActiveProviderForRequest();
-    const system = `Eres el copiloto de un mapa mental. Desarrolla la solicitud como ideas hijas del nodo indicado. Devuelve exclusivamente JSON: {"message":"explicación breve","ideas":[{"label":"texto breve","tone":"lavender|mint|peach|blue"}]}. Incluye entre 2 y 8 ideas concretas, sin duplicar literalmente los nodos existentes. No añadas ideas al proyecto; el usuario revisará la propuesta antes de aplicarla. Responde en español. Contexto: ${contextText(project, scope)}. Nodo padre: ${parent.id} — ${parent.data.label}.`;
+    const system = `Eres el copiloto de un mapa mental. Desarrolla la solicitud como ideas hijas del nodo indicado. Devuelve exclusivamente JSON: {"message":"explicación breve","ideas":[{"label":"texto breve","tone":"lavender|mint|peach|blue"}]}. Incluye entre 1 y 8 ideas concretas, sin duplicar literalmente los nodos existentes. No añadas ideas al proyecto; el usuario revisará la propuesta antes de aplicarla. Responde en español. Contexto: ${contextText(project, scope)}. Nodo padre: ${parent.id} — ${parent.data.label}.`;
     report('waiting-for-provider', provider.profile.kind);
     const content = await generateProviderText(provider.profile, provider.apiKey, [{ role: 'user', content: request.body.prompt.trim() }], system, signal);
     report('validating', provider.profile.kind);
@@ -301,7 +301,7 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
       .filter(({ id }) => id === parent.id || childIds.has(id))
       .map(({ data }) => data.label);
     const ideas = sanitizedIdeas(parsed.ideas, parent, existingLabels);
-    if (ideas.length < 2 || typeof parsed.message !== 'string') throw Object.assign(new Error('La propuesta no contiene suficientes ideas válidas.'), { statusCode: 502 });
+    if (ideas.length < 1 || typeof parsed.message !== 'string') throw Object.assign(new Error('La propuesta no contiene suficientes ideas válidas.'), { statusCode: 502 });
     const proposal: AiProposal = { baseRevision: project.revision, parentNodeId: parent.id, message: parsed.message.trim().slice(0, 1200), ideas };
     return { proposal, provider: provider.profile.name };
   }));
@@ -443,7 +443,7 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
     if (request.body?.expectedRevision !== current.revision) throw Object.assign(new Error('El mapa cambió desde que se generó la propuesta. Recarga antes de aplicarla.'), { statusCode: 409 });
     const scope = scopeFor(current, request.body.scopeNodeIds);
     const parent = scope.nodes.find((node) => node.id === request.body.parentNodeId);
-    if (!parent || !Array.isArray(request.body.ideas) || request.body.ideas.length < 2 || request.body.ideas.length > 12) throw Object.assign(new Error('La propuesta no coincide con el ámbito actual.'), { statusCode: 400 });
+    if (!parent || !Array.isArray(request.body.ideas) || request.body.ideas.length < 1 || request.body.ideas.length > 12) throw Object.assign(new Error('La propuesta no coincide con el ámbito actual.'), { statusCode: 400 });
     const existingIds = new Set((current.map.nodes as IdeaNode[]).map((node) => node.id));
     const ideas = request.body.ideas;
     if (current.map.nodes.length + ideas.length > PROJECT_NODE_LIMIT) {
@@ -462,7 +462,7 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
       ...current,
       revision: current.revision + 1,
       map: { nodes: [...current.map.nodes, ...safeIdeas.map((idea) => ({ id: idea.id, type: 'idea', position: idea.position, data: { label: idea.label.trim(), tone: idea.tone } }))], edges: [...current.map.edges, ...addedEdges] },
-      lastAiUndo: { appliedAtRevision: current.revision + 1, nodeIds: safeIdeas.map((idea) => idea.id), edgeIds: addedEdges.map((edge) => edge.id), description: `Añadir ${safeIdeas.length} ideas a «${parent.data.label.slice(0, 250)}»` },
+      lastAiUndo: { appliedAtRevision: current.revision + 1, nodeIds: safeIdeas.map((idea) => idea.id), edgeIds: addedEdges.map((edge) => edge.id), description: `Añadir ${safeIdeas.length} ${safeIdeas.length === 1 ? 'idea' : 'ideas'} a «${parent.data.label.slice(0, 250)}»` },
     };
     const saved = await commitAiProject(request, request.params.id, 'apply-map', current.revision, next, { preserveAiUndo: true });
     return { project: saved };
