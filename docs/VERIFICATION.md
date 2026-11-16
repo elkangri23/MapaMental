@@ -60,6 +60,11 @@ Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos ta
 
 ### Primera evaluación real con FreeLLMAPI
 
+#### Vista previa de formulario y clasificación de recorrido en Chrome
+
+- En Chrome con un proyecto temporal y FreeLLMAPI (gpt-oss-120b), la tarjeta de formulario abrió la vista previa con el rótulo «Formulario de ejemplo con datos ficticios» y campos ya rellenados. Aplicar añadió una diapositiva. Deshacer restauró la presentación a cero diapositivas.
+- En la misma respuesta, «Diseña un recorrido visual de cosecha» abrió el flujo de ideas según la clasificación devuelta por el modelo. Tras corregir el servidor, una comprobación de clasificación confirmó que esa tarjeta pide una diapositiva con diagrama, se descarta si la presentación está llena o el destino queda fuera del ámbito y conserva el comportamiento de una expansión ordinaria y una tabla explícita. Falta repetir en Chrome la generación, aplicación y deshacer del recorrido después de la corrección.
+
 - Se usó el conector compatible con OpenAI de MapaMental y el mapa ficticio de siembra en proyectos temporales. El catálogo de FreeLLMAPI respondió HTTP 200. Una consulta de chat a gemini-flash devolvió HTTP 502 tras unos 60 segundos. El alias gpt-oss-120b respondió en ambas rondas, con cuatro peticiones de chat entre 1,7 y 15,2 segundos. El alias identifica el modelo solicitado al intermediario.
 - En las dos rondas de mapa completo se obtuvieron tres tarjetas. Se propusieron acciones sobre el calendario y un recorrido de cultivo. Al seleccionar Siembra, las tarjetas apuntaron a esa rama. Una tarjeta que pedía un recorrido se clasificó como expansión de mapa. En la primera ronda la selección devolvió una sola tarjeta y pidió una tabla sin marcar ese formato.
 - Las expansiones se aplicaron y deshicieron correctamente. La cantidad de nodos volvió a cinco en ambos casos. La calidad falló porque los borradores rellenaron la ubicación y el clima con datos que el ejemplo no proporcionaba.

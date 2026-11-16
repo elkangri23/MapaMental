@@ -121,6 +121,11 @@ function explicitlyRequestsTable(value: string): boolean {
   return /^(?:crea(?:r)?|genera(?:r)?|diseña(?:r)?|prepara(?:r)?|elabora(?:r)?|propón|proponer) (?:una )?(?:diapositiva con (?:una )?)?tabla(?:\s|[.:,]|$)/u.test(text);
 }
 
+function explicitlyRequestsVisualJourney(value: string): boolean {
+  const text = value.normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('es');
+  return /^(?:crea(?:r)?|genera(?:r)?|diseña(?:r)?|prepara(?:r)?|elabora(?:r)?|propón|proponer) (?:un )?recorrido visual(?:\s|[.:,]|$)/u.test(text);
+}
+
 function sanitizeSuggestions(value: unknown, nodes: IdeaNode[], canCreateSlide: boolean): AiSuggestion[] {
   if (!Array.isArray(value)) return [];
   const ids = new Set(nodes.map((node) => node.id));
@@ -131,23 +136,26 @@ function sanitizeSuggestions(value: unknown, nodes: IdeaNode[], canCreateSlide: 
     if (!isRecord(entry) || typeof entry.title !== 'string' || typeof entry.prompt !== 'string') continue;
     if (entry.kind !== 'expand' && entry.kind !== 'explore' && entry.kind !== 'create-slide') continue;
     if (typeof entry.targetNodeId !== 'string' || !ids.has(entry.targetNodeId)) continue;
-    if (entry.kind === 'create-slide' && !canCreateSlide) continue;
     const title = entry.title.trim().replace(/\s+/g, ' ').slice(0, 90);
     const prompt = entry.prompt.trim().slice(0, 700);
     const key = JSON.stringify([entry.targetNodeId, title.normalize('NFC').toLocaleLowerCase('es')]);
     if (!title || !prompt || titles.has(key)) continue;
-    const format = entry.kind === 'create-slide'
-      ? isSlideSuggestionFormat(entry.format)
-        ? entry.format
-        : explicitlyRequestsTable(title) || explicitlyRequestsTable(prompt) ? 'table' : undefined
+    const visualJourney = explicitlyRequestsVisualJourney(title) || explicitlyRequestsVisualJourney(prompt);
+    const kind = visualJourney ? 'create-slide' : entry.kind;
+    if (kind === 'create-slide' && !canCreateSlide) continue;
+    const format = kind === 'create-slide'
+      ? visualJourney
+        ? 'diagram'
+        : isSlideSuggestionFormat(entry.format) ? entry.format
+          : explicitlyRequestsTable(title) || explicitlyRequestsTable(prompt) ? 'table' : undefined
       : undefined;
-    const action = entry.kind === 'create-slide' ? 'slide' : 'map';
+    const action = kind === 'create-slide' ? 'slide' : 'map';
     const normalizedPrompt = prompt.normalize('NFC').replace(/\s+/g, ' ').trim().toLocaleLowerCase('es');
     const actionKey = JSON.stringify([entry.targetNodeId, action, format, normalizedPrompt]);
     if (actions.has(actionKey)) continue;
     actions.add(actionKey);
     titles.add(key);
-    suggestions.push({ title, prompt, kind: entry.kind, targetNodeId: entry.targetNodeId, format });
+    suggestions.push({ title, prompt, kind, targetNodeId: entry.targetNodeId, format });
     if (suggestions.length === 3) break;
   }
   return suggestions;

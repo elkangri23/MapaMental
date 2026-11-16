@@ -1,5 +1,7 @@
 # Cambios
 
+- Las tarjetas que proponen crear un recorrido visual explícito abren una diapositiva con diagrama aunque el modelo las clasifique como ideas del mapa.
+
 - La vista previa de diapositivas muestra un rótulo visible para los formularios con datos ficticios.
 
 - Las instrucciones de tabla piden marcar cada celda que depende de datos pendientes, aunque la tarjeta sugiera una estimación.
