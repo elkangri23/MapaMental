@@ -435,3 +435,10 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Se repitió el mock HTTP 503 contra `apps/server/src/index.ts` con carpeta de proyecto, perfiles y datos aislados. La validación Windows Storage (`Get-Volume`, `Get-Partition`, `Get-Disk`) clasificó el directorio en C: como `Fixed`/NVMe y el proceso completo escuchó en loopback; no se desactivó el control de volumen.
 - SSE devolvió HTTP 200 para el flujo abierto y terminó con evento `error` que incluía `UPSTREAM_ERROR`, `correlationId` y mensaje genérico. La petición JSON devolvió HTTP 502 con el mismo código/correlación y mensaje 5xx redactado. El mock incluyó `FAIL_RESPONSE_SENTINEL` en el cuerpo 503; no apareció en ninguna respuesta al cliente.
 - Los logs completos de Fastify mostraron etapas y código/correlación para SSE y JSON, más el error central redactado para JSON. No aparecieron `FULL_PROMPT_SENTINEL`, `FULL_LABEL_SENTINEL` ni `FAIL_RESPONSE_SENTINEL`. Mock y servicio detenidos; perfiles y proyecto solo existieron en Temp.
+
+
+### Límites del contexto IA con proyecto extenso — T-010 — 2026-11-16
+
+- Fixture sintético: idea central, diez ramas principales, una rama seleccionada, 40 diapositivas vinculadas con cuerpos de 700 caracteres y viñetas de 600, más una diapositiva enlazada a otra rama.
+- `buildProjectAiContext` devolvió 20 títulos como máximo, 12 extractos de 500 caracteres y 6.000 caracteres totales. El resumen incluyó ocho ramas más el tema central, limitó las etiquetas a 120 caracteres e indicó que quedaban dos ramas; omitió el título y el marcador de la diapositiva ajena.
+- Se recorrió el constructor compartido del dominio con datos sintéticos; no se llamó al LLM ni se repitió el recorrido de red. La coincidencia vista previa/payload se confirmó en E2E previos. Calidad semántica con un modelo real y concurrencia entre ventanas siguen pendientes.

@@ -1,5 +1,9 @@
 # Cambios
 
+## Contexto IA medido con diapositivas extensas — 2026-11-16
+
+- Un fixture con 40 diapositivas confirmó los topes de 20 títulos, 500 caracteres por extracto y 6.000 caracteres totales, además de resumen de ocho ramas con etiquetas limitadas a 120 caracteres y exclusión de contenido ajeno.
+
 ## Fallo upstream verificado en el servicio completo — 2026-11-16
 
 - El mock HTTP 503 pasó SSE y JSON con validación de almacenamiento activa: evento terminal `UPSTREAM_ERROR` y respuesta JSON 502 correlacionados. Logs y respuestas no filtraron los marcadores privados.
