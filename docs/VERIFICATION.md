@@ -75,11 +75,12 @@ Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos ta
 - La primera ronda generó una tabla de tres columnas y dos filas. El texto marcó la ubicación y el clima como pendientes. Aplicar añadió una diapositiva y deshacer recuperó la presentación original. Algunas celdas tituladas Mes de inicio y Mes de fin contenían estaciones, un punto pendiente de calidad semántica.
 - En la segunda ronda, el proveedor devolvió HTTP 502 al generar la diapositiva. Se confirma el flujo completo de la tabla en una ronda. La aceptación de dos rondas completas y el recorrido desde Chrome siguen abiertos.
 
-### Edición antes de aplicar una tabla (pendiente en Chrome)
+### Edición antes de aplicar una tabla en Chrome
 
 - Genera una diapositiva con tabla. Cambia una celda a «Pendiente de confirmar» y descarta el borrador. Comprueba que el proyecto conserva la presentación anterior.
 - Genera otra tabla, edita una celda con el teclado y comprueba que el foco permanece en el campo. Aplica el borrador, recarga y confirma que se guardó el valor editado. Deshaz la operación y comprueba que se restaura la presentación original.
-- La compilación web pasó. Estos pasos buscan comprobar la edición en la vista previa y quedan pendientes de ejecución.
+- Completado con la compilación de producción, Chrome aislado y el modelo solicitado gpt-oss-120b a través de FreeLLMAPI. Al editar la primera celda, el foco se mantuvo en ella. Tras aplicar y recargar, el documento conservó «Pendiente de confirmar». Deshacer dejó solo la diapositiva original.
+- En otro borrador se cambió una celda y se pulsó Escape. Se cerró la vista previa, el foco volvió a la tarjeta y el documento conservó solo la diapositiva original. El modelo generó meses concretos en el primer borrador y marcó celdas como pendientes en el segundo. La segunda tarjeta no anunció que contenía una tabla, aunque el borrador sí la incluyó.
 
 ### Comprobación específica de tablas con FreeLLMAPI
 
