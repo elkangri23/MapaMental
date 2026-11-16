@@ -442,3 +442,9 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Fixture sintético: idea central, diez ramas principales, una rama seleccionada, 40 diapositivas vinculadas con cuerpos de 700 caracteres y viñetas de 600, más una diapositiva enlazada a otra rama.
 - `buildProjectAiContext` devolvió 20 títulos como máximo, 12 extractos de 500 caracteres y 6.000 caracteres totales. El resumen incluyó ocho ramas más el tema central, limitó las etiquetas a 120 caracteres e indicó que quedaban dos ramas; omitió el título y el marcador de la diapositiva ajena.
 - Se recorrió el constructor compartido del dominio con datos sintéticos; no se llamó al LLM ni se repitió el recorrido de red. La coincidencia vista previa/payload se confirmó en E2E previos. Calidad semántica con un modelo real y concurrencia entre ventanas siguen pendientes.
+
+### Aplicación concurrente de propuesta IA — T-010 — 2026-11-16
+
+- En el servicio completo con proyecto, perfil y almacenamiento aislados, un mock OpenAI-compatible devolvió una propuesta válida de dos ideas.
+- Se enviaron al mismo tiempo dos solicitudes `/ai-actions` con idéntica propuesta y revisión base. Una respondió HTTP 200 y guardó la revisión 3; la otra recibió HTTP 409 por conflicto. La lectura final confirmó exactamente tres nodos (raíz y dos ideas), por lo que no hubo aplicación duplicada ni pérdida silenciosa.
+- No se probaron dos ventanas de navegador ni un proveedor/modelo real. El servidor, mock, proyecto y configuración temporales se detuvieron o conservaron fuera del repositorio.

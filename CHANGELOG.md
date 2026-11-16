@@ -1,5 +1,9 @@
 # Cambios
 
+## Concurrencia de propuestas IA — 2026-11-16
+
+- Dos solicitudes simultáneas que intentaron aplicar la misma propuesta y revisión produjeron un solo guardado (HTTP 200) y un conflicto claro (HTTP 409). El documento terminó con una única copia de las ideas propuestas.
+
 ## Contexto IA medido con diapositivas extensas — 2026-11-16
 
 - Un fixture con 40 diapositivas confirmó los topes de 20 títulos, 500 caracteres por extracto y 6.000 caracteres totales, además de resumen de ocho ramas con etiquetas limitadas a 120 caracteres y exclusión de contenido ajeno.
