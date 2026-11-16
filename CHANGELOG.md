@@ -1,5 +1,7 @@
 # Cambios
 
+- Cuando el servidor confirma que falta el segundo factor, el foco pasa a Continuar con passkey.
+
 - Escape o Cancelar cierran el formulario de recuperación y devuelven el foco al botón que lo abrió.
 
 - Al volver a una recuperación activa, el foco pasa a Continuar recuperación.
@@ -395,6 +397,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Cuando el servidor confirma que falta el segundo factor, el foco pasa a Continuar con passkey.
 
 - Escape o Cancelar cierran el formulario de recuperación y devuelven el foco al botón que lo abrió.
 

@@ -18,6 +18,8 @@
 - La cookie temporal produjo HTTP 428 al consultar el estado de sesión y HTTP 403 al consultar el perfil. Al adelantar el reloj más de cinco minutos, el estado del segundo factor dejó de ser válido.
 - El recorrido comienza con un estado de prueba. La aceptación con un proveedor OIDC y una passkey reales sigue abierta.
 
+- En Chrome con el segundo factor pendiente simulado, el foco inicial quedó en Continuar con passkey. Tab movió el foco a Perdí mi passkey. Se comprobó la navegación sin abrir el autenticador.
+
 ### Reintento al volver de OIDC
 
 - En Chrome aislado y con la compilación de producción, se abrió un regreso de prueba con un paso temporal inexistente. El canje respondió HTTP 401. La aplicación retiró de la URL los datos del regreso, mostró el aviso de caducidad y enfocó Reintentar inicio de sesión. La pantalla permaneció en la aplicación sin mostrar el aviso de passkey.

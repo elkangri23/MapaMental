@@ -218,6 +218,7 @@ export default function App() {
   const [recoveryResuming, setRecoveryResuming] = useState(false);
   const [recoveryOnly, setRecoveryOnly] = useState(false);
   const recoveryButtonRef = useRef<HTMLButtonElement>(null);
+  const passkeyLoginButtonRef = useRef<HTMLButtonElement>(null);
   const [recoveryCode, setRecoveryCode] = useState('');
   const [recoveryPasskeyName, setRecoveryPasskeyName] = useState('Passkey recuperada');
   const [chatMessages, setChatMessages] = useState<AiChatMessage[]>([]);
@@ -1357,6 +1358,11 @@ export default function App() {
     recoveryButtonRef.current?.focus();
   };
 
+  const showPasskeyLogin = protectedLoginPending && !recoveryOnly;
+  useEffect(() => {
+    if (showPasskeyLogin) passkeyLoginButtonRef.current?.focus();
+  }, [showPasskeyLogin]);
+
   const canResumeRecovery = protectedLoginPending && recoveryOnly && !recoveryFormOpen && !protectedLoginBusy;
   useEffect(() => {
     if (canResumeRecovery) recoveryButtonRef.current?.focus();
@@ -1623,7 +1629,7 @@ export default function App() {
 
       {protectedLoginPending && <section className="protected-login-notice" role="region" aria-labelledby="protected-login-title">
         <div><strong id="protected-login-title">{recoveryOnly ? 'Continúa la recuperación' : 'Completa el acceso con tu passkey'}</strong><p>{recoveryOnly ? 'Registra una passkey nueva para completar la recuperación.' : 'La identidad OIDC se verificó. Confirma ahora con Windows Hello, una llave FIDO2 u otra passkey registrada.'}</p>{protectedLoginMessage && <p role="status">{protectedLoginMessage}</p>}</div>
-        <div className="provider-passkey-row"><button type="button" className="quiet-button" disabled={protectedLoginBusy || recoveryOnly} hidden={recoveryOnly} onClick={() => void completeProtectedLogin()}>{protectedLoginBusy ? 'Esperando passkey…' : 'Continuar con passkey'}</button>
+        <div className="provider-passkey-row"><button ref={passkeyLoginButtonRef} type="button" className="quiet-button" disabled={protectedLoginBusy || recoveryOnly} hidden={recoveryOnly} onClick={() => void completeProtectedLogin()}>{protectedLoginBusy ? 'Esperando passkey…' : 'Continuar con passkey'}</button>
           <button ref={recoveryButtonRef} type="button" className="quiet-button" disabled={protectedLoginBusy} aria-expanded={recoveryFormOpen} aria-controls={recoveryFormOpen ? 'protected-recovery-form' : undefined} onClick={() => recoveryFormOpen ? closeRecoveryForm() : void openProtectedRecovery()}>{recoveryFormOpen ? 'Cerrar recuperación' : recoveryOnly ? 'Continuar recuperación' : 'Perdí mi passkey'}</button></div>
         {recoveryFormOpen && <form id="protected-recovery-form" className="provider-passkey-setup" onSubmit={(event) => void recoverProtectedLogin(event)} aria-labelledby="protected-recovery-title"
           onKeyDown={(event) => {
