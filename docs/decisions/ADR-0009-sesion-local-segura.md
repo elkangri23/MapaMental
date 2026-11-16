@@ -1,15 +1,15 @@
 # ADR-0009: Sesión local de un solo uso y API restringida al origen propio
 
-- **Estado:** Aceptado
+- **Estado:** Reemplazado parcialmente por [ADR-0013](ADR-0013-loopback-ipv6-y-webauthn.md) en la dirección de loopback y el origen de navegador
 - **Fecha:** 2026-11-14
 
 ## Contexto
 
-Un servicio en loopback puede recibir peticiones de páginas web abiertas en el mismo navegador. Restringirlo a `127.0.0.1` evita acceso desde la red, pero por sí solo no impide ataques desde un origen web ajeno ni protege las rutas que modifican proyectos.
+Un servicio en loopback puede recibir peticiones de páginas web abiertas en el mismo navegador. Restringirlo a loopback evita acceso desde la red, pero por sí solo no impide ataques desde un origen web ajeno ni protege las rutas que modifican proyectos. La dirección y el origen concretos se actualizaron para WebAuthn en ADR-0013.
 
 ## Decisión
 
-El servicio escucha únicamente en `127.0.0.1`, valida estrictamente `Host` y `Origin` contra el origen de la aplicación y no habilita CORS abierto. Al arrancar genera un nonce aleatorio de un solo uso; el lanzador entrega la página local con el nonce en el fragmento de URL, que no se envía en la petición HTTP. La UI lo intercambia por una cookie de sesión `HttpOnly`, `SameSite=Strict` y limitada a loopback. El nonce se invalida tras el primer intercambio. Las rutas que leen o cambian datos requieren sesión; las rutas mutables también validan el origen y un tipo de contenido JSON esperado. La UI no guardará el nonce ni la cookie en almacenamiento accesible por JavaScript.
+El servicio valida estrictamente `Host` y `Origin` contra el origen de la aplicación y no habilita CORS abierto. Al arrancar genera un nonce aleatorio de un solo uso; el lanzador entrega la página local con el nonce en el fragmento de URL, que no se envía en la petición HTTP. La UI lo intercambia por una cookie de sesión `HttpOnly`, `SameSite=Strict` y limitada a loopback. El nonce se invalida tras el primer intercambio. Las rutas que leen o cambian datos requieren sesión; las rutas mutables también validan el origen y un tipo de contenido JSON esperado. La UI no guardará el nonce ni la cookie en almacenamiento accesible por JavaScript. La escucha en `::1` y el origen `localhost` están fijados en ADR-0013.
 
 ## Alternativas
 

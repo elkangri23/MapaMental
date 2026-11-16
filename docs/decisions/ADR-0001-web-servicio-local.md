@@ -1,6 +1,6 @@
 # ADR-0001: Web local con servicio loopback
 
-- **Estado:** Aceptado
+- **Estado:** Reemplazado parcialmente por [ADR-0013](ADR-0013-loopback-ipv6-y-webauthn.md) en el host y la dirección de loopback
 - **Fecha:** 2026-11-14
 
 ## Contexto
@@ -9,7 +9,7 @@ La app necesita conectarse a modelos locales, guardar carpetas de proyecto, mant
 
 ## Decisión
 
-Separar UI web y servicio local. El proceso se ejecutará bajo la cuenta Windows interactiva que lo inició; el navegador se conectará a `127.0.0.1`, y el servicio realizará operaciones de archivos y llamadas a proveedores. Solo aceptará el host/origen de la aplicación y usará la sesión de un solo uso descrita en [ADR-0009](ADR-0009-sesion-local-segura.md). El instalador abrirá la UI en el navegador.
+Separar UI web y servicio local. El proceso se ejecutará bajo la cuenta Windows interactiva que lo inició; el servicio realizará operaciones de archivos y llamadas a proveedores. Solo aceptará el host/origen de la aplicación y usará la sesión de un solo uso descrita en [ADR-0009](ADR-0009-sesion-local-segura.md). El instalador abrirá la UI en el navegador. El host y la dirección de loopback vigentes se fijan en ADR-0013.
 
 ## Alternativas
 

@@ -68,7 +68,7 @@ No hay decisiones de producto o arquitectura abiertas para v1. La selección del
 ### Componentes
 
 * **Web:** React + TypeScript + Vite. React Flow (`@xyflow/react`) aportará interacción de nodos, conexiones, selección, zoom y viewport; los tipos de nodo y la identidad visual serán propios.
-* **Servicio local:** Node.js 24 LTS + Fastify. Se ejecutará como proceso hijo de la app bajo la cuenta Windows interactiva actual y escuchará solo en `127.0.0.1`. Inno Setup incluirá Node y creará un acceso directo para iniciar el proceso y abrir el navegador.
+* **Servicio local:** Node.js 24 LTS + Fastify. Se ejecutará como proceso hijo de la app bajo la cuenta Windows interactiva actual y escuchará solo en `::1`; el lanzador abrirá `http://localhost:<puerto>` para mantener el RP ID de WebAuthn. Inno Setup incluirá Node y creará un acceso directo para iniciar el proceso y abrir el navegador. Ver [ADR-0013](../decisions/ADR-0013-loopback-ipv6-y-webauthn.md).
 * **Workspace:** npm workspaces con `apps/web`, `apps/server` y `packages/domain` para contratos y operaciones compartidas.
 * **Persistencia:** carpetas JSON versionadas en un volumen local fijo, autosave y hasta 20 copias previas válidas. Los secretos quedarán en el almacén seguro de Windows y se aislarán por cuenta de usuario.
 
@@ -163,7 +163,7 @@ El mapa usará nodos y conexiones jerárquicos, disposición radial inicial y po
 
 | Riesgo | Mitigación prevista |
 |---|---|
-| Una web ajena intenta acceder al servicio loopback | Escuchar solo en `127.0.0.1`, permitir solo host/origen exactos y exigir sesión de un solo uso para mutaciones; rechazar origen ausente y no habilitar CORS abierto. |
+| Una web ajena intenta acceder al servicio loopback | Escuchar solo en `::1`, permitir solo host/origen exactos y exigir sesión de un solo uso para mutaciones; rechazar origen ausente y no habilitar CORS abierto. |
 | Secreto de proveedor expuesto a otro usuario de Windows | Ejecutar la app bajo el usuario interactivo actual; guardar claves en el almacén de credenciales asociado a esa cuenta, no en proyecto ni settings JSON. |
 | Respuesta de IA añade elementos fuera del ámbito | Validar IDs, revisión base, tipos y destino; aplicar solo operación completa validada; mantener inverso de la última acción. |
 | Cierre o disco lleno durante el guardado | Verificar copia previa y temporal antes de reemplazar; no confirmar UI ni actualizar memoria hasta que el archivo durable exista; no rotar copias válidas si falla el commit. |

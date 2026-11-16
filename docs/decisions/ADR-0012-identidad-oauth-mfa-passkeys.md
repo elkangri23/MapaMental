@@ -2,7 +2,7 @@
 
 - **Estado:** Aceptado
 - **Fecha:** 2026-11-16
-- **Relacionados:** [ADR-0001](ADR-0001-web-servicio-local.md), [ADR-0006](ADR-0006-adaptadores-y-credenciales.md), [ADR-0009](ADR-0009-sesion-local-segura.md), [informe de autenticación](../AUTH_OAUTH_MFA_PASSKEYS.md)
+- **Relacionados:** [ADR-0001](ADR-0001-web-servicio-local.md), [ADR-0006](ADR-0006-adaptadores-y-credenciales.md), [ADR-0009](ADR-0009-sesion-local-segura.md), [ADR-0013](ADR-0013-loopback-ipv6-y-webauthn.md), [informe de autenticación](../AUTH_OAUTH_MFA_PASSKEYS.md)
 
 ## Contexto
 

@@ -1,5 +1,10 @@
 # Cambios
 
+## Contrato de loopback para WebAuthn — 2026-11-16
+
+- ADR-0013 alinea la especificación con el servicio: `localhost` como origen WebAuthn, escucha solo en `::1` y callback OIDC en IPv6 loopback. Los ADR 0001/0009 quedan reemplazados parcialmente; no se abre acceso de red.
+- El recorrido de impresión T-011 se inició en almacenamiento temporal, pero se detuvo antes de guardar PDF; no cambia su estado pendiente.
+
 ## Aclaración del acceso OIDC protegido — 2026-11-16
 
 - Ajustes ya no indica erróneamente que el inicio protegido no está habilitado: explica que hay que vincular OIDC y registrar una passkey antes de arrancar con `MYMAP_AUTH_MODE=protected`.
