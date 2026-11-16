@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
-import { clearOidcSecondFactorCookie, clearRecoveryCookie, clearSessionCookie, consumeLaunchNonce, consumeOidcSecondFactor, consumeRecoverySession, createOidcSecondFactorStep, createProtectedSession, createRecoverySession, exchangeOidcSecondFactorStep, expectedUiOrigin, getDevelopmentNonce, getOidcSecondFactorIdentity, getOidcSecondFactorToken, getRecoveryIdentity, getRecoverySessionId, getValidSessionId, hasRecentUserVerification, isDevelopmentBootstrapEnabled, isExpectedHost, isExpectedOrigin, isSessionIdValid, isValidSession, requiredSessionMode, revokeAllProtectedSessions, revokeSession, setOidcSecondFactorCookie, setRecoveryCookie, setSessionCookie } from '../services/session.js';
-import { bindAuthIdentity, getAuthConfiguration, retainStoredPasskey, saveAuthConfiguration } from '../services/auth-store.js';
+import { clearOidcSecondFactorCookie, clearRecoveryCookie, clearSessionCookie, consumeLaunchNonce, consumeOidcSecondFactor, createOidcSecondFactorStep, createProtectedSession, createRecoverySession, exchangeOidcSecondFactorStep, expectedUiOrigin, getDevelopmentNonce, getOidcSecondFactorIdentity, getOidcSecondFactorToken, getRecoveryIdentity, getRecoverySessionId, getValidSessionId, hasRecentUserVerification, isDevelopmentBootstrapEnabled, isExpectedHost, isExpectedOrigin, isSessionIdValid, isValidSession, requiredSessionMode, revokeAllProtectedSessions, revokeSession, setOidcSecondFactorCookie, setRecoveryCookie, setSessionCookie } from '../services/session.js';
+import { bindAuthIdentity, getAuthConfiguration, saveAuthConfiguration } from '../services/auth-store.js';
 import { beginOidcAuthorization, completeOidcAuthorization, consumeOidcTransaction } from '../services/oidc.js';
 import { beginPasskeyAuthentication, beginPasskeyReauthentication, beginPasskeyRegistration, finishPasskeyAuthentication, finishPasskeyReauthentication, finishPasskeyRegistration, renamePasskey, revokePasskey } from '../services/passkeys.js';
 import { beginTotpEnrollment, confirmTotpEnrollment, disableTotp, totpStatus, verifyTotpRecovery } from '../services/totp.js';
@@ -148,11 +148,8 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
         const currentIdentity = config?.owner ? `${config.owner.issuer}\u0000${config.owner.subject}` : null;
         if (!recoveryIdentity || currentIdentity !== recoveryIdentity) return reply.code(401).send({ message: 'La identidad de recuperación ya no es válida.' });
       }
-      const result = await finishPasskeyRegistration(sessionId, request.body as never);
+      const result = await finishPasskeyRegistration(sessionId, request.body as never, recoveryId ? request.headers.cookie : undefined);
       if (recoveryId) {
-        await retainStoredPasskey(result.credentialId);
-        consumeRecoverySession(recoveryId);
-        revokeAllProtectedSessions();
         reply.header('set-cookie', [clearRecoveryCookie(), clearOidcSecondFactorCookie(), clearSessionCookie('protected')]);
       }
       await audit(request, 'passkey.register');

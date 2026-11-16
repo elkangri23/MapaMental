@@ -31,6 +31,8 @@
 - Al consumir la sesión, el estado dejó de ofrecer la reanudación. Con la web compilada y un servidor simulado, Chrome enfocó Continuar recuperación al abrir y al recargar. Intro abrió el formulario y movió el foco al nombre de la passkey. El formulario no volvió a pedir el código TOTP.
 - En Chrome con el segundo factor pendiente simulado, se abrió el formulario y se escribió un código ficticio sin enviarlo. Escape cerró el formulario y devolvió el foco a Perdí mi passkey. Intro lo reabrió con el código vacío. Cancelar también cerró el formulario y devolvió el foco. Queda completar el recorrido con una aplicación TOTP y un autenticador reales.
 
+- En el almacén temporal se registraron diez credenciales ficticias. Una identidad distinta se rechazó y conservó las diez. El reemplazo autorizado dejó únicamente la nueva credencial, incluso al reutilizar un nombre, e invalidó la sesión protegida y la de recuperación. La prueba se realizó en el almacén compilado y no accionó un autenticador.
+
 ## Aceptación pendiente del modo protegido (T-021 y T-023 a T-026)
 
 1. Desde el modo local, vincular un proveedor OIDC real, registrar una passkey y reiniciar en modo protegido. Verificar que el inicio exige OIDC y verificación de usuario con passkey.

@@ -1,3 +1,4 @@
+import { getRecoveryIdentity, revokeAllProtectedSessions } from './session.js';
 import { randomUUID } from 'node:crypto';
 import { mkdir, open, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
@@ -118,15 +119,21 @@ export async function saveAuthConfiguration(input: unknown) {
   });
 }
 
-export async function addStoredPasskey(passkey: StoredPasskey) {
+export async function addStoredPasskey(passkey: StoredPasskey, expectedIdentity: string, recoveryCookie?: string) {
   return serializeMutation(async () => {
     const current = await getAuthConfiguration();
     if (!current?.owner) throw Object.assign(new Error('Vincula primero una identidad OIDC.'), { statusCode: 409 });
+    const recovering = recoveryCookie !== undefined;
+    if (expectedIdentity !== current.owner.issuer + '\u0000' + current.owner.subject
+      || (recovering && getRecoveryIdentity(recoveryCookie) !== expectedIdentity)) {
+      throw Object.assign(new Error('La identidad o la recuperación ya no son válidas.'), { statusCode: 401 });
+    }
     if (current.passkeys.some((item) => item.id === passkey.id)) throw Object.assign(new Error('Esta passkey ya está registrada.'), { statusCode: 409 });
-    if (current.passkeys.some((item) => item.name.toLocaleLowerCase() === passkey.name.toLocaleLowerCase())) throw Object.assign(new Error('Ya existe una passkey con ese nombre.'), { statusCode: 409 });
-    if (current.passkeys.length >= 10) throw Object.assign(new Error('Se alcanzó el máximo de diez passkeys.'), { statusCode: 409 });
-    const next = { ...current, passkeys: [...current.passkeys, passkey] };
+    if (!recovering && current.passkeys.some((item) => item.name.toLocaleLowerCase() === passkey.name.toLocaleLowerCase())) throw Object.assign(new Error('Ya existe una passkey con ese nombre.'), { statusCode: 409 });
+    if (!recovering && current.passkeys.length >= 10) throw Object.assign(new Error('Se alcanzó el máximo de diez passkeys.'), { statusCode: 409 });
+    const next = { ...current, passkeys: recovering ? [passkey] : [...current.passkeys, passkey] };
     await writeConfiguration(next);
+    if (recovering) revokeAllProtectedSessions();
     return next.passkeys;
   });
 }
@@ -169,19 +176,6 @@ export async function removeStoredPasskey(id: string) {
     if (nextPasskeys.length === current.passkeys.length) throw Object.assign(new Error('La passkey ya no está registrada.'), { statusCode: 404 });
     await writeConfiguration({ ...current, passkeys: nextPasskeys });
     return nextPasskeys;
-  });
-}
-
-/** Recovery is an explicit replacement ceremony: retain only the newly verified credential. */
-export async function retainStoredPasskey(id: string) {
-  return serializeMutation(async () => {
-    const current = await getAuthConfiguration();
-    if (!current) throw Object.assign(new Error('No existe una configuración OIDC.'), { statusCode: 409 });
-    const replacement = current.passkeys.find((item) => item.id === id);
-    if (!replacement) throw Object.assign(new Error('La passkey de reemplazo no está registrada.'), { statusCode: 404 });
-    const passkeys = [replacement];
-    await writeConfiguration({ ...current, passkeys });
-    return passkeys;
   });
 }
 
