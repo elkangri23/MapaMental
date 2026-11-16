@@ -1,5 +1,7 @@
 # Cambios
 
+- El chat muestra las sugerencias en la selección para la que se generaron, aunque otra rama incluya alguna de las mismas ideas.
+
 - El panel de sugerencias explica cuándo el modelo no propone acciones para la selección y permite volver a pedirlas.
 
 - La interfaz retira las propuestas de IA obsoletas y ofrece cargar la versión guardada tras un conflicto. Si hay cambios locales que no se pueden guardar, mantiene la opción de recuperarlos.
@@ -305,6 +307,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- El chat muestra las sugerencias en la selección para la que se generaron, aunque otra rama incluya alguna de las mismas ideas.
 
 - El panel de sugerencias explica cuándo el modelo no propone acciones para la selección y permite volver a pedirlas.
 

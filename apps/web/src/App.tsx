@@ -211,8 +211,7 @@ export default function App() {
   const [chatMessages, setChatMessages] = useState<AiChatMessage[]>([]);
   const [chatDraft, setChatDraft] = useState('');
   const [aiContextExpanded, setAiContextExpanded] = useState(false);
-  const [chatSuggestions, setChatSuggestions] = useState<AiSuggestion[]>([]);
-  const [emptySuggestionsScope, setEmptySuggestionsScope] = useState<string | null>(null);
+  const [suggestionBatch, setSuggestionBatch] = useState<{ nodeId: string; suggestions: AiSuggestion[] } | null>(null);
   const [aiBusy, setAiBusy] = useState(false);
   const [generationStatus, setGenerationStatus] = useState('');
   const [restoreBusy, setRestoreBusy] = useState(false);
@@ -365,8 +364,7 @@ export default function App() {
     setChatDraft('');
     chatMessagesRef.current = conversation;
     setChatMessages(conversation);
-    setChatSuggestions([]);
-    setEmptySuggestionsScope(null);
+    setSuggestionBatch(null);
     setAiProposal(null);
     setAiSlideProposal(null);
     setDeckProposal(null);
@@ -613,6 +611,8 @@ export default function App() {
     setSelectedNodeId(id);
     return id;
   }, [aiBusy, nodes, selectedNodeId]);
+
+  const currentSuggestionBatch = suggestionBatch?.nodeId === (selectedNodeId ?? '') ? suggestionBatch : null;
 
   const selectedBranchIds = useMemo(() => {
     if (!selectedNodeId || selectedNodeId === 'root') return new Set(nodes.map((node) => node.id));
@@ -863,8 +863,7 @@ export default function App() {
         setChatDraft('');
         setChatMessages((current) => [...current, userMessage, { role: 'assistant' as const, content: result.message }].slice(-PROJECT_CHAT_MESSAGE_LIMIT));
       }
-      setChatSuggestions(result.suggestions);
-      setEmptySuggestionsScope(result.suggestions.length ? null : selectedNodeId ?? '');
+      setSuggestionBatch({ nodeId: selectedNodeId ?? '', suggestions: result.suggestions });
     });
   }, [aiBusy, aiReady, chatMessages, project, runGeneration, selectedBranchIds, selectedNodeId]);
 
@@ -1655,11 +1654,11 @@ export default function App() {
               <span>PRÓXIMOS CAMINOS</span>
               <button type="button" className="quiet-button" disabled={!aiReady || aiBusy || !nodes.length} onClick={() => void runChat('Sugiere próximos pasos para el ámbito actual. Ten en cuenta lo ya desarrollado y prioriza acciones nuevas.', true)}>Generar sugerencias</button>
             </div>
-            {!aiBusy && aiReady && emptySuggestionsScope === (selectedNodeId ?? '') && (
+            {!aiBusy && aiReady && currentSuggestionBatch?.suggestions.length === 0 && (
               <p className="suggestion-empty" role="status">El modelo no propuso acciones para esta selección. Puedes generar sugerencias de nuevo o pedir un cambio concreto en el chat.</p>
             )}
             <div className="suggestion-list">
-              {chatSuggestions.map((suggestion) => {
+              {currentSuggestionBatch?.suggestions.map((suggestion) => {
                 const target = aiContextPreview.nodes.find((node) => node.id === suggestion.targetNodeId);
                 if (!target) return null;
                 const createsSlide = suggestion.kind === 'create-slide';
