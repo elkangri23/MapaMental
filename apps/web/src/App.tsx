@@ -1430,10 +1430,14 @@ export default function App() {
   const slideBeingRevised = aiSlideProposal && aiSlideProposal.sourceNodeId === undefined
     ? slides.find(({ id }) => id === aiSlideProposal.slideId)
     : undefined;
-  const slideBlockChanges: string[] = [];
+  const slideChanges: string[] = [];
   if (slideBeingRevised && aiSlideProposal) {
     const { draft } = aiSlideProposal;
     const blocks = [
+      { label: 'Título', before: slideBeingRevised.title, after: draft.title },
+      { label: 'Subtítulo', before: slideBeingRevised.subtitle, after: draft.subtitle },
+      { label: 'Texto', before: slideBeingRevised.body, after: draft.body },
+      { label: 'Viñetas', before: slideBeingRevised.bullets, after: draft.bullets },
       {
         label: 'Tabla',
         before: slideBeingRevised.table ? [slideBeingRevised.table.headers, slideBeingRevised.table.rows] : [],
@@ -1449,7 +1453,7 @@ export default function App() {
     for (const { label, before, after } of blocks) {
       if (after === undefined || JSON.stringify(before) === JSON.stringify(after)) continue;
       const change = !after.length ? 'se quitará' : before.length ? 'se actualizará' : 'se añadirá';
-      slideBlockChanges.push(`${label}: ${change}`);
+      slideChanges.push(`${label}: ${change}`);
     }
   }
 
@@ -1459,9 +1463,9 @@ export default function App() {
       <small>{aiSlideProposal.provider} · {aiSlideProposal.sourceNodeId
         ? `Se añadirá una diapositiva al final de la presentación a partir de «${nodes.find((node) => node.id === aiSlideProposal.sourceNodeId)?.data.label ?? 'Idea de origen'}».`
         : 'Solo cambiará esta diapositiva.'}</small>
-      {slideBlockChanges.length > 0 && (
-        <ul aria-label="Cambios en los bloques visuales">
-          {slideBlockChanges.map((change) => <li key={change}>{change}</li>)}
+      {slideChanges.length > 0 && (
+        <ul aria-label="Cambios en la diapositiva">
+          {slideChanges.map((change) => <li key={change}>{change}</li>)}
         </ul>
       )}
       <h3>{aiSlideProposal.draft.title}</h3>
