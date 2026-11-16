@@ -462,3 +462,9 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Se verificó la presencia de Node, los scripts de inicio/detención, la SPA compilada, el servidor y el módulo nativo de credenciales Windows; el runtime extraído respondió `v24.22.2`.
 - El recorrido de arranque desde una extracción en Temp se detuvo antes de escuchar: `validateProjectStorageRoot` falló con `PROJECT_STORAGE_VOLUME_INVALID`. Una consulta directa `Get-Volume -FilePath` sobre la misma ruta no produjo salida dentro de la espera y se interrumpió. No se omitió el control de almacenamiento. La prueba anterior de paquete arrancado y detenido sigue siendo evidencia histórica; esta repetición queda pendiente de repetir cuando Windows Storage responda.
 - `ISCC.exe` no está instalado; no se compiló ni instaló el asistente Inno Setup. Datos y configuración de esta comprobación estaban en Temp.
+
+### Arranque del ZIP actualizado — T-013 — 2026-11-16
+
+- El empaquetado portátil en modo offline completó la compilación. El ZIP se extrajo en una carpeta temporal, con proyectos y perfiles de prueba separados.
+- Con una ruta de red, el lanzador abortó el inicio y mostró el aviso específico de validación del almacenamiento. Con una carpeta local, el servicio arrancó y sirvió la interfaz con HTTP 200.
+- El segundo inicio reutilizó el mismo proceso. El lanzador lo detuvo y se comprobó que el proceso había salido. Queda pendiente el recorrido del instalador Inno Setup.
