@@ -1,5 +1,10 @@
 # Cambios
 
+## Verificación del PDF desde impresión nativa — 2026-11-16
+
+- Se guardó «Huerto-balcon-vista.pdf» desde el diálogo de Chrome en una carpeta temporal aislada. `pdfinfo` confirmó tres páginas A4 apaisadas y PDF etiquetado; el árbol lógico conserva títulos H1, listas, tabla con encabezados asociados y orden secuencial.
+- Se renderizaron las tres páginas y se comprobó que tabla, recorrido y formulario ficticio caben sin cortes visibles. T-011 queda completada; lector de pantalla real y evaluación general WCAG siguen en T-016.
+
 ## Contrato de loopback para WebAuthn — 2026-11-16
 
 - ADR-0013 alinea la especificación con el servicio: `localhost` como origen WebAuthn, escucha solo en `::1` y callback OIDC en IPv6 loopback. Los ADR 0001/0009 quedan reemplazados parcialmente; no se abre acceso de red.

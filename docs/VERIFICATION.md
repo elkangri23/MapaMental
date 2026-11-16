@@ -357,6 +357,14 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - El árbol del visor expuso los textos de la diapositiva y los bloques de tabla, recorrido y formulario. Se activó «Guardar como PDF», pero el cuadro nativo dejó de estar disponible al actualizar el estado de la ventana para continuar la automatización; no se guardó un archivo ni se tocó la impresora física.
 - Por tanto, la estructura observada es la vista previa HTML/PDF de Chromium, no el archivo final. La revisión del PDF descargado y sus marcadores/etiquetas y orden de lectura sigue sin verificar; T-011 permanece parcial.
 
+### PDF nativo guardado y revisado — T-011 — 2026-11-16
+
+- Se abrió el proyecto sintético «Espacio para pensar» en una instancia Chrome aislada, se crearon tres diapositivas y se completó la primera con título y texto de «Huerto de balcón», lista, tabla (Tomate/Marzo), recorrido de tres pasos y formulario ficticio (Alex García; Interés: Explorar la propuesta). El indicador confirmó «Guardado local».
+- Desde «Imprimir / Guardar PDF» se eligió el destino «Guardar como PDF» y se guardó el documento desde el diálogo nativo en `%TEMP%\mymap-roadmap-t011-final-projects\Huerto-balcon-vista.pdf`. La acción de guardar se completó y `pdfinfo` leyó el archivo resultante (87.875 bytes).
+- `pdfinfo` confirmó PDF 1.4, tres páginas, A4 apaisado (841,92 × 594,96 puntos), sin cifrado y `Tagged: yes`. `pdfinfo -struct-text` expuso por página títulos `H1`, viñetas como listas, tabla como `Table` con encabezados `TH` y celdas `TD` asociadas mediante `/Headers`; el recorrido aparece como lista y los campos ficticios como etiquetas/valores en orden secuencial.
+- Las tres páginas se renderizaron con Poppler y se inspeccionaron visualmente: la primera incluye título, subtítulo, texto, viñetas, tabla, recorrido y formulario; la segunda y tercera tienen sus propios títulos/contenidos. No se observaron recortes ni desbordamiento. La segunda y tercera quedan escasas porque reflejan el mapa sintético de prueba.
+- Esto cierra el criterio de exportación de T-011 para paginación, etiquetado estructural y lectura lógica del artefacto. La estructura etiquetada no equivale a prueba con lector de pantalla; evaluación con AT real permanece en T-016. El PDF y sus renders están en `%TEMP%`, no en el repositorio, y no se usó impresora física.
+
 ### Transparencia del historial enviado — T-010 — 2026-11-16
 
 - El panel de contexto del chat ahora renderiza los últimos diez mensajes que usa el cliente al llamar chat/sugerencias, indica «Tú» o «Asistente» y aplica el mismo recorte de 3.000 caracteres por entrada que `sanitizeHistory` en el servidor. También avisa que el texto actual del compositor se enviará al pulsar «Enviar».
