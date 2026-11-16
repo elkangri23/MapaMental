@@ -1,5 +1,7 @@
 # Cambios
 
+- Al aplicar una expansión, el servidor comprueba los nombres de las ideas y rechaza el borrador si contiene duplicados.
+
 - Al ampliar una rama, la petición señala sus ideas hijas que están dentro del contexto para que el modelo aporte detalles nuevos.
 
 - Cuando la expansión no contiene ideas nuevas, el chat explica el resultado y permite pedir otro enfoque.
@@ -331,6 +333,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Al aplicar una expansión, el servidor comprueba los nombres de las ideas y rechaza el borrador si contiene duplicados.
 
 - Al ampliar una rama, la petición señala sus ideas hijas que están dentro del contexto para que el modelo aporte detalles nuevos.
 

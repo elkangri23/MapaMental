@@ -147,15 +147,26 @@ function ideaPosition(parent: IdeaNode, index: number, count: number) {
   return { x: x + offsetX, y: centerY - halfHeight + index * 112 };
 }
 
+function ideaLabelKey(label: string): string {
+  return label.normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('es');
+}
+
+function branchLabels(project: ProjectDocument, parent: IdeaNode): string[] {
+  const ids = new Set((project.map.edges as IdeaEdge[])
+    .filter(({ source }) => source === parent.id)
+    .map(({ target }) => target));
+  ids.add(parent.id);
+  return (project.map.nodes as IdeaNode[]).filter(({ id }) => ids.has(id)).map(({ data }) => data.label);
+}
+
 function sanitizedIdeas(value: unknown, parent: IdeaNode, existingLabels: string[]): AiIdeaProposal[] {
   if (!Array.isArray(value) || value.length < 1 || value.length > 12) throw Object.assign(new Error('La propuesta debe contener entre 1 y 12 ideas.'), { statusCode: 502 });
   const tones = new Set(['lavender', 'mint', 'peach', 'blue']);
-  const labelKey = (label: string) => label.normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('es');
-  const usedLabels = new Set(existingLabels.map(labelKey));
+  const usedLabels = new Set(existingLabels.map(ideaLabelKey));
   const ideas = value.flatMap((entry) => {
     if (!isRecord(entry) || typeof entry.label !== 'string') return [];
     const label = entry.label.trim().replace(/\s+/g, ' ').slice(0, 160);
-    const key = labelKey(label);
+    const key = ideaLabelKey(label);
     if (!key || usedLabels.has(key)) return [];
     usedLabels.add(key);
     const id = `ai-${crypto.randomUUID()}`;
@@ -301,10 +312,7 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
     const content = await generateProviderText(provider.profile, provider.apiKey, [{ role: 'user', content: request.body.prompt.trim() }], system, signal);
     report('validating', provider.profile.kind);
     const parsed = parseJson(content);
-    const existingLabels = (project.map.nodes as IdeaNode[])
-      .filter(({ id }) => id === parent.id || childIds.has(id))
-      .map(({ data }) => data.label);
-    const ideas = sanitizedIdeas(parsed.ideas, parent, existingLabels);
+    const ideas = sanitizedIdeas(parsed.ideas, parent, branchLabels(project, parent));
     if (typeof parsed.message !== 'string') throw Object.assign(new Error('La propuesta no incluye un mensaje válido.'), { statusCode: 502 });
     if (ideas.length === 0) {
       throw Object.assign(new Error('El modelo no propuso ideas nuevas para esta rama. Prueba a pedir otro enfoque.'), { statusCode: 422 });
@@ -462,6 +470,12 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
         || typeof idea.label !== 'string' || !idea.label.trim() || idea.label.length > 160) return true;
       proposalIds.add(idea.id); return false;
     })) throw Object.assign(new Error('La propuesta contiene ideas no válidas o ya aplicadas.'), { statusCode: 400 });
+    const usedLabels = new Set(branchLabels(current, parent).map(ideaLabelKey));
+    for (const idea of ideas) {
+      const label = ideaLabelKey(idea.label);
+      if (usedLabels.has(label)) throw invalidBody('La propuesta repite el nombre de una idea de esta rama. Genera otra propuesta.');
+      usedLabels.add(label);
+    }
     const allowedTones = new Set(['lavender', 'mint', 'peach', 'blue']);
     const safeIdeas = ideas.map((idea, index) => ({ ...idea, tone: allowedTones.has(idea.tone) ? idea.tone : 'blue', position: ideaPosition(parent, index, ideas.length) }));
     const addedEdges: IdeaEdge[] = safeIdeas.map((idea) => ({ id: `ai-edge-${crypto.randomUUID()}`, source: parent.id, target: idea.id, type: 'smoothstep' }));
