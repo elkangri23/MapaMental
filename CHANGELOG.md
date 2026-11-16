@@ -1,5 +1,7 @@
 # Cambios
 
+- Al volver a una recuperación activa, el foco pasa a Continuar recuperación.
+
 - Cuando se ofrece reintentar el acceso protegido, el botón recibe el foco para continuar con teclado.
 
 - La recuperación ofrece volver a iniciar sesión si caduca. Si el alta de passkey se interrumpe y la recuperación sigue activa, puedes retomarla sin introducir de nuevo el código TOTP.
@@ -391,6 +393,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Al volver a una recuperación activa, el foco pasa a Continuar recuperación.
 
 - Cuando se ofrece reintentar el acceso protegido, el botón recibe el foco para continuar con teclado.
 
