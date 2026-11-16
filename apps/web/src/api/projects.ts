@@ -48,10 +48,10 @@ async function ensureSession() {
       return new Promise<void>(() => undefined);
     }
     if (status.status === 428 || status.status === 403) {
-      const result = await status.json().catch(() => ({})) as { message?: string };
+      const result = await status.json().catch(() => ({})) as { message?: string; recovery?: boolean };
       if (status.status === 428) {
         oidcRetryMessage = null;
-        window.dispatchEvent(new CustomEvent('espacio-visual:passkey-required'));
+        window.dispatchEvent(new CustomEvent('espacio-visual:passkey-required', { detail: { recovery: result.recovery === true } }));
       }
       throw new Error(result.message ?? 'La autenticación protegida necesita atención.');
     }

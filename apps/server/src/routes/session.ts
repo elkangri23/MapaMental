@@ -41,6 +41,7 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
     const mode = requiredSessionMode();
     if (!isValidSession(request.headers.cookie, mode)) {
       if (mode === 'local') return reply.code(204).send();
+      if (getRecoverySessionId(request.headers.cookie)) return reply.code(428).send({ mode, recovery: true, message: 'La recuperación está activa. Registra una passkey nueva para continuar.' });
       if (getOidcSecondFactorIdentity(request.headers.cookie)) return reply.code(428).send({ mode, message: 'La identidad OIDC está verificada. Completa ahora la passkey para abrir la aplicación.' });
       const config = await getAuthConfiguration();
       if (!config?.owner) return reply.code(403).send({ mode, message: 'Vuelve al modo local y vincula primero tu cuenta OIDC en Ajustes.' });

@@ -1,5 +1,7 @@
 # Cambios
 
+- Una recuperación TOTP activa se puede retomar tras recargar para registrar la passkey de reemplazo.
+
 - Si el paso OIDC caduca mientras se confirma la passkey, la interfaz ofrece volver a iniciar sesión.
 
 - Si el paso temporal de OIDC caduca, la aplicación ofrece reiniciar el acceso. La passkey se solicita cuando el servidor confirma el segundo factor pendiente.
@@ -385,6 +387,8 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - Actualizado el plugin estático a una versión corregida tras detectar vulnerabilidades en 8.x; la auditoría resultante informa cero vulnerabilidades.
 
 # Cambios
+
+- Una recuperación TOTP activa se puede retomar tras recargar para registrar la passkey de reemplazo.
 
 - Si el paso OIDC caduca mientras se confirma la passkey, la interfaz ofrece volver a iniciar sesión.
 

@@ -18,6 +18,11 @@
 - La cookie temporal produjo HTTP 428 al consultar el estado de sesión y HTTP 403 al consultar el perfil. Al adelantar el reloj más de cinco minutos, el estado del segundo factor dejó de ser válido.
 - El recorrido comienza con un estado de prueba. La aceptación con un proveedor OIDC y una passkey reales sigue abierta.
 
+## Reanudación de recuperación (T-023)
+
+- Con Fastify aislado y una sesión de recuperación de prueba, el estado general respondió HTTP 428 e indicó recuperación activa. La API del perfil siguió devolviendo HTTP 403.
+- Al consumir la sesión, el estado dejó de ofrecer la reanudación. Queda recorrer desde Chrome la recarga tras introducir TOTP y el alta de la passkey de reemplazo con un autenticador real.
+
 ## Aceptación pendiente del modo protegido (T-021 y T-023 a T-026)
 
 1. Desde el modo local, vincular un proveedor OIDC real, registrar una passkey y reiniciar en modo protegido. Verificar que el inicio exige OIDC y verificación de usuario con passkey.

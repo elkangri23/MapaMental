@@ -215,6 +215,7 @@ export default function App() {
   const [protectedLoginMessage, setProtectedLoginMessage] = useState('');
   const [recoveryFormOpen, setRecoveryFormOpen] = useState(false);
   const [recoveryResuming, setRecoveryResuming] = useState(false);
+  const [recoveryOnly, setRecoveryOnly] = useState(false);
   const [recoveryCode, setRecoveryCode] = useState('');
   const [recoveryPasskeyName, setRecoveryPasskeyName] = useState('Passkey recuperada');
   const [chatMessages, setChatMessages] = useState<AiChatMessage[]>([]);
@@ -1372,7 +1373,8 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const requirePasskey = () => {
+    const requirePasskey = (event: Event) => {
+      setRecoveryOnly(event instanceof CustomEvent && event.detail?.recovery === true);
       setOidcRetryMessage('');
       setProtectedLoginPending(true);
     };
@@ -1584,9 +1586,9 @@ export default function App() {
       </section>}
 
       {protectedLoginPending && <section className="protected-login-notice" role="region" aria-labelledby="protected-login-title">
-        <div><strong id="protected-login-title">Completa el acceso con tu passkey</strong><p>La identidad OIDC se verificó. Confirma ahora con Windows Hello, una llave FIDO2 u otra passkey registrada.</p>{protectedLoginMessage && <p role="status">{protectedLoginMessage}</p>}</div>
-        <div className="provider-passkey-row"><button type="button" className="quiet-button" disabled={protectedLoginBusy} onClick={() => void completeProtectedLogin()}>{protectedLoginBusy ? 'Esperando passkey…' : 'Continuar con passkey'}</button>
-          <button type="button" className="quiet-button" disabled={protectedLoginBusy} aria-expanded={recoveryFormOpen} aria-controls="protected-recovery-form" onClick={() => recoveryFormOpen ? setRecoveryFormOpen(false) : void openProtectedRecovery()}>{recoveryFormOpen ? 'Cerrar recuperación' : 'Perdí mi passkey'}</button></div>
+        <div><strong id="protected-login-title">{recoveryOnly ? 'Continúa la recuperación' : 'Completa el acceso con tu passkey'}</strong><p>{recoveryOnly ? 'Registra una passkey nueva para completar la recuperación.' : 'La identidad OIDC se verificó. Confirma ahora con Windows Hello, una llave FIDO2 u otra passkey registrada.'}</p>{protectedLoginMessage && <p role="status">{protectedLoginMessage}</p>}</div>
+        <div className="provider-passkey-row"><button type="button" className="quiet-button" disabled={protectedLoginBusy || recoveryOnly} hidden={recoveryOnly} onClick={() => void completeProtectedLogin()}>{protectedLoginBusy ? 'Esperando passkey…' : 'Continuar con passkey'}</button>
+          <button type="button" className="quiet-button" disabled={protectedLoginBusy} aria-expanded={recoveryFormOpen} aria-controls="protected-recovery-form" onClick={() => recoveryFormOpen ? setRecoveryFormOpen(false) : void openProtectedRecovery()}>{recoveryFormOpen ? 'Cerrar recuperación' : recoveryOnly ? 'Continuar recuperación' : 'Perdí mi passkey'}</button></div>
         {recoveryFormOpen && <form id="protected-recovery-form" className="provider-passkey-setup" onSubmit={(event) => void recoverProtectedLogin(event)} aria-labelledby="protected-recovery-title">
           <h2 id="protected-recovery-title">Recuperar acceso con TOTP</h2>
           <p id="protected-recovery-description">Se registrará una passkey nueva y se revocarán las passkeys anteriores. La recuperación no abre proyectos ni el chat.</p>
