@@ -455,3 +455,10 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Dos pestañas autenticadas abrieron el mismo proyecto de ejemplo en revisión 1. Ambas generaron y mostraron la misma tarjeta sugerida, con una propuesta revisable de dos ideas todavía sin guardar.
 - En la primera pestaña, aplicar la tarjeta creó la revisión 2 y el mapa pasó de cinco a siete ideas. En la segunda, aplicar la propuesta antigua fue rechazado con HTTP 409; la interfaz mostró un aviso accesible: «El mapa cambió desde que se generó la propuesta. Recarga antes de aplicarla.» No se duplicaron ideas.
 - Al recargar la segunda pestaña, se recuperaron las siete ideas guardadas y la opción de deshacer IA. Las páginas de prueba y los procesos de servicio/mock se cerraron; los datos permanecen en Temp, fuera del repositorio.
+
+### Reconstrucción del paquete portátil — T-013/T-014 — 2026-11-16
+
+- `scripts/package-windows.ps1 -PortableOnly -Offline -NodeDirectory .tools/node-v24.22.2-win-x64` completó build y empaquetado con Node 24.22.2. Vite mantuvo el aviso conocido del bundle principal de 508,15 kB. El ZIP resultante pesa 43.901.641 bytes y contiene 4.443 entradas.
+- Se verificó la presencia de Node, los scripts de inicio/detención, la SPA compilada, el servidor y el módulo nativo de credenciales Windows; el runtime extraído respondió `v24.22.2`.
+- El recorrido de arranque desde una extracción en Temp se detuvo antes de escuchar: `validateProjectStorageRoot` falló con `PROJECT_STORAGE_VOLUME_INVALID`. Una consulta directa `Get-Volume -FilePath` sobre la misma ruta no produjo salida dentro de la espera y se interrumpió. No se omitió el control de almacenamiento. La prueba anterior de paquete arrancado y detenido sigue siendo evidencia histórica; esta repetición queda pendiente de repetir cuando Windows Storage responda.
+- `ISCC.exe` no está instalado; no se compiló ni instaló el asistente Inno Setup. Datos y configuración de esta comprobación estaban en Temp.

@@ -1,5 +1,8 @@
 # Cambios
 
+## Paquete portátil reconstruido — 2026-11-16
+
+- El empaquetado offline pasó e incluyó runtime y componentes esperados. La revalidación de arranque quedó bloqueada por `Get-Volume`/`PROJECT_STORAGE_VOLUME_INVALID`; no se desactivó la comprobación de almacenamiento ni se compiló el instalador Inno Setup, que requiere `ISCC.exe`.
 ## Conflictos de sugerencias entre pestañas — 2026-11-16
 
 - Recorrido visual con dos pestañas: una aplicó una propuesta IA (5→7 ideas); la otra recibió HTTP 409 y un aviso para recargar. Al recargar, mostró el estado persistido, sin duplicar ideas.
