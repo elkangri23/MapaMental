@@ -9,9 +9,11 @@
 
 ## Perfil del heap de mapas grandes — T-028 — 2026-11-17
 
-- En builds de producción y viewport móvil, se compararon fixtures aislados de 10.000 nodos con 0 y 9.999 conexiones. `performance.memory.usedJSHeapSize` se estabilizó en ~163,9 MB (canvas sin conexiones), ~182,4 MB (canvas con conexiones), ~17,5 MB (lista sin conexiones) y ~27,5 MB (lista con conexiones). Una muestra conectada bajó de ~182 MB a ~30 MB al desmontar el canvas.
-- El canvas montó 72 nodos visibles; con relaciones se montaron 97 conexiones visibles. Los números no representan toda la memoria del proceso: no incluyen buffers nativos/GPU o servidor, no se ejecutó GC explícito y cada variante se midió una sola vez. La diferencia orienta la siguiente investigación de T-028; no es un presupuesto de RAM.
-- En desarrollo con emulación móvil/Fast 3G, la vista de lista mostró su primera página en ~0,9 s y diez transiciones dieron 378–591 ms (mediana 550 ms). No se extrapola a producción ni se toma como una medición representativa de usuarios.
+- Se corrige la interpretación de las lecturas anteriores: el heap de Chromium alcanzó ~162 MB antes de GC natural y descendió a ~25 MB tras esperar; la lista osciló entre ~12 y ~28 MB en distintos momentos. Sin controlar la recolección no se puede comparar esos valores ni atribuir un ahorro a la implementación. No incluyen memoria nativa/GPU, servidor ni sistema operativo.
+- El canvas montó 72 nodos visibles y 97 conexiones en el fixture conectado. Una lectura única en producción, seguida de GC natural, dejó ~25 MB en canvas; la comparación requiere repetirse con condiciones controlables y no constituye un presupuesto de RAM.
+- Se movió el callback de edición desde copias por nodo a contexto React y se reutilizan conexiones que ya tienen el nombre accesible correcto. Build pasó. Chrome confirmó nombres accesibles en nodo y conexiones; F2 abrió edición, el nombre actualizado llegó al nodo y arista, el API guardó revisión 2 y el JSON persistido no contiene `ariaLabel` transitorio.
+- Lighthouse en móvil dio 100/100 en accesibilidad, buenas prácticas, SEO y Agentic Browsing (35 auditorías disponibles, ninguna fallida) en la lista paginada del build actualizado. El perfil de heap y la edición usaron fixtures aislados; el servidor de producción no pudo reiniciarse para repetir heap por un fallo de validación del volumen temporal de Windows.
+- En desarrollo con emulación móvil/Fast 3G, la vista de lista mostró su primera página en ~0,9 s y diez transiciones dieron 378–591 ms (mediana 550 ms). Es una sola pasada, no se extrapola a producción.
 
 ## Revisión de accesibilidad — 2026-11-17
 

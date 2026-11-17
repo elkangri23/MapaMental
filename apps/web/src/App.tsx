@@ -108,6 +108,20 @@ function serializeMap(nodes: IdeaNode[], edges: Edge[]) {
   };
 }
 
+function withAccessibleEdgeLabels(nodes: IdeaNode[], edges: Edge[]) {
+  const labels = new Map(nodes.map((node) => [node.id, node.data.label]));
+  let hasMissingLabel = false;
+  for (const edge of edges) {
+    const label = `Conexión de «${labels.get(edge.source) ?? 'idea desconocida'}» a «${labels.get(edge.target) ?? 'idea desconocida'}»`;
+    if (edge.ariaLabel !== label) { hasMissingLabel = true; break; }
+  }
+  if (!hasMissingLabel) return edges;
+  return edges.map((edge) => {
+    const ariaLabel = `Conexión de «${labels.get(edge.source) ?? 'idea desconocida'}» a «${labels.get(edge.target) ?? 'idea desconocida'}»`;
+    return edge.ariaLabel === ariaLabel ? edge : { ...edge, ariaLabel };
+  });
+}
+
 const staleProposalMessage = 'El proyecto cambió. Carga la versión guardada para generar una propuesta nueva.';
 const mapListPageSize = 250;
 
@@ -344,8 +358,8 @@ export default function App() {
       const timestamp = new Date(backup.updatedAt).toLocaleString();
       if (!window.confirm(`Restaurar la copia de ${timestamp} (revisión ${backup.revision})? El contenido actual se conservará como una copia antes de restaurar.`)) return;
       const { project: restored } = await projectsApi.restore(projectId, backup.file, current?.revision ?? 0);
-      const restoredNodes = (restored.map.nodes as IdeaNode[]).map(({ selected: _selected, dragging: _dragging, ...node }) => node);
-      const restoredEdges = (restored.map.edges as Edge[]).map(({ selected: _selected, ...edge }) => edge);
+      const restoredNodes = (restored.map.nodes as IdeaNode[]).map(({ selected: _selected, dragging: _dragging, ...node }) => ({ ...node, ariaLabel: node.data.label }));
+      const restoredEdges = withAccessibleEdgeLabels(restoredNodes, (restored.map.edges as Edge[]).map(({ selected: _selected, ...edge }) => edge));
       revisionRef.current = restored.revision;
       projectRef.current = restored;
       savedMapRef.current = JSON.stringify(serializeMap(restoredNodes, restoredEdges));
@@ -400,8 +414,8 @@ export default function App() {
       revisionRef.current = openedProject?.revision ?? 0;
       const openedNodes = (openedProject?.map.nodes ?? []) as IdeaNode[];
       const openedEdges = (openedProject?.map.edges ?? []) as Edge[];
-      const cleanNodes = openedNodes.map(({ selected: _selected, dragging: _dragging, ...node }) => node);
-      const cleanEdges = openedEdges.map(({ selected: _selected, ...edge }) => edge);
+      const cleanNodes = openedNodes.map(({ selected: _selected, dragging: _dragging, ...node }) => ({ ...node, ariaLabel: node.data.label }));
+      const cleanEdges = withAccessibleEdgeLabels(cleanNodes, openedEdges.map(({ selected: _selected, ...edge }) => edge));
       setNodes(cleanNodes);
       setEdges(cleanEdges);
       const openedSlides = (openedProject?.presentation.slides ?? []) as PresentationSlide[];
@@ -513,20 +527,14 @@ export default function App() {
 
   const updateLabel = useCallback((id: string, label: string) => {
     if (aiBusy) return;
-    setNodes((current) => current.map((node) => node.id === id ? { ...node, data: { ...node.data, label } } : node));
+    setNodes((current) => current.map((node) => node.id === id ? { ...node, ariaLabel: label, data: { ...node.data, label } } : node));
   }, [aiBusy]);
 
-  const nodesWithCallbacks = useMemo(
-    () => nodes.map((node) => ({ ...node, ariaLabel: node.data.label, data: { ...node.data, onLabelChange: updateLabel } })),
-    [nodes, updateLabel],
+  const nodesWithAccessibleLabels = useMemo(
+    () => nodes.map((node) => node.ariaLabel === node.data.label ? node : { ...node, ariaLabel: node.data.label }),
+    [nodes],
   );
-  const edgesWithAccessibleLabels = useMemo(() => {
-    const labels = new Map(nodes.map((node) => [node.id, node.data.label]));
-    return edges.map((edge) => ({
-      ...edge,
-      ariaLabel: `Conexión de «${labels.get(edge.source) ?? 'idea desconocida'}» a «${labels.get(edge.target) ?? 'idea desconocida'}»`,
-    }));
-  }, [edges, nodes]);
+  const edgesWithAccessibleLabels = useMemo(() => withAccessibleEdgeLabels(nodes, edges), [edges, nodes]);
   const mapListChildren = useMemo(() => {
     if (!mapListView) return new Map<string, string>();
     const labels = new Map(nodes.map((node) => [node.id, node.data.label]));
@@ -1740,8 +1748,8 @@ export default function App() {
               </ol>
             </>}
             {!loading && !mapListView && <Suspense fallback={<div className="canvas-overlay" role="status">Cargando el mapa…</div>}>
-              <MapCanvas nodes={nodesWithCallbacks} edges={edgesWithAccessibleLabels} setNodes={setNodes} setEdges={setEdges}
-                setSelectedNodeId={setSelectedNodeId} aiBusy={aiBusy} />
+              <MapCanvas nodes={nodesWithAccessibleLabels} edges={edgesWithAccessibleLabels} setNodes={setNodes} setEdges={setEdges}
+                setSelectedNodeId={setSelectedNodeId} onLabelChange={updateLabel} aiBusy={aiBusy} />
             </Suspense>}
             </>}
           </div>

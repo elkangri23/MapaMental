@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState, type Dispatch, type MouseEvent as ReactMouseEvent, type SetStateAction } from 'react';
+import { createContext, memo, useCallback, useContext, useEffect, useState, type Dispatch, type MouseEvent as ReactMouseEvent, type SetStateAction } from 'react';
 import '@xyflow/react/dist/style.css';
 import {
   addEdge,
@@ -22,16 +22,20 @@ import {
 import type { IdeaNodeData } from '@espacio-visual/domain';
 
 type IdeaNode = Node<IdeaNodeData, 'idea'>;
+type LabelChange = (id: string, label: string) => void;
+const LabelChangeContext = createContext<LabelChange>(() => undefined);
 type Props = {
   nodes: IdeaNode[];
   edges: Edge[];
   setNodes: Dispatch<SetStateAction<IdeaNode[]>>;
   setEdges: Dispatch<SetStateAction<Edge[]>>;
   setSelectedNodeId: (id: string) => void;
+  onLabelChange: LabelChange;
   aiBusy: boolean;
 };
 
 function IdeaNodeView({ id, data, selected }: NodeProps<IdeaNode>) {
+  const onLabelChange = useContext(LabelChangeContext);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const tone = data.tone ?? 'lavender';
@@ -45,7 +49,7 @@ function IdeaNodeView({ id, data, selected }: NodeProps<IdeaNode>) {
           onChange={(event) => {
             setDraft(event.target.value);
             const label = event.target.value.trim();
-            if (label) data.onLabelChange?.(id, label);
+            if (label) onLabelChange(id, label);
           }}
           onBlur={() => setEditing(false)}
           onKeyDown={(event) => { if (event.key === 'Enter' || event.key === 'Escape') event.currentTarget.blur(); }} />
@@ -81,7 +85,7 @@ const ariaLabelConfig = {
   'handle.ariaLabel': 'Punto de conexión',
 };
 
-function MapCanvas({ nodes, edges, setNodes, setEdges, setSelectedNodeId, aiBusy }: Props) {
+function MapCanvas({ nodes, edges, setNodes, setEdges, setSelectedNodeId, onLabelChange, aiBusy }: Props) {
   const [minimumZoom, setMinimumZoom] = useState(() => window.matchMedia('(max-width: 760px)').matches ? 0.4 : 0.25);
   useEffect(() => {
     const mobileViewport = window.matchMedia('(max-width: 760px)');
@@ -105,14 +109,16 @@ function MapCanvas({ nodes, edges, setNodes, setEdges, setSelectedNodeId, aiBusy
 
   return (
     <ReactFlowProvider>
-      <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} ariaLabelConfig={ariaLabelConfig}
-        onlyRenderVisibleElements={nodes.length >= 100} nodesDraggable={!aiBusy} nodesConnectable={!aiBusy}
-        elementsSelectable={!aiBusy} deleteKeyCode={null} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
-        onConnect={onConnect} onNodeClick={onNodeClick} fitView fitViewOptions={fitViewOptions} minZoom={minimumZoom} maxZoom={1.6}>
-        <Background variant={BackgroundVariant.Dots} gap={23} size={1} color="#dfe3ee" />
-        <Controls position="bottom-left" showInteractive={false} />
-        {nodes.length <= minimapMaxNodes && <MiniMap position="bottom-right" pannable zoomable nodeStrokeWidth={2} />}
-      </ReactFlow>
+      <LabelChangeContext.Provider value={onLabelChange}>
+        <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} ariaLabelConfig={ariaLabelConfig}
+          onlyRenderVisibleElements={nodes.length >= 100} nodesDraggable={!aiBusy} nodesConnectable={!aiBusy}
+          elementsSelectable={!aiBusy} deleteKeyCode={null} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
+          onConnect={onConnect} onNodeClick={onNodeClick} fitView fitViewOptions={fitViewOptions} minZoom={minimumZoom} maxZoom={1.6}>
+          <Background variant={BackgroundVariant.Dots} gap={23} size={1} color="#dfe3ee" />
+          <Controls position="bottom-left" showInteractive={false} />
+          {nodes.length <= minimapMaxNodes && <MiniMap position="bottom-right" pannable zoomable nodeStrokeWidth={2} />}
+        </ReactFlow>
+      </LabelChangeContext.Provider>
     </ReactFlowProvider>
   );
 }
