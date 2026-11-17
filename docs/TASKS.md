@@ -44,6 +44,8 @@ Implementado en T-010: la vista previa y el contexto del proveedor incluyen un r
 
 - **Seguimiento de T-015/T-017 — recuperación si ya existe la copia de un documento corrupto.** Se reprodujo que un nombre basado solo en `Date.now()` podía colisionar y bloquear la restauración con `EEXIST`. El nombre ahora incorpora UUID. El build completo pasó y la repetición aislada recuperó el proyecto en revisión 2 aun con una copia `.invalid` preexistente. Restan otros escenarios de almacenamiento y seguridad enumerados en estas tareas.
 
+- **Seguimiento de T-015 — redirecciones de proveedor.** Un mock de loopback respondió con 302 al consultar modelos; la petición se rechazó con error genérico y la ruta destino no recibió tráfico. Esto verifica la política contra redirecciones en la prueba de conexión, no completa la matriz DNS/TLS/SNI.
+
 ## Pausa de desarrollo — estabilización
 
 - **Seguimiento de T-017.** En Chrome se comprobaron el fallo de guardado previo a crear proyecto, el reintento, la restauración con autosave pendiente y la bifurcación después de una revisión externa enviada por API. El guardado previo a una acción y el autosave usan el mismo flujo. Se añadió aviso antes de cerrar con cambios pendientes.

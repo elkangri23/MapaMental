@@ -673,3 +673,9 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - La revisión del flujo encontró que el nombre `project-corrupt-${Date.now()}.json.invalid` podía colisionar con un archivo existente. El repro aislado creó un proyecto de fixture, guardó una copia válida, corrompió el archivo principal y precreó el nombre que iba a usar la restauración; el intento devolvió `EEXIST` y no recuperó el proyecto.
 - Se añadió un UUID al nombre de la copia `.invalid`. Tras `npm run build`, se repitió el mismo flujo con otra carpeta temporal y el mismo sello temporal forzado; la restauración completó la revisión 2, conservando la copia dañada existente y la copia válida.
 - Todos los archivos de prueba quedaron en `%TEMP%`; no se usaron proyectos del usuario. El build terminó bien; Vite conserva el aviso de que el bundle principal supera 500 kB. T-015/T-017 siguen parciales por los demás escenarios pendientes.
+
+### Redirección del endpoint de modelos del proveedor — T-015 — 2026-11-17
+
+- Se usó `testProviderConnection` con un perfil compatible con OpenAI apuntando a un mock HTTP en loopback. El mock respondió `302` desde `/v1/models` hacia `/redirect-target` y registró las rutas recibidas.
+- El cliente rechazó la redirección y devolvió el error genérico de conexión (502); el mock solo recibió `/v1/models`, nunca `/redirect-target`. La respuesta simulada de destino no se leyó.
+- El perfil, el almacén de configuración y el mock se aislaron en `%TEMP%`; se eliminó esa carpeta al terminar. La evidencia confirma la política `redirect: 'error'` para la consulta de modelos, no cubre DNS público, TLS/SNI ni todos los proveedores. T-015 permanece parcial.
