@@ -761,8 +761,9 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 
 - La revisión estática de `project-store` encontró que varios flujos llamaban directamente a `copyFile`. Si una operación fallaba después de crear el destino, podía quedar un archivo parcial en `backups`; en migración y restauración también había rutas donde una copia fallida quedaba fuera del `catch` de verificación.
 - Se centralizó `copyFileExclusive`: en errores distintos de `EEXIST` intenta retirar el destino parcial y vuelve a lanzar el error original; `EEXIST` conserva el archivo previo. `copyVerifiedSnapshot` también intenta retirar el archivo si no pasa la verificación. Los cambios cubren snapshots de migración, el backup previo a restauración, la copia del documento dañado y backups de guardado/reintento.
-- `npm run build --workspace @espacio-visual/server` terminó con código 0. `git diff --check` no informó errores.
-- No se provocó ENOSPC ni interrupción durante copia en esta pasada. La eliminación es best-effort: si también falla la operación de limpieza por ACL o un fallo físico, podría persistir un parcial. Mantener T-015/T-017 abiertas hasta probar el caso de runtime y otros fallos de disco.
+- Un arnés temporal cargó el almacenamiento compilado desde una raíz de proyectos aislada y sustituyó `fs/promises.copyFile` para escribir `{"partial":` en el destino y luego lanzar `ENOSPC`. `saveProject` propagó el error original, dejó el `project.json` idéntico byte a byte a la revisión 1 y retiró el destino parcial (cero archivos en `backups`).
+- Se restauró `copyFile` real y el reintento guardó el nombre nuevo en revisión 2 con una sola copia recuperable válida. El arnés y todos sus archivos temporales se retiraron.
+- `npm run build --workspace @espacio-visual/server` terminó con código 0. `git diff --check` no informó errores. La retirada es best-effort: no se probó que la operación de limpieza también falle por ACL o por un disco realmente lleno. T-015/T-017 siguen parciales.
 
 ### Modelo inicial de amenazas — T-015 — 2026-11-17
 
