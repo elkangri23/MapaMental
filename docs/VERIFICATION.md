@@ -660,3 +660,10 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - En la vista previa repetida se mostraron tres notas diferentes y cuatro pasos de diagrama; no hubo viñetas repetidas. La inspección visual confirmó el orden y la presentación del recorrido.
 - Se añadió la diapositiva desde Chrome. Tras recargar, el editor conservó título, subtítulo, notas y los cuatro pasos. «Deshacer diapositiva» la retiró, mostró el aviso y dejó la presentación en cero.
 - `npm run build` completó el build de dominio, servidor y web. Vite advirtió que el chunk principal supera 500 kB. El servicio y el perfil de prueba estaban aislados; el proyecto era ficticio.
+
+### Repetición de chat con proveedor real no disponible — T-009/T-010 — 2026-11-17
+
+- Se arrancó el servicio con `APPDATA`, configuración de proveedor, proyectos y registros aislados en `%TEMP%`; se usó exclusivamente la fixture ficticia «Huerto de balcón temporal».
+- El bootstrap, la sesión local, la lectura de proyecto y el endpoint de chat respondieron correctamente. La petición a FreeLLMAPI con el perfil/modelo temporal acabó a los 60 segundos con el evento SSE terminal `UPSTREAM_ERROR`; el mensaje al cliente no reveló el cuerpo upstream ni credenciales. No se obtuvo texto del modelo, por lo que no cuenta como evaluación semántica.
+- Ollama (`127.0.0.1:11434`) y LM Studio (`127.0.0.1:1234`) tampoco estaban escuchando en la comprobación local del 2026-11-17. No se pudieron repetir estas validaciones con un modelo local real.
+- El proceso de prueba se detuvo y no se modificaron proyectos del usuario. T-009/T-010 permanecen abiertas hasta que un proveedor complete peticiones reales con éxito y se recorra su salida.
