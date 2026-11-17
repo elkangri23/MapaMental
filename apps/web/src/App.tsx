@@ -128,6 +128,7 @@ const mapListPageSize = 250;
 export default function App() {
   const [nodes, setNodes] = useState<IdeaNode[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+  const [nodeLabelRevision, setNodeLabelRevision] = useState(0);
   const [slides, setSlides] = useState<PresentationSlide[]>([]);
   const [workspaceView, setWorkspaceView] = useState<'map' | 'slides'>('map');
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
@@ -540,13 +541,14 @@ export default function App() {
   const updateLabel = useCallback((id: string, label: string) => {
     if (aiBusy) return;
     setNodes((current) => current.map((node) => node.id === id ? { ...node, ariaLabel: label, data: { ...node.data, label } } : node));
+    setNodeLabelRevision((revision) => revision + 1);
   }, [aiBusy]);
 
   const nodesWithAccessibleLabels = useMemo(
     () => nodes.map((node) => node.ariaLabel === node.data.label ? node : { ...node, ariaLabel: node.data.label }),
     [nodes],
   );
-  const edgesWithAccessibleLabels = useMemo(() => withAccessibleEdgeLabels(nodes, edges), [edges, nodes]);
+  const edgesWithAccessibleLabels = useMemo(() => withAccessibleEdgeLabels(nodes, edges), [edges, nodeLabelRevision]);
   const mapListChildren = useMemo(() => {
     if (!mapListView) return new Map<string, string>();
     const labels = new Map(nodes.map((node) => [node.id, node.data.label]));

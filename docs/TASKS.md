@@ -69,6 +69,10 @@ Implementado en T-010: la vista previa y el contexto del proveedor incluyen un r
 
 - **Seguimiento de T-015 — respuesta DNS privada y TLS/SNI.** `127.0.0.1.nip.io` resolvió a loopback; el control de proveedor devolvió 400 antes de conectar y el listener canario registró cero sockets. El 2026-11-17, un servidor HTTPS de prueba con una CA local confiada completó la consulta de modelos y observó SNI `localhost`. La prueba determinista de rebinding ejercitó las funciones de resolución SSRF y lookup de socket de producción con un DNS inyectado, sin petición de red; sigue pendiente combinarlas en un recorrido HTTP y probar proveedores reales en Windows.
 
+### Seguimiento T-028 — memoización de nombres accesibles de conexiones
+
+En `App`, las etiquetas de aristas ya no se vuelven a derivar al cambiar posición o selección de nodos. La memoización se invalida cuando cambia el conjunto de aristas o cuando se confirma un nuevo nombre de idea; se conservan así los nombres accesibles sin trabajo repetido en interacciones que no modifican etiquetas. `npm run build` pasó. No se midió una reducción temporal. Falta repetir el perfil de canvas de 10.000 ideas con objetivo y entrada reproducibles. Evidencia: [`VERIFICATION.md`](VERIFICATION.md#memoización-de-etiquetas-accesibles-de-conexiones--t-028).
+
 ## Pausa de desarrollo — estabilización
 
 - **Seguimiento de T-017.** En Chrome se comprobaron el fallo de guardado previo a crear proyecto, el reintento, la restauración con autosave pendiente y la bifurcación después de una revisión externa enviada por API. El guardado previo a una acción y el autosave usan el mismo flujo. Se añadió aviso antes de cerrar con cambios pendientes.

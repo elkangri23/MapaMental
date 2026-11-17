@@ -175,3 +175,9 @@ La ruta anterior llamaba a `updateLabel` en cada `input`, haciendo que App volvi
 Se repitió el recorrido con fixture aislado de 10.000 ideas/9.999 conexiones en Chrome móvil 390×844, CPU 1× y sin limitación de red. El navegador montó 448 nodos y 513 conexiones visibles en la muestra. El botón de `node-3443` se enfocó por script y la secuencia F2, Control+A, texto y Enter usó teclado DevTools. La revisión de API se mantuvo en 1 durante el borrador; al confirmar, guardó revisión 2 y dos aristas reflejaron la etiqueta nueva.
 
 La traza registró un `keydown` de 2.407 ms (3 ms de input delay, 1.733 ms de procesamiento y 671 ms de presentación), CLS 0 y 38 ms de reflow sin función atribuida. El resumen no desglosa cuál tecla de la secuencia produjo el máximo. El foco programático impide tomarlo como INP físico o de campo, pero sí alerta de un coste elevado en el ciclo del canvas grande. El fixture se retiró. Próximo: identificar qué parte del render/DOM explica esa interacción, revisar la estrategia de zoom/visibilidad de un canvas grande y repetir por rutas de UI separables.
+
+## Continuación — memoización de etiquetas accesibles de conexiones — T-028
+
+La derivación `edgesWithAccessibleLabels` ya no depende de cada cambio de referencia de `nodes`: ahora se invalida cuando cambia la lista de aristas o cuando se confirma un renombrado de idea. Así, cambios de posición/selección reutilizan las etiquetas existentes, y un cambio de nombre vuelve a derivarlas para conservar la descripción accesible de cada conexión.
+
+`npm run build` pasó para dominio, servidor y web. No se repitió el perfil de 10.000 ideas; no se afirma una reducción temporal. T-028 sigue pendiente de medir una interacción reproducible, guardar/confirmar y comparar la traza antes y después bajo el mismo fixture.
