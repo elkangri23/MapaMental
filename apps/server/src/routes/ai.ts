@@ -395,15 +395,18 @@ function removeRepeatedDiagramBullets(draft: AiSlideDraft): void {
   });
 }
 
-function markUngroundedDiagramSteps(draft: AiSlideDraft, context: string): void {
+function markUngroundedDiagramContent(draft: AiSlideDraft, context: string): void {
   if (!draft.diagramSteps?.length) return;
   const contextTokens = slideTextTokens(context);
-  draft.diagramSteps = draft.diagramSteps.map((step) => {
-    if (/pendiente de (?:confirmar|documentar|definir)/i.test(step)) return step;
-    const stepTokens = slideTextTokens(step);
-    const supportedTerms = [...stepTokens].filter((token) => contextTokens.has(token)).length;
-    return supportedTerms >= 2 ? step : `Pendiente de confirmar: ${step}`;
-  });
+  const mark = (text: string) => {
+    if (/pendiente de (?:confirmar|documentar|definir)/i.test(text)) return text;
+    const textTokens = slideTextTokens(text);
+    const supportedTerms = [...textTokens].filter((token) => contextTokens.has(token)).length;
+    return supportedTerms >= 2 ? text : `Pendiente de confirmar: ${text}`;
+  };
+  draft.diagramSteps = draft.diagramSteps.map(mark);
+  draft.bullets = draft.bullets.map(mark);
+  draft.body = 'Este recorrido organiza los pasos del mapa; revisa los elementos pendientes antes de utilizarlo.';
 }
 
 function sanitizeDeckSlides(value: unknown, scope: ReturnType<typeof scopeFor>, statusCode: number, count?: number): AiDeckSlide[] {
@@ -605,7 +608,7 @@ Omite sugerencias duplicadas, genéricas o que requieran hechos ausentes. Los va
     if (format === 'diagram') {
       delete draft.mockFields;
       delete draft.table;
-      markUngroundedDiagramSteps(draft, context);
+      markUngroundedDiagramContent(draft, context);
       removeRepeatedDiagramBullets(draft);
     } else if (format === 'mock-form') {
       delete draft.diagramSteps;
