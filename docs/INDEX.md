@@ -23,12 +23,14 @@ Actualizado: 2026-11-17. El estado se refiere a la documentación, no a que la f
 | [`STATUS.md`](STATUS.md) | Resumen de estado, bloqueos y próximo trabajo | T-004 cerrada; tareas activas actualizadas el 2026-11-17 |
 | [`ROADMAP.md`](ROADMAP.md) | Hitos y condiciones de salida | T-011 completada; resumen global de contexto IA implementado; validaciones externas/locales siguen pendientes |
 | [`TASKS.md`](TASKS.md) | Estado detallado de trabajo | Fuente única de progreso; T-010 incorpora resumen global estructural |
+| [`CHANGELOG.md`](CHANGELOG.md) | Cambios visibles agrupados por versión | Registro de cambios desde esta auditoría |
 | [`decisions/README.md`](decisions/README.md) | Índice de ADR y su estado | ADR-0012 y ADR-0014–0019 aceptados; identidad/MFA parcial, contratos, contexto, volumen y trazabilidad IA documentados |
 | [`reviews/2026-11-14/`](reviews/2026-11-14/) | Informes de revisión Goldfish del diseño | Completados; hallazgos registrados |
 | [`reviews/2026-11-15-code-audit.md`](reviews/2026-11-15-code-audit.md) | Auditoría estática de implementación, correcciones y pendientes | Correcciones compiladas; recorridos dinámicos pendientes |
 | [`reviews/2026-11-16-auth-mfa-audit.md`](reviews/2026-11-16-auth-mfa-audit.md) | Revisión estática de OIDC, MFA, passkeys y accesibilidad | Correcciones compiladas; recorridos reales y lector de pantalla pendientes |
 | [`reviews/2026-11-17-security-audit.md`](reviews/2026-11-17-security-audit.md) | Revisión de seguridad retomada y manejo seguro de excepciones de autenticación | Corrección compilada; pentest y recorridos dinámicos siguen pendientes |
 | [`reviews/2026-11-17-wcag-aa-audit.md`](reviews/2026-11-17-wcag-aa-audit.md) | Revisión WCAG de interfaz, hallazgos móviles y arreglos | Lighthouse 100 en Accessibility en mapa y presentación; revisión manual/lector de pantalla pendientes |
+| [`reviews/2026-11-17-performance-audit.md`](reviews/2026-11-17-performance-audit.md) | Rendimiento de carga, renderizado y mapas grandes | Mejoras aplicadas; comparación a escala y optimización de chunk pendientes |
 | [`reviews/2026-11-15-security-audit.md`](reviews/2026-11-15-security-audit.md) | Auditoría de seguridad, cambios, límites y pendientes | Build y auditoría de dependencias verificados; revisión de código, no pentest |
 
 ## Cómo mantenerlo actualizado

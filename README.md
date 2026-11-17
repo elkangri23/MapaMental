@@ -51,7 +51,9 @@ Para abrir la compilación de producción local: `npm run build` y después `.\s
 - [Roadmap](docs/ROADMAP.md)
 - [Ideas de extensiones futuras](docs/IDEAS_FUTURAS.md)
 - [Tareas y backlog](docs/TASKS.md)
+- [Historial de cambios](docs/CHANGELOG.md)
 - [Criterios de aceptación](docs/VERIFICATION.md)
+- [Informe de auditoría de rendimiento](docs/reviews/2026-11-17-performance-audit.md)
 - [Informe de auditoría de seguridad y estado](docs/reviews/2026-11-15-security-audit.md)
 - [Decisiones de arquitectura (ADR)](docs/decisions/README.md)
 

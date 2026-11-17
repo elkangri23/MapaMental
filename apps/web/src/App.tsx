@@ -1,5 +1,5 @@
 import { PersonalProfileButton } from './PersonalProfileButton.js';
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent } from 'react';
 import {
   addEdge,
   Background,
@@ -132,6 +132,20 @@ function IdeaNodeView({ id, data, selected }: NodeProps<IdeaNode>) {
 }
 
 const nodeTypes = { idea: IdeaNodeView };
+const fitViewOptions = { padding: 0.25 };
+const flowAriaLabelConfig = {
+  'node.a11yDescription.default': 'Pulsa Intro o espacio para seleccionar una idea. Pulsa Suprimir para eliminarla o Escape para cancelar.',
+  'node.a11yDescription.keyboardDisabled': 'Pulsa Intro o espacio para seleccionar una idea. Después usa las flechas para moverla, Suprimir para eliminarla o Escape para cancelar.',
+  'node.a11yDescription.ariaLiveMessage': ({ direction, x, y }: { direction: string; x: number; y: number }) => `Idea seleccionada movida ${direction}. Nueva posición: x ${x}, y ${y}.`,
+  'edge.a11yDescription.default': 'Pulsa Intro o espacio para seleccionar una conexión. Después pulsa Suprimir para eliminarla o Escape para cancelar.',
+  'controls.ariaLabel': 'Controles del mapa',
+  'controls.zoomIn.ariaLabel': 'Acercar',
+  'controls.zoomOut.ariaLabel': 'Alejar',
+  'controls.fitView.ariaLabel': 'Ajustar mapa a la vista',
+  'controls.interactive.ariaLabel': 'Alternar interactividad',
+  'minimap.ariaLabel': 'Minimapa',
+  'handle.ariaLabel': 'Punto de conexión',
+};
 
 function drawWrappedText(context: CanvasRenderingContext2D, value: string, x: number, y: number, maxWidth: number, lineHeight: number, maxLines: number) {
   const paragraphs = value.split(/\r?\n/);
@@ -582,6 +596,20 @@ export default function App() {
       ariaLabel: `Conexión de «${labels.get(edge.source) ?? 'idea desconocida'}» a «${labels.get(edge.target) ?? 'idea desconocida'}»`,
     }));
   }, [edges, nodes]);
+  const mapListChildren = useMemo(() => {
+    if (!mapListView) return new Map<string, Array<{ id: string; label: string }>>();
+    const labels = new Map(nodes.map((node) => [node.id, node.data.label]));
+    const children = new Map<string, Array<{ id: string; label: string }>>();
+    for (const edge of edges) {
+      const siblings = children.get(edge.source) ?? [];
+      siblings.push({ id: edge.id, label: labels.get(edge.target) ?? 'Idea no disponible' });
+      children.set(edge.source, siblings);
+    }
+    return children;
+  }, [edges, mapListView, nodes]);
+  const handleFlowNodeClick = useCallback((_event: ReactMouseEvent, node: IdeaNode) => {
+    setSelectedNodeId(node.id);
+  }, []);
 
   const onNodesChange: OnNodesChange<IdeaNode> = useCallback((changes) => {
     if (aiBusy) return;
@@ -1780,24 +1808,13 @@ export default function App() {
             <div className="canvas-badge"><span className="badge-dot" /> Mapa de ideas <span className="badge-separator">·</span> {nodes.length} ideas</div>
             {loading && <div className="canvas-overlay">Abriendo tu espacio…</div>}
             {!loading && !nodes.length && <div className="canvas-empty">Añade una idea para empezar tu mapa.</div>}
-            {!loading && mapListView && <ol className="map-text-list">{nodes.map((node) => <li key={node.id}><button type="button" onClick={() => setSelectedNodeId(node.id)} aria-current={selectedNodeId === node.id ? 'true' : undefined}>{node.data.label}</button><ul>{edges.filter((edge) => edge.source === node.id).map((edge) => <li key={edge.id}>{nodes.find((item) => item.id === edge.target)?.data.label ?? 'Idea no disponible'}</li>)}</ul></li>)}</ol>}
+            {!loading && mapListView && <ol className="map-text-list">{nodes.map((node) => <li key={node.id}><button type="button" onClick={() => setSelectedNodeId(node.id)} aria-current={selectedNodeId === node.id ? 'true' : undefined}>{node.data.label}</button><ul>{(mapListChildren.get(node.id) ?? []).map((child) => <li key={child.id}>{child.label}</li>)}</ul></li>)}</ol>}
             {!mapListView && <ReactFlow
               nodes={nodesWithCallbacks}
               edges={edgesWithAccessibleLabels}
               nodeTypes={nodeTypes}
-              ariaLabelConfig={{
-                'node.a11yDescription.default': 'Pulsa Intro o espacio para seleccionar una idea. Pulsa Suprimir para eliminarla o Escape para cancelar.',
-                'node.a11yDescription.keyboardDisabled': 'Pulsa Intro o espacio para seleccionar una idea. Después usa las flechas para moverla, Suprimir para eliminarla o Escape para cancelar.',
-                'node.a11yDescription.ariaLiveMessage': ({ direction, x, y }) => `Idea seleccionada movida ${direction}. Nueva posición: x ${x}, y ${y}.`,
-                'edge.a11yDescription.default': 'Pulsa Intro o espacio para seleccionar una conexión. Después pulsa Suprimir para eliminarla o Escape para cancelar.',
-                'controls.ariaLabel': 'Controles del mapa',
-                'controls.zoomIn.ariaLabel': 'Acercar',
-                'controls.zoomOut.ariaLabel': 'Alejar',
-                'controls.fitView.ariaLabel': 'Ajustar mapa a la vista',
-                'controls.interactive.ariaLabel': 'Alternar interactividad',
-                'minimap.ariaLabel': 'Minimapa',
-                'handle.ariaLabel': 'Punto de conexión',
-              }}
+              ariaLabelConfig={flowAriaLabelConfig}
+              onlyRenderVisibleElements={nodes.length >= 100}
               nodesDraggable={!aiBusy}
               nodesConnectable={!aiBusy}
               elementsSelectable={!aiBusy}
@@ -1805,9 +1822,9 @@ export default function App() {
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
-              onNodeClick={(_, node) => setSelectedNodeId(node.id)}
+              onNodeClick={handleFlowNodeClick}
               fitView
-              fitViewOptions={{ padding: 0.25 }}
+              fitViewOptions={fitViewOptions}
               minZoom={0.25}
               maxZoom={1.6}
             >

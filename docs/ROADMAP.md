@@ -48,6 +48,10 @@ No se incluye colaboración en tiempo real, formularios funcionales, prototipos 
 
 ## Progreso vigente
 
+### Auditoría de rendimiento — T-028 — 2026-11-17
+
+En producción, el mapa de cinco ideas midió LCP 492 ms y CLS 0,00 en Chromium de escritorio sin throttling; 519,01 kB de JavaScript (159,07 kB gzip) y 208 elementos DOM. El LCP estuvo dominado por renderizado (485 ms). Se estabilizaron props del canvas, se hizo lineal la preparación de la vista de lista y se habilitó renderizado de elementos visibles desde 100 ideas. El build posterior pasó, pero no se obtuvo una segunda medida de carga comparable y el tamaño inicial sigue por encima de 500 kB. T-028 continúa abierta para perfiles controlados de 100/1.000/10.000 ideas e investigación del bundle. [Informe y evidencia](reviews/2026-11-17-performance-audit.md).
+
 T-004 queda completada: se actualizaron los documentos de producto y aceptación, se revisaron ADR-0001–0019 frente a la implementación y se registró el informe EGM de deriva. El escaneo final de 52 documentos Markdown confirmó 168 enlaces locales a archivo y 14 anclas sin destinos rotos. [Evidencia](VERIFICATION.md#cierre-documental-de-t-004--2026-11-17).
 
 T-011 ya permite elegir la cantidad de diapositivas en la conversión local. T-013 cuenta con ZIP e instalador compilados y un ciclo aislado de instalación/arranque/parada/desinstalación; queda verificar una actualización que conserve proyectos. Consulta [Tareas](TASKS.md) para los criterios y la verificación.
