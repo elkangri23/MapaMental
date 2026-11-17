@@ -674,6 +674,12 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Se añadió un UUID al nombre de la copia `.invalid`. Tras `npm run build`, se repitió el mismo flujo con otra carpeta temporal y el mismo sello temporal forzado; la restauración completó la revisión 2, conservando la copia dañada existente y la copia válida.
 - Todos los archivos de prueba quedaron en `%TEMP%`; no se usaron proyectos del usuario. El build terminó bien; Vite conserva el aviso de que el bundle principal supera 500 kB. T-015/T-017 siguen parciales por los demás escenarios pendientes.
 
+### Denegación ACL en carpeta de copias — T-015/T-017 — 2026-11-17
+
+- Se creó un proyecto fixture con revisión 1 y se guardó bajo una raíz `%TEMP%` aislada. Se guardó la ACL original de `backups`, se denegó al usuario actual el permiso de añadir archivos solo en esa carpeta e intentó guardar un cambio de nombre.
+- La copia previa falló con `EPERM` en `copyfile`. La lectura posterior del `project.json` conservó exactamente los bytes previos y revisión 1; no quedó un documento parcialmente actualizado.
+- Se restauró la ACL original y el reintento creó revisión 2 con el nuevo nombre. No se modificaron proyectos del usuario ni se agotó espacio; no cubre ACL de lectura/reemplazo, disco lleno ni interrupción durante restauración. El fixture permanece bajo `%TEMP%\MapaMental-acl-recovery-*`.
+
 ### Redirección del endpoint de modelos del proveedor — T-015 — 2026-11-17
 
 - Se usó `testProviderConnection` con un perfil compatible con OpenAI apuntando a un mock HTTP en loopback. El mock respondió `302` desde `/v1/models` hacia `/redirect-target` y registró las rutas recibidas.

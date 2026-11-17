@@ -72,6 +72,8 @@ En T-011 se mejoró la semántica del documento de impresión: cada diapositiva 
 
 En T-017 se provocó un fallo controlado en la escritura de la copia previa al guardado: la API devolvió 500 sin cambiar la revisión 1 y el reintento guardó revisión 2 al retirar el bloqueo. La restauración de una copia JSON malformada también devolvió 500 y conservó la revisión 2; una copia válida restauró el documento en revisión 3. Quedan permisos ACL, disco lleno, otros fallos a mitad de escritura y los escenarios de auditoría aún abiertos.
 
+En la continuación de T-015/T-017 se denegó mediante ACL el permiso de añadir archivos a la carpeta temporal `backups`. El guardado falló con `EPERM` en `copyfile`, conservó exactamente el archivo del proyecto en revisión 1 y se completó en revisión 2 después de restaurar la ACL original. Esto cubre el fallo al crear la copia previa; no simula disco lleno ni interrupción durante el reemplazo/restauración. [Evidencia](VERIFICATION.md#denegación-acl-en-carpeta-de-copias--t-015t-017--2026-11-17).
+
 ### Continuación de T-011 — 2026-11-16
 
 Se repitió el recorrido con perfil de navegador, proyecto y almacenamiento temporales. La presentación contenía tres diapositivas y el visor de impresión mostró tres páginas con contenido accesible, incluidos tabla, recorrido y campos ficticios. Se intentó usar «Guardar como PDF»; la ventana nativa se cerró durante la recuperación de la automatización, así que no se generó ni inspeccionó un archivo. T-011 sigue parcial. Siguiente paso: repetir el guardado con un medio fiable de controlar el cuadro nativo y examinar el PDF resultante, incluida la paginación y el orden de lectura.
