@@ -127,3 +127,11 @@ El fixture de 10.000 ideas tenía un JSON de 2.035.696 B. Antes de dividir el ca
 3. Identificar con trazas si conexiones, miniatura, layout, serialización o autosave dominan el caso de 10.000.
 
 T-028 sigue parcial. Las métricas observadas en este informe son de laboratorio y no equivalen a experiencia de usuarios reales.
+
+## Continuación — heap y cambios de página — 2026-11-17
+
+Se repitió el perfil con builds de producción y fixtures aislados de 10.000 ideas. Con 9.999 conexiones, el heap JavaScript estable muestreado por Chromium fue de unos 182,4 MB con el canvas montado y 27,5 MB en la lista paginada. Con los mismos nodos y sin conexiones fue de 163,9 MB en canvas y 17,5 MB en lista. La diferencia de unos 18 MB entre los canvas con y sin conexiones sugiere que los nodos y el estado interno del grafo dominan el coste observado. Los conteos DOM en canvas fueron 72 nodos/97 conexiones visibles en la muestra conectada y 72 nodos/0 conexiones en la otra.
+
+La lista generó una página de 250 filas en unos 0,9 s en el servidor de desarrollo. Diez cambios de página midieron 378–591 ms (mediana 550 ms) con emulación móvil y red Fast 3G; estas son mediciones de una sola pasada en desarrollo, no un objetivo de rendimiento ni un resultado de producción. En producción, tras el canvas, cambiar a la lista redujo el heap muestreado de 182 MB a 30 MB en el fixture conectado. No se forzó GC y `performance.memory` estima solo heap JS del renderer: no incluye memoria nativa, GPU, servidor ni consumo del sistema operativo. Los valores sirven para localizar el coste, no para presupuestar RAM.
+
+T-028 permanece abierta. Próximo paso: estudiar una representación del canvas que reduzca el estado retenido en mapas extremos y medirla repetidamente en producción; mantener la lista paginada como alternativa accesible. No se estableció un umbral automático ni se modificó qué vista aparece al abrir un proyecto.

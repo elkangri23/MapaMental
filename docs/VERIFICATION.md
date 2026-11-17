@@ -7,6 +7,12 @@
 - Con foco en «Anterior», Intro cambió del rango 9.751–10.000 a 9.501–9.750 y mantuvo el foco en el control. No se realizó recorrido con lector de pantalla real.
 - El perfil usó proyecto, perfil y configuración temporales; el fixture fue retirado al terminar. El límite de 250 reduce la carga del árbol accesible que hacía agotar el tiempo del protocolo al auditar 10.000 filas en una sola página.
 
+## Perfil del heap de mapas grandes — T-028 — 2026-11-17
+
+- En builds de producción y viewport móvil, se compararon fixtures aislados de 10.000 nodos con 0 y 9.999 conexiones. `performance.memory.usedJSHeapSize` se estabilizó en ~163,9 MB (canvas sin conexiones), ~182,4 MB (canvas con conexiones), ~17,5 MB (lista sin conexiones) y ~27,5 MB (lista con conexiones). Una muestra conectada bajó de ~182 MB a ~30 MB al desmontar el canvas.
+- El canvas montó 72 nodos visibles; con relaciones se montaron 97 conexiones visibles. Los números no representan toda la memoria del proceso: no incluyen buffers nativos/GPU o servidor, no se ejecutó GC explícito y cada variante se midió una sola vez. La diferencia orienta la siguiente investigación de T-028; no es un presupuesto de RAM.
+- En desarrollo con emulación móvil/Fast 3G, la vista de lista mostró su primera página en ~0,9 s y diez transiciones dieron 378–591 ms (mediana 550 ms). No se extrapola a producción ni se toma como una medición representativa de usuarios.
+
 ## Revisión de accesibilidad — 2026-11-17
 
 En la app local conectada, Lighthouse snapshot quedó en 100/100 Accessibility para mapa móvil/escritorio y presentación móvil/escritorio. A 320 px se corrigió el solapamiento entre el bloque de ideas vinculadas y el pie de presentación; el contenido ahora desplaza el pie y el botón «Copias» deja de fallar `target-size`. El editor no desborda horizontalmente a 320 o 640 CSS px. El chevrón decorativo se oscureció de 2,91:1 a 4,34:1. También se verificaron nombres en controles y foco visible del skip link. Informe y límites: [`reviews/2026-11-17-wcag-aa-audit.md`](reviews/2026-11-17-wcag-aa-audit.md). Esto no sustituye lector de pantalla ni evaluación completa de criterios A/AA.
