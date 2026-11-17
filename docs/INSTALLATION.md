@@ -23,16 +23,16 @@ El lanzador reinicia una instancia activa si cambia el modo. Para volver al modo
 
 ## Instalador Inno Setup
 
-El proyecto del instalador está preparado en `packaging\windows\setup.iss`. Está configurado para instalar por usuario, crear accesos directos en el menú Inicio y ofrecer un acceso directo opcional en el escritorio. La versión 0.1.0 se compiló con Inno Setup 6.7.3. Una comprobación aislada instaló los archivos, inició el servicio (HTTP 200), lo detuvo y desinstaló la aplicación. Falta recorrer la actualización desde una versión anterior y comprobar que conserva proyectos; esta guía aún no se ha validado de principio a fin desde los accesos directos.
+El proyecto del instalador está preparado en `packaging\windows\setup.iss`. Está configurado para instalar por usuario, crear accesos directos en el menú Inicio y ofrecer un acceso directo opcional en el escritorio. Las versiones 0.1.0 y 0.1.1 se compilaron con Inno Setup 6.7.3. El 2026-11-17, una prueba Windows aislada instaló 0.1.0, creó y guardó un proyecto, actualizó en la misma carpeta a 0.1.1, abrió el mapa conservado y desinstaló el programa. El desinstalador retiró el directorio de la app y el proyecto permaneció en la carpeta de datos separada. El recorrido usó los scripts incluidos para iniciar/detener; no valida todavía los accesos directos del menú Inicio, la opción del escritorio ni el flujo desde Configuración de Windows. Detalle en [`VERIFICATION.md`](VERIFICATION.md#actualizacion-del-instalador-windows-y-conservacion-de-proyectos--t-013).
 
 ### Recorrido pendiente del instalador
 
-Usa un perfil de Windows de prueba para comprobar el ciclo completo con datos separados.
+Usa un perfil estándar de Windows de prueba para cerrar la verificación pendiente de accesos directos y desinstalación desde Configuración. La actualización 0.1.0→0.1.1 y la conservación del proyecto ya se probaron con un directorio de instalación temporal.
 
-1. Ejecuta el instalador como usuario sin privilegios de administrador. Comprueba que instala bajo el perfil de ese usuario, crea los accesos directos de Inicio y respeta la elección del acceso directo de escritorio.
-2. Abre la aplicación desde Inicio. Crea un mapa de prueba, espera a «Guardado local» y usa «Detener Espacio Visual» para cerrar el servicio.
-3. Ejecuta un instalador de versión posterior en la misma carpeta. Abre la aplicación desde Inicio y comprueba que el mapa se conserva y se puede editar.
-4. Guarda y detén el servicio antes de desinstalar desde Configuración de Windows. Comprueba que se retiran la aplicación y sus accesos directos y que el mapa sigue en la carpeta de proyectos.
+1. Ejecuta el instalador como usuario estándar. Comprueba que instala bajo el perfil de ese usuario, crea los accesos directos de Inicio y respeta la elección del acceso directo de escritorio.
+2. Abre desde Inicio y detén desde el acceso directo correspondiente; inspecciona que el servicio arranca y se cierra correctamente.
+3. Ya verificado con los scripts del paquete: instala 0.1.0, guarda un proyecto, actualiza a 0.1.1 en la misma carpeta y comprueba que el mapa se conserva.
+4. Desinstala desde Configuración de Windows. Comprueba que se retiran la aplicación y sus accesos directos, y que el mapa sigue en la carpeta de proyectos. La desinstalación mediante `unins000.exe` ya dejó los datos intactos.
 
 ## Datos, actualización y retirada del paquete portátil
 

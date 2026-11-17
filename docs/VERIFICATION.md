@@ -925,3 +925,11 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - En el proyecto de muestra temporal se añadió una idea y el árbol accesible anunció la conexión con sus dos extremos. Se enfocó el botón de la idea por script, F2 abrió el campo, se cambió el nombre y Enter lo confirmó. El snapshot accesible mostró el nuevo nombre en el nodo y en la conexión; la UI terminó en «Guardado local».
 - Foco del nodo programático y entrada vía DevTools; no equivale a una prueba manual física ni a lector de pantalla. Solo valida el flujo breve de skip link, edición y nombre accesible, no T-016 completa ni rendimiento de un mapa grande.
 - Se cerraron Chrome y los procesos de desarrollo. El directorio aislado `%TEMP%\\mymap-roadmap-fc454afb7401436a964390b4ad824c6f` contiene datos generados únicamente para esta comprobación. La eliminación recursiva fue rechazada por la política de ejecución; queda pendiente retirar ese directorio temporal.
+
+### Actualización del instalador Windows y conservación de proyectos — T-013
+
+- Se generó un paquete temporal `0.1.1` usando el código del repositorio, Node `24.22.1` e Inno Setup `6.7.3`; `package.json` y `package-lock.json` se restauraron después al `0.1.0` versionado. Build, ZIP e instalador terminaron correctamente.
+- En `%TEMP%\\mymap-upgrade-test-20261117` se instaló `0.1.0` en una ruta temporal. La app se abrió y se guardó el marcador «Conservar tras actualizar»; el autosave indicó «Guardado local» y el archivo `project.json` contenía el marcador.
+- Con el servicio detenido, `0.1.1` se instaló sobre la misma ruta. La app actualizada volvió a mostrar el nodo y su conexión con ese nombre; el paquete instalado reportó versión `0.1.1`.
+- `unins000.exe /VERYSILENT` terminó con código 0, retiró el directorio de instalación y dejó intacto `project.json` con el marcador. Esto verifica la actualización y desinstalación mediante el uninstaller; no valida los accesos directos ni la retirada desde Configuración de Windows.
+- Los datos del perfil y proyecto permanecen en `%TEMP%\\mymap-upgrade-test-20261117`; Chrome y el servicio están cerrados. No se intentó una segunda eliminación recursiva tras el rechazo de política registrado para la fixture temporal de la comprobación anterior.

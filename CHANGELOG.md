@@ -1,5 +1,6 @@
 # Cambios
 
+- Se verificó una actualización aislada del instalador Windows de 0.1.0 a 0.1.1 conservando el proyecto de prueba y sus datos al desinstalar.
 - El canvas mantiene etiquetas accesibles en nodos y conexiones desde su carga/creación y reutiliza ambos arrays al mover o seleccionar nodos.
 - Las tarjetas IA se orientan por la cobertura y los vacíos explícitos de cada rama; el calendario de siembra ya no hereda supuestos de clima o fechas añadidos por el modelo.
 
