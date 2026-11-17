@@ -84,6 +84,7 @@ Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos ta
 
 - En un proyecto temporal, el mapa completo produjo una expansión para recoger la ubicación/clima pendientes y dos diapositivas distintas para cosecha: calendario de tabla y ficha con formulario ficticio. La consulta de la rama Cosecha devolvió tres tarjetas: expansión del calendario, formulario ficticio para Ficha de ejemplo de cosecha y recorrido visual para Cosecha.
 - Los destinos de las tres tarjetas de rama pertenecían a la selección enviada. Las tarjetas anunciaron `mock-form` y `diagram` para las diapositivas. La respuesta generó dos propuestas diferentes en 3,7 segundos. Esta ronda mejora la cobertura de selección global y de rama, pero no completa dos rondas de aceptación completas ni el ciclo de aplicar/deshacer de cada formato.
+- En las tarjetas de la rama, el recorrido (6 pasos) y el formulario (6 campos) se generaron, aplicaron y deshicieron por API. Las revisiones avanzaron de 14 a 16 y de 16 a 18; el proyecto quedó con cero diapositivas. En una consulta nueva al mapa completo, tras reforzar la instrucción contra ramas ausentes, la expansión pidió ubicación/clima y la tarjeta de recorrido apuntó a Cosecha. La tercera tarjeta volvió a proponer una tabla de cultivos para la ficha de cosecha, un cruce de tema/destino que requiere seguir afinando la calidad.
 
 #### Modelos adicionales y respuestas lentas
 
