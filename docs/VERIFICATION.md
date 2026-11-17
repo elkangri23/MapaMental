@@ -20,6 +20,12 @@
 - El árbol de accesibilidad agotó el timeout al intentar obtener un snapshot con el canvas cargado; el DOM consultable tenía 48 nodos visibles en ese intento. El próximo perfil necesita apuntar por coordenadas/UI física al nodo y capturar un ciclo que persista, además de aislar el coste de presentación.
 - Se retiró el fixture y se detuvieron los servicios temporales.
 
+## Aceptación del editor con borrador local — T-028 — 2026-11-17
+
+- En un fixture aislado de tres ideas y dos conexiones, hacer clic en «Idea de prueba A» y pulsar F2 abrió «Nombre de la idea» con foco. Al escribir un título nuevo, la revisión del API permaneció en 1 mientras el texto estaba en edición; Enter confirmó la primera edición, guardó revisión 2 y ambas aristas anunciaron el título actualizado.
+- Se reabrió el editor con F2, se escribió otro borrador y la API permaneció en revisión 3 hasta pulsar Escape. Escape confirmó el borrador, ambas etiquetas accesibles de conexión se actualizaron y el autosave terminó en «Guardado local», revisión 4.
+- El fixture y configuración estaban bajo `.perf-run`; se cerró la pestaña de prueba, detuvieron los servicios y retiró el directorio. El recorrido confirma el comportamiento del commit-on-blur y que no se persisten caracteres intermedios. No mide INP ni rendimiento de un mapa grande.
+
 ## Vista de lista paginada en mapas grandes — T-028/T-016 — 2026-11-17
 
 - Fixture aislado de 10.000 ideas. La lista presenta 250 botones por página, 40 páginas en total y anuncia el rango visible. Seleccionar la última idea mostró el rango 9.751–10.000 y la mantuvo seleccionada; las ideas fuera de la página no se duplican en el DOM.
