@@ -2,6 +2,7 @@
 
 - Las propuestas de tabla con celdas «Pendiente de confirmar» ya no conservan texto ni viñetas generadas que podrían introducir fechas o recomendaciones sin base en el mapa; la diapositiva explica de forma neutral qué dato hay que completar.
 - Las sugerencias explícitas de «pasos numerados», «secuencia de pasos» y «proceso de …» ahora se clasifican como diapositivas de recorrido en vez de diapositivas genéricas.
+- Los pasos del diagrama que no comparten al menos dos términos concretos con el contexto del proyecto se etiquetan «Pendiente de confirmar» antes de mostrar el borrador.
 - Se recorrió en Chrome el ciclo real de sugerencia de calendario, borrador editable, aplicación, persistencia y deshacer con FreeLLMAPI y un perfil/proyecto aislados.
 - Las sugerencias IA exigen IDs de destino válidos y acciones variadas; las etiquetas de formato `table`, `diagram` y `mock-form` se normalizan como creación de diapositiva cuando corresponde.
 - En mapas de siembra con calendario y datos pendientes, el chat conserva una sugerencia de tabla contextual; si el modelo omite la tabla al desarrollar esa tarjeta, el servidor solicita una corrección antes de devolver el borrador.

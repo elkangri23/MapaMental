@@ -395,6 +395,17 @@ function removeRepeatedDiagramBullets(draft: AiSlideDraft): void {
   });
 }
 
+function markUngroundedDiagramSteps(draft: AiSlideDraft, context: string): void {
+  if (!draft.diagramSteps?.length) return;
+  const contextTokens = slideTextTokens(context);
+  draft.diagramSteps = draft.diagramSteps.map((step) => {
+    if (/pendiente de (?:confirmar|documentar|definir)/i.test(step)) return step;
+    const stepTokens = slideTextTokens(step);
+    const supportedTerms = [...stepTokens].filter((token) => contextTokens.has(token)).length;
+    return supportedTerms >= 2 ? step : `Pendiente de confirmar: ${step}`;
+  });
+}
+
 function sanitizeDeckSlides(value: unknown, scope: ReturnType<typeof scopeFor>, statusCode: number, count?: number): AiDeckSlide[] {
   const invalid = (message: string) => statusCode === 502 ? new InvalidModelOutput(message) : invalidBody(message);
   if (!Array.isArray(value) || value.length < 1 || value.length > AI_DECK_SLIDE_LIMIT) {
@@ -594,6 +605,7 @@ Omite sugerencias duplicadas, genéricas o que requieran hechos ausentes. Los va
     if (format === 'diagram') {
       delete draft.mockFields;
       delete draft.table;
+      markUngroundedDiagramSteps(draft, context);
       removeRepeatedDiagramBullets(draft);
     } else if (format === 'mock-form') {
       delete draft.diagramSteps;
