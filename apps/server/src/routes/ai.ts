@@ -134,7 +134,7 @@ function explicitlyRequestsVisualJourney(value: string): boolean {
 
 function explicitlyRequestsDiagram(value: string): boolean {
   const text = value.normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('es');
-  return /\b(diagrama|flujo de trabajo|flujo del proceso|diagrama de proceso|proceso visual)\b/u.test(text);
+  return /\b(diagrama|flujo de trabajo|flujo del proceso|diagrama de proceso|proceso visual|pasos numerados|secuencia de pasos|recorrido paso a paso|proceso de (?:la )?[\p{L}\p{N}-]+|procedimiento de (?:la )?[\p{L}\p{N}-]+)\b/u.test(text);
 }
 
 function explicitlyRequestsMockForm(value: string): boolean {
