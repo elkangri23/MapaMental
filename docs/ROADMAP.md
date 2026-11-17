@@ -21,6 +21,8 @@ También se endureció la clasificación de nombres DNS con punto final: `localh
 
 La petición de conexión a `127.0.0.1.nip.io`, resuelto a loopback, se rechazó con 400 antes de abrir socket; un listener canario confirmó cero conexiones. Esto verifica el rechazo de una respuesta DNS privada, no una carrera de DNS rebinding ni TLS/SNI. [Evidencia](VERIFICATION.md#resolución-dns-a-loopback-bloqueada-antes-de-conectar--t-015--2026-11-17).
 
+En T-015, la conexión HTTPS ahora fija explícitamente el SNI al hostname del perfil y exige validación del certificado TLS. `npm run build` pasó con Node 24.22.2; el comportamiento TLS todavía requiere un recorrido con certificado de prueba y no cierra DNS rebinding. [Evidencia](VERIFICATION.md#política-explícita-de-tls-y-sni--t-015--2026-11-17).
+
 ### Puerta de entrada a M5
 
 M5 es una ampliación solicitada. **T-018 y T-019 están cerradas:** alcance de una persona Windows/loopback y contrato OIDC + passkey WebAuthn `UV`; TOTP opcional de recuperación; RP ID `localhost`; ADR-0012 aceptado. **T-020 está cerrada. T-021 sigue parcial.** TOTP ya tiene implementación parcial: enrolamiento tras reautenticación, secreto/anti-replay en Credential Manager, bloqueo tras fallos, y recuperación limitada a registrar una passkey nueva y revocar las anteriores. Falta validar IdP, apps autenticadoras y autenticadores reales. El modo protegido depende de Internet para OIDC; el modo local sigue disponible. No habrá acceso por red, multiusuario ni sincronización en nube.

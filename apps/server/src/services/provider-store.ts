@@ -213,6 +213,11 @@ async function fetchBounded(url: URL, init: RequestInit, timeoutMs: number, maxB
       headersTimeout: timeoutMs,
       bodyTimeout: timeoutMs,
       connect: {
+        // Pin TLS identity to the configured DNS name while lookup is pinned
+        // to the addresses already checked for SSRF. IP literals use IP SANs
+        // and must not be sent as a DNS SNI name.
+        ...(isIP(originalHostname) === 0 ? { servername: originalHostname } : {}),
+        rejectUnauthorized: true,
         lookup: ((hostname: string, options: { all?: boolean }, callback: (...args: unknown[]) => void) => {
           if (hostname.replace(/^\[|\]$/g, '').toLowerCase() !== originalHostname.toLowerCase()) return callback(new Error('Destino de conexión inesperado.'));
           const records = addresses.map((address) => ({ address, family: isIP(address) }));

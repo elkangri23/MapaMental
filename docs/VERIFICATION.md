@@ -710,6 +710,11 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 
 ### Instalador Windows aislado — T-013 — 2026-11-17
 
-- `scripts/package-windows.ps1` compiló el workspace, preparó dependencias de producción y terminó con código 0. Inno Setup 6.7.3 generó `EspacioVisual-0.1.0-Setup-x64.exe` (28.255.075 bytes) y el ZIP portátil (43.911.119 bytes); ambos artefactos están en `release/`, excluida de Git.
-- En una ruta temporal nueva, el instalador silencioso por usuario terminó con código 0. Se confirmaron `runtime/node.exe`, el servidor compilado, la web compilada y `unins000.exe`. Con `%APPDATA%`, `%LOCALAPPDATA%` y proyectos apuntando a un directorio temporal, `start-local.ps1 -NoBrowser -PassThru` inició el servicio y `/api/health` respondió HTTP 200; el lanzador lo detuvo correctamente.
-- El desinstalador silencioso terminó con código 0 y retiró la carpeta de aplicación. No se verificaron accesos directos ni actualización sobre una versión anterior con proyectos; T-013 sigue abierta. El perfil de datos temporal separado no se usó para proyectos del usuario.
+- Tras el cambio de TLS/SNI, `scripts/package-windows.ps1 -CompilerPath ... -Offline` compiló el workspace, preparó dependencias de producción y terminó con código 0. Inno Setup 6.7.3 generó `EspacioVisual-0.1.0-Setup-x64.exe` (28.252.372 bytes) y el ZIP portátil (43.911.377 bytes); ambos artefactos están en `release/`, excluida de Git.
+- Se repitió el ciclo del instalador recién compilado en una ruta temporal: instalación silenciosa por usuario con código 0; presencia de `runtime/node.exe`, servidor/web compilados y `unins000.exe`; inicio desde la carpeta instalada con `%APPDATA%`, `%LOCALAPPDATA%` y proyectos aislados; `/api/health` respondió HTTP 200 y el lanzador detuvo el servicio.
+- El desinstalador silencioso terminó con código 0 y retiró la carpeta de aplicación. No se verificaron accesos directos ni actualización sobre una versión anterior con proyectos; T-013 sigue abierta. El perfil temporal separado no se usó para proyectos del usuario.
+
+### Política explícita de TLS y SNI — T-015 — 2026-11-17
+
+- El agente HTTP del proveedor envía como SNI el hostname DNS configurado, aunque el socket resuelve contra la lista de IP públicas ya validada. Para perfiles configurados con una IP literal no se envía nombre SNI; la verificación TLS de Node queda explícitamente activada (`rejectUnauthorized: true`). La misma ruta se usa para llamadas LLM y OIDC.
+- `npm run build` con Node 24.22.2 compiló dominio, servidor y web. Esta comprobación es de código/build; no se conectó a un endpoint HTTPS ni se comprobó un certificado/SNI en ejecución. T-015 permanece parcial hasta el recorrido TLS y la simulación determinista de rebinding.
