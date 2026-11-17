@@ -47,6 +47,12 @@
 
 La guía operativa está en [AUTH_OPERATIONS.md](AUTH_OPERATIONS.md). Las sesiones simuladas del perfil cubren las guardas de la API. La aceptación de OIDC, passkeys y TOTP requiere los dispositivos y el proveedor indicados.
 
+## Seguimiento de uso en proveedor local con límite opcional (T-012)
+
+- El servicio mantiene el camino local sin contador cuando el perfil no tiene presupuesto ni tarifas.
+- Si se configura un presupuesto mensual o tarifas para el modelo de un perfil local, el generador pasa por el registro y la verificación de gasto de T-012. Esto permite configurar FreeLLMAPI u otro proxy con URL loopback sin activar límites para instalaciones locales de forma predeterminada.
+- `npm run build` pasó con Node 24. Queda una comprobación de extremo a extremo con respuesta que incluya tokens conocidos, persistencia de uso y rechazo de la siguiente petición al alcanzar el presupuesto. La consulta anterior a FreeLLMAPI no actualizó el perfil porque la configuración del fixture no se aplicó, así que no se considera evidencia de uso real ni del bloqueo.
+
 ## Calidad de las sugerencias con el mapa de siembra (T-010)
 
 Este recorrido está pendiente con un modelo real. Usa un proyecto de prueba llamado «Huerto de balcón». Añade a la idea central las ramas «Prueba A — Siembra» y «Prueba B — Cosecha». Bajo Siembra, añade tomate y lechuga. Deja Cosecha sin ideas hijas. Crea una diapositiva vinculada a Siembra titulada «Calendario de siembra», con los dos cultivos y los meses por concretar.

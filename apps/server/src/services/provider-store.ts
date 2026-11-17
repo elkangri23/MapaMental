@@ -104,8 +104,10 @@ async function writeConfiguration(value: StoredConfiguration) {
 
 async function publicProfile(profile: StoredConfiguration['profiles'][number]): Promise<ProviderProfile> {
   const credentialConfigured = Boolean(await readProviderKey(profile).catch(() => undefined));
-  const usage = isLocalProviderUrl(profile.baseUrl) ? undefined : await getProviderUsage(profile.id).catch(() => undefined);
-  return { ...profile, credentialConfigured, usage, usageUnavailable: !isLocalProviderUrl(profile.baseUrl) && !usage };
+  const tracksUsage = !isLocalProviderUrl(profile.baseUrl) || profile.monthlyBudgetEur != null
+    || Object.hasOwn(profile.ratesByModel ?? {}, profile.model);
+  const usage = tracksUsage ? await getProviderUsage(profile.id).catch(() => undefined) : undefined;
+  return { ...profile, credentialConfigured, usage, usageUnavailable: tracksUsage && !usage };
 }
 
 export async function getProviderConfiguration(): Promise<ProviderConfiguration> {
@@ -363,8 +365,8 @@ export async function generateProviderText(
   const baseUrl = validatedBaseUrl(profile.kind, profile.baseUrl);
   const request = (report?: (tokens: ReturnType<typeof reportedUsage>) => void) =>
     requestProviderText(profile, baseUrl, apiKey, messages, system, maxOutputTokens, requestSignal, report);
-  if (isLocalProviderUrl(baseUrl)) return request();
   const rates = profile.ratesByModel && Object.hasOwn(profile.ratesByModel, profile.model) ? profile.ratesByModel[profile.model] : undefined;
+  if (isLocalProviderUrl(baseUrl) && profile.monthlyBudgetEur == null && !rates) return request();
   return withRemoteUsage(profile, rates, request, requestSignal);
 }
 

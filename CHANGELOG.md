@@ -1,5 +1,7 @@
 # Cambios
 
+- Los perfiles con URL local registran y aplican límites de uso cuando el usuario configura presupuesto mensual o tarifas para el modelo.
+
 - Las diapositivas de recorrido, formulario y tabla solo conservan el bloque visual del formato pedido.
 
 - Las sugerencias que piden explícitamente un formulario ficticio recuperan el formato de formulario aunque el modelo omita la etiqueta.
