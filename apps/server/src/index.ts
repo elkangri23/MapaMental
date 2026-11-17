@@ -37,7 +37,8 @@ const app = Fastify({
 
 app.setErrorHandler((error, request, reply) => {
   const failure = error as Error & { statusCode?: number; code?: string };
-  const statusCode = Number.isInteger(failure.statusCode) && failure.statusCode! >= 400 && failure.statusCode! < 600 ? failure.statusCode! : 500;
+  const statusCode = failure.code === 'ENOSPC' ? 507
+    : Number.isInteger(failure.statusCode) && failure.statusCode! >= 400 && failure.statusCode! < 600 ? failure.statusCode! : 500;
   if (statusCode >= 500) request.log.error({ reqId: request.id, code: failure.code, name: failure.name }, 'Error de petición; detalle omitido para no registrar datos del proyecto.');
   const message = statusCode >= 500
     ? 'No se pudo completar la petición. Revisa el estado del servicio e inténtalo de nuevo.'

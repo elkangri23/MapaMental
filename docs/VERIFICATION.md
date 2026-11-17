@@ -765,6 +765,13 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Se restauró `copyFile` real y el reintento guardó el nombre nuevo en revisión 2 con una sola copia recuperable válida. El arnés y todos sus archivos temporales se retiraron.
 - `npm run build --workspace @espacio-visual/server` terminó con código 0. `git diff --check` no informó errores. La retirada es best-effort: no se probó que la operación de limpieza también falle por ACL o por un disco realmente lleno. T-015/T-017 siguen parciales.
 
+### Respuesta API ante falta de espacio — T-015/T-017 — 2026-11-17
+
+- Se registraron las rutas reales de sesión y proyecto en Fastify, con almacenamiento y configuración bajo `%TEMP%`. Se abrió sesión, creó un proyecto, y se inyectó `ENOSPC` después de escribir un destino parcial de backup al guardar.
+- La ruta `PUT /api/projects/:id` respondió HTTP 507, código `INSUFFICIENT_STORAGE` y el mensaje «No hay espacio suficiente para guardar los cambios. Libera espacio e inténtalo de nuevo.» La respuesta no contenía el marcador de ruta del error inyectado.
+- El proyecto original conservó sus bytes; el archivo parcial se retiró. Al restaurar `copyFile` real, la repetición del PUT guardó revisión 2 y la API enumeró una copia recuperable válida.
+- Se eliminaron `APPDATA`, proyectos, perfil y arnés temporal. No se llenó el disco real ni se probaron permisos que impidan la limpieza; el comportamiento corresponde al error `ENOSPC` simulado después de crear el archivo.
+
 ### Modelo inicial de amenazas — T-015 — 2026-11-17
 
 - Se redactó [`THREAT_MODEL.md`](THREAT_MODEL.md) a partir de la arquitectura, los controles descritos y la evidencia ya registrada. Incluye activos, límites de confianza, adversarios, once escenarios con controles y riesgo residual, supuestos y prioridades.

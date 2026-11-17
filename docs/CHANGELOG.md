@@ -5,6 +5,7 @@
 ### Seguridad y persistencia
 
 - Las copias de proyectos limpian archivos destino parciales cuando falla la escritura o la verificación; un destino preexistente por `EEXIST` se conserva.
+- La falta de espacio (`ENOSPC`) devuelve HTTP 507 con un mensaje que orienta a liberar espacio, sin revelar rutas del equipo.
 
 ### Rendimiento
 
