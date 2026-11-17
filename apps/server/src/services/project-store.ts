@@ -279,7 +279,7 @@ async function restoreProjectBackupUnlocked(id: string, fileName: string, expect
   } else {
     await mkdir(join(directory, 'backups'), { recursive: true });
     try {
-      const damagedCopy = join(directory, 'backups', `project-corrupt-${Date.now()}.json.invalid`);
+      const damagedCopy = join(directory, 'backups', `project-corrupt-${Date.now()}-${crypto.randomUUID()}.json.invalid`);
       await copyFile(join(directory, 'project.json'), damagedCopy, constants.COPYFILE_EXCL);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
