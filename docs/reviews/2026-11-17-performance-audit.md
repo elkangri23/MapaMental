@@ -55,10 +55,12 @@ Se sirvió el build de producción local desde una raíz de proyectos, perfil de
 - La navegación con caché vacía y CPU 1× dio LCP 966 ms (TTFB 14 ms, demora de render 952 ms) y CLS 0,00. Es una única muestra local. En el momento de la instantánea, el canvas tenía 6.540 elementos DOM, 612 nodos y 681 aristas montados; el minimapa no estaba presente.
 - La traza señaló una actualización de layout de 403 ms (80.013 nodos afectados), recálculo de estilos de 416 ms (60.003 elementos) y 58 ms de reflujo forzado dentro del chunk de React Flow. Son hallazgos de esa navegación, no una suma de tiempos de usuario.
 - Antes de optimizar la lista, cambiar del lienzo a lista tardó 2.414 ms en una corrida, con 40.128 elementos DOM, 10.000 filas principales y 19.999 elementos `li` por la repetición de relaciones directas.
-- En mapas de más de 1.000 ideas se añadió `content-visibility: auto` a las filas principales con tamaño intrínseco estimado de 76 px. Tres cambios de vista en producción tardaron 577, 365 y 352 ms (mediana 365 ms). Se conservaron las 10.000 filas y los 40.128 elementos DOM; no es una reducción de memoria/DOM. Al desplazar hasta el final, «Idea sintetica 9999» quedó visible y se pudo seleccionar. El estimado intrínseco es aproximado y el DOM sigue grande.
+- Primera iteración: en mapas de más de 1.000 ideas se añadió `content-visibility: auto` a las filas principales con tamaño intrínseco estimado de 76 px. Tres cambios de vista tardaron 577, 365 y 352 ms (mediana 365 ms), conservando 40.128 elementos DOM; al final «Idea sintetica 9999» siguió visible y seleccionable.
+- Segunda iteración: los nombres conectados pasaron de listas `<ul>/<li>` anidadas a un texto «Ideas conectadas: …» dentro del botón de la idea de origen. Conserva los nombres y cada idea tiene una sola fila/botón principal. El DOM descendió a 30.128 elementos (25 % menos que la iteración anterior), con 10.000 filas, 10.000 botones y 9.999 bloques de relaciones. Tres cambios de vista dieron 398, 514 y 462 ms (mediana 462 ms); la última idea siguió visible y seleccionable.
+- La medición previa sin estas optimizaciones fue 2.414 ms y 40.128 elementos. No es un A/B balanceado: la comparación orienta el trabajo, pero no atribuye una mejora estadística. `content-visibility` conserva el DOM y el cambio a texto en botón modifica la presentación semántica de las relaciones; falta revisión con lector de pantalla.
 - El CSS inicial pasó de 33,93 kB (8,05 kB gzip) a 34,01 kB (8,09 kB gzip); JS principal y chunk del canvas cambiaron solo por el rebuild (333,62 y 185,86 kB respectivamente).
 
-La comparación de 2.414 ms frente a tres corridas tras el cambio no es una serie A/B balanceada; orienta la corrección, no demuestra una mejora garantizada. Siguiente foco: reducir el número de filas/relaciones renderizadas sin perder acceso a las 10.000 ideas y aislar el coste del canvas y sus reflows.
+La comparación de 2.414 ms frente a las corridas tras los cambios no es una serie A/B balanceada; orienta la corrección, no demuestra una mejora garantizada. Siguiente foco: revisar con lector de pantalla la presentación de relaciones, medir memoria y aislar el coste del canvas y sus reflows.
 
 ## Comprobaciones posteriores
 
@@ -98,8 +100,8 @@ El fixture de 10.000 ideas tenía un JSON de 2.035.696 B. Antes de dividir el ca
 
 - `T-028` permanece parcial. Se verificaron tamaños 100/1.000/10.000, pero faltan perfiles completos de interacción, memoria y diapositivas en cada escala.
 - Perfilado inicial a 10.000 ideas completado con arnés de desarrollo: la comparación de una captura observó 10.004 elementos DOM menos al omitir el minimapa y confirmó que «Ajustar mapa a la vista» sigue operativo. Falta un perfil de producción y medidas repetidas.
-- Build de producción perfilado con 10.000 ideas: LCP 966 ms y CLS 0 en una corrida. Se aplicó `content-visibility: auto` en la lista grande; tres transiciones dieron mediana de 365 ms y el último elemento siguió seleccionable. DOM de la lista sigue en 40.128 elementos.
-- Reducir DOM/relaciones duplicadas de lista sin perder acceso a todas las ideas; perfilar repetidamente 10.000 ideas, especialmente conexiones, layout, reflows, memoria y persistencia.
+- Build de producción perfilado con 10.000 ideas: LCP 966 ms y CLS 0 en una corrida. La lista consolidó relaciones en texto dentro de cada botón; bajó de 40.128 a 30.128 elementos DOM (25 %), mantiene los 10.000 botones/ideas y selecciona la última. Tres recorridos dieron mediana 462 ms; el A/B no fue balanceado.
+- Revisar la lista de relaciones con lector de pantalla y medir memoria; perfilar repetidamente 10.000 ideas, especialmente conexiones, layout, reflows y persistencia.
 - Repetir varias corridas comparables con caché fría y medir zoom, selección, edición, cambio de mapa, lista y editor de diapositivas; documentar variabilidad.
 - Considerar una estrategia de renderizado de conexiones o agrupación adaptativa solo si la nueva traza confirma que son el cuello de botella.
 - Repetir en viewport móvil/CPU lenta y revisar que el fallback de carga diferida siga accesible.

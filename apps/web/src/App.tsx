@@ -526,15 +526,15 @@ export default function App() {
     }));
   }, [edges, nodes]);
   const mapListChildren = useMemo(() => {
-    if (!mapListView) return new Map<string, Array<{ id: string; label: string }>>();
+    if (!mapListView) return new Map<string, string>();
     const labels = new Map(nodes.map((node) => [node.id, node.data.label]));
-    const children = new Map<string, Array<{ id: string; label: string }>>();
+    const children = new Map<string, string[]>();
     for (const edge of edges) {
       const siblings = children.get(edge.source) ?? [];
-      siblings.push({ id: edge.id, label: labels.get(edge.target) ?? 'Idea no disponible' });
+      siblings.push(labels.get(edge.target) ?? 'Idea no disponible');
       children.set(edge.source, siblings);
     }
-    return children;
+    return new Map([...children].map(([id, labels]) => [id, `Ideas conectadas: ${labels.join(' · ')}`]));
   }, [edges, mapListView, nodes]);
   const addIdea = useCallback((parentId = selectedNodeId, label = 'Nueva idea') => {
     if (aiBusy) return undefined;
@@ -1718,7 +1718,7 @@ export default function App() {
             <div className="canvas-badge"><span className="badge-dot" /> Mapa de ideas <span className="badge-separator">·</span> {nodes.length} ideas</div>
             {loading && <div className="canvas-overlay">Abriendo tu espacio…</div>}
             {!loading && !nodes.length && <div className="canvas-empty">Añade una idea para empezar tu mapa.</div>}
-            {!loading && mapListView && <ol className={`map-text-list${nodes.length > 1_000 ? ' map-text-list--large' : ''}`}>{nodes.map((node) => <li key={node.id}><button type="button" onClick={() => setSelectedNodeId(node.id)} aria-current={selectedNodeId === node.id ? 'true' : undefined}>{node.data.label}</button><ul>{(mapListChildren.get(node.id) ?? []).map((child) => <li key={child.id}>{child.label}</li>)}</ul></li>)}</ol>}
+            {!loading && mapListView && <ol className={`map-text-list${nodes.length > 1_000 ? ' map-text-list--large' : ''}`}>{nodes.map((node) => <li key={node.id}><button type="button" onClick={() => setSelectedNodeId(node.id)} aria-current={selectedNodeId === node.id ? 'true' : undefined}>{node.data.label}{mapListChildren.has(node.id) && <span className="map-text-list__connections">{mapListChildren.get(node.id)}</span>}</button></li>)}</ol>}
             {!loading && !mapListView && <Suspense fallback={<div className="canvas-overlay" role="status">Cargando el mapa…</div>}>
               <MapCanvas nodes={nodesWithCallbacks} edges={edgesWithAccessibleLabels} setNodes={setNodes} setEdges={setEdges}
                 setSelectedNodeId={setSelectedNodeId} aiBusy={aiBusy} />
