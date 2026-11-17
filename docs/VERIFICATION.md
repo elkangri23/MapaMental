@@ -59,6 +59,7 @@ La guía operativa está en [AUTH_OPERATIONS.md](AUTH_OPERATIONS.md). Las sesion
 - Se contrastaron las reglas de `isBlockedRemoteHost` con los registros actuales de direcciones especiales de IANA. IPv4 bloquea redes privadas, loopback, link-local, espacio compartido, documentación, benchmarking, multicast, reservado y broadcast. IPv6 permite solo global unicast y excluye `2001::/23`, `2001:db8::/32`, `2002::/16` y `3fff::/20`, además de espacio no global y direcciones IPv4 mapeadas.
 - No se hizo un cambio de código en esta revisión. La verificación fue documental y por lectura del validador, no una enumeración automatizada de cada prefijo. La matriz de DNS, TLS/SNI, hosts internacionales y operaciones negativas sigue abierta en T-015. Registros: [IANA IPv4](https://www.iana.org/assignments/iana-ipv4-special-registry) y [IANA IPv6](https://www.iana.org/assignments/iana-ipv6-special-registry).
 - El 2026-11-17, `npm audit --omit=dev` informó cero vulnerabilidades y `npm run build` pasó con Node 24.
+- Matriz puntual mediante `saveProviderProfile` y almacenamiento temporal: se rechazaron 27 literales IPv4/IPv6 especiales (privados, loopback remoto, link-local, compartidos, reservados, documentación, benchmarking, multicast, IPv4 mapeado y prefijos IPv6 especiales). Se permitieron 9 direcciones globales y los literales loopback aprobados para servicios locales. Cero resultados distintos de lo esperado. La matriz no cubre DNS mixto/rebinding, IDN, TLS/SNI ni hosts con punto final.
 
 ## Calidad de las sugerencias con el mapa de siembra (T-010)
 
