@@ -128,6 +128,14 @@ El fixture de 10.000 ideas tenía un JSON de 2.035.696 B. Antes de dividir el ca
 
 T-028 sigue parcial. Las métricas observadas en este informe son de laboratorio y no equivalen a experiencia de usuarios reales.
 
+## Comparación de edición en producción — 2026-11-17
+
+Se volvió a iniciar el build de producción con el fixture sintético aislado de 10.000 ideas y 9.999 conexiones. En Chrome de escritorio, con CPU 1× y sin limitación de red, la misma acción de teclado `F2` registró una interacción `keydown` de 703 ms: 3 ms de retraso de entrada, 584 ms de procesamiento y 115 ms de presentación. Chrome clasificó la duración total por encima del umbral de 500 ms. La traza previa de desarrollo había medido 2.407 ms (3/1.733/671 ms), por lo que esta muestra de producción fue 1.704 ms menor; son capturas únicas y no un A/B controlado, así que no cuantifican una mejora atribuible al modo de compilación.
+
+El foco del botón de idea se estableció programáticamente y F2 se envió mediante DevTools. La página terminó con el campo de nombre abierto y no registró recursos HTTP fallidos. Esta es evidencia de una interacción de laboratorio, no INP de campo ni una prueba de entrada física. No se midió un nombre confirmado/autosave en esta corrida. Se detuvieron el servicio y la pestaña, y se retiraron `.perf-run`, el perfil y el proyecto sintético.
+
+**Siguiente paso:** T-028 continúa abierta. Repetir varias veces con entrada física reproducible y separar F2, escritura local, confirmación/autosave, selección, zoom y cambio de vista. Usar trazas con atribución de tareas/layout para aislar el coste, y comparar heap tras GC controlado antes de plantear optimizaciones del canvas.
+
 ## Continuación — heap, callbacks y persistencia — 2026-11-17
 
 La primera lectura de memoria se interpretó como estable, pero al esperar más apareció la recolección automática de basura y el heap bajó de aproximadamente 162 MB a 25 MB. En la lista también hubo lecturas de 12–28 MB según el momento. Se corrige el informe: los valores previos de 164–182 MB describían memoria transitoria antes de GC, no heap retenido. `performance.memory` no permite comparar variantes sin fijar estado de GC, y no se forzó una recolección. Estos datos no sustentan un presupuesto de RAM ni un cálculo de ahorro frente a la versión anterior.
