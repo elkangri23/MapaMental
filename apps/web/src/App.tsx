@@ -1,23 +1,6 @@
 import { PersonalProfileButton } from './PersonalProfileButton.js';
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent } from 'react';
-import {
-  addEdge,
-  Background,
-  BackgroundVariant,
-  Controls,
-  MiniMap,
-  ReactFlow,
-  applyEdgeChanges,
-  applyNodeChanges,
-  type Connection,
-  type Edge,
-  type Node,
-  type NodeProps,
-  type OnEdgesChange,
-  type OnNodesChange,
-  Handle,
-  Position,
-} from '@xyflow/react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react';
+import type { Edge, Node } from '@xyflow/react';
 import type { IdeaNodeData } from '@espacio-visual/domain';
 import { AI_DECK_SLIDE_LIMIT, buildProjectAiContext, PROJECT_CHAT_MESSAGE_LIMIT, PROJECT_NODE_LIMIT, PROJECT_SCHEMA_VERSION, PROJECT_SLIDE_LIMIT, type FutureProjectPreview, type PresentationSlide, type ProjectDocument, type ProjectSummary, type SlideTable } from '@espacio-visual/domain';
 import { isLocalProviderUrl, type ProviderConfiguration, type ProviderKind, type ProviderProfile, type ProviderRates } from '@espacio-visual/domain';
@@ -26,6 +9,7 @@ import { ProjectRequestError, projectsApi } from './api/projects.js';
 import { providersApi } from './api/providers.js';
 import { authApi, OidcStepExpiredError, type OidcConfigurationView } from './api/auth.js';
 const PasskeySettingsPanel = lazy(() => import('./components/PasskeySettingsPanel.js'));
+const MapCanvas = lazy(() => import('./MapCanvas.js'));
 import { aiApi, type GenerationOptions } from './api/ai.js';
 import { SlideTableBlock } from './SlideTableBlock.js';
 import { SlidePrintDeck } from './SlidePrintDeck.js';
@@ -91,61 +75,6 @@ function createInitialProjectOnce() {
   }
   return initialProjectCreation;
 }
-
-function IdeaNodeView({ id, data, selected }: NodeProps<IdeaNode>) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState('');
-  const tone = data.tone ?? 'lavender';
-  const startEditing = () => { setDraft(data.label); setEditing(true); };
-  return (
-    <div className={`idea-node idea-node--${tone}${selected ? ' is-selected' : ''}`}>
-      <Handle type="target" position={Position.Left} />
-      <div className="idea-node__eyebrow">{id === 'root' ? 'IDEA CENTRAL' : 'IDEA'}</div>
-      {editing ? (
-        <input
-          className="idea-node__input nodrag"
-          autoFocus
-          aria-label="Nombre de la idea"
-          maxLength={500}
-          value={draft}
-          onChange={(event) => {
-            setDraft(event.target.value);
-            const label = event.target.value.trim();
-            if (label) data.onLabelChange?.(id, label);
-          }}
-          onBlur={() => setEditing(false)}
-          onKeyDown={(event) => { if (event.key === 'Enter' || event.key === 'Escape') event.currentTarget.blur(); }}
-        />
-      ) : (
-        <button className="idea-node__label nodrag" onDoubleClick={startEditing} onKeyDown={(event) => {
-          if (event.key !== 'Enter' && event.key !== 'F2') return;
-          event.preventDefault();
-          event.stopPropagation();
-          startEditing();
-        }} title="Doble clic, Intro o F2 para editar">
-          {data.label}
-        </button>
-      )}
-      <Handle type="source" position={Position.Right} />
-    </div>
-  );
-}
-
-const nodeTypes = { idea: IdeaNodeView };
-const fitViewOptions = { padding: 0.25 };
-const flowAriaLabelConfig = {
-  'node.a11yDescription.default': 'Pulsa Intro o espacio para seleccionar una idea. Pulsa Suprimir para eliminarla o Escape para cancelar.',
-  'node.a11yDescription.keyboardDisabled': 'Pulsa Intro o espacio para seleccionar una idea. Después usa las flechas para moverla, Suprimir para eliminarla o Escape para cancelar.',
-  'node.a11yDescription.ariaLiveMessage': ({ direction, x, y }: { direction: string; x: number; y: number }) => `Idea seleccionada movida ${direction}. Nueva posición: x ${x}, y ${y}.`,
-  'edge.a11yDescription.default': 'Pulsa Intro o espacio para seleccionar una conexión. Después pulsa Suprimir para eliminarla o Escape para cancelar.',
-  'controls.ariaLabel': 'Controles del mapa',
-  'controls.zoomIn.ariaLabel': 'Acercar',
-  'controls.zoomOut.ariaLabel': 'Alejar',
-  'controls.fitView.ariaLabel': 'Ajustar mapa a la vista',
-  'controls.interactive.ariaLabel': 'Alternar interactividad',
-  'minimap.ariaLabel': 'Minimapa',
-  'handle.ariaLabel': 'Punto de conexión',
-};
 
 function drawWrappedText(context: CanvasRenderingContext2D, value: string, x: number, y: number, maxWidth: number, lineHeight: number, maxLines: number) {
   const paragraphs = value.split(/\r?\n/);
@@ -607,25 +536,6 @@ export default function App() {
     }
     return children;
   }, [edges, mapListView, nodes]);
-  const handleFlowNodeClick = useCallback((_event: ReactMouseEvent, node: IdeaNode) => {
-    setSelectedNodeId(node.id);
-  }, []);
-
-  const onNodesChange: OnNodesChange<IdeaNode> = useCallback((changes) => {
-    if (aiBusy) return;
-    setNodes((current) => applyNodeChanges(changes, current) as IdeaNode[]);
-  }, [aiBusy]);
-
-  const onEdgesChange: OnEdgesChange = useCallback((changes) => {
-    if (aiBusy) return;
-    setEdges((current) => applyEdgeChanges(changes, current));
-  }, [aiBusy]);
-
-  const onConnect = useCallback((connection: Connection) => {
-    if (aiBusy) return;
-    setEdges((current) => addEdge({ ...connection, type: 'smoothstep' }, current));
-  }, [aiBusy]);
-
   const addIdea = useCallback((parentId = selectedNodeId, label = 'Nueva idea') => {
     if (aiBusy) return undefined;
     if (nodes.length >= PROJECT_NODE_LIMIT) {
@@ -1809,29 +1719,10 @@ export default function App() {
             {loading && <div className="canvas-overlay">Abriendo tu espacio…</div>}
             {!loading && !nodes.length && <div className="canvas-empty">Añade una idea para empezar tu mapa.</div>}
             {!loading && mapListView && <ol className="map-text-list">{nodes.map((node) => <li key={node.id}><button type="button" onClick={() => setSelectedNodeId(node.id)} aria-current={selectedNodeId === node.id ? 'true' : undefined}>{node.data.label}</button><ul>{(mapListChildren.get(node.id) ?? []).map((child) => <li key={child.id}>{child.label}</li>)}</ul></li>)}</ol>}
-            {!mapListView && <ReactFlow
-              nodes={nodesWithCallbacks}
-              edges={edgesWithAccessibleLabels}
-              nodeTypes={nodeTypes}
-              ariaLabelConfig={flowAriaLabelConfig}
-              onlyRenderVisibleElements={nodes.length >= 100}
-              nodesDraggable={!aiBusy}
-              nodesConnectable={!aiBusy}
-              elementsSelectable={!aiBusy}
-              deleteKeyCode={null}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
-              onNodeClick={handleFlowNodeClick}
-              fitView
-              fitViewOptions={fitViewOptions}
-              minZoom={0.25}
-              maxZoom={1.6}
-            >
-              <Background variant={BackgroundVariant.Dots} gap={23} size={1} color="#dfe3ee" />
-              <Controls position="bottom-left" showInteractive={false} />
-              <MiniMap position="bottom-right" pannable zoomable nodeStrokeWidth={2} />
-            </ReactFlow>}
+            {!loading && !mapListView && <Suspense fallback={<div className="canvas-overlay" role="status">Cargando el mapa…</div>}>
+              <MapCanvas nodes={nodesWithCallbacks} edges={edgesWithAccessibleLabels} setNodes={setNodes} setEdges={setEdges}
+                setSelectedNodeId={setSelectedNodeId} aiBusy={aiBusy} />
+            </Suspense>}
             </>}
           </div>
           <footer className="canvas-footer">

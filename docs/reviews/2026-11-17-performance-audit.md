@@ -48,11 +48,44 @@ El proyecto admite hasta 10.000 ideas. React Flow no limita por defecto el dibuj
 - CLS observado: 0,00. La traza posterior no produjo un LCP comparable, por lo que no se atribuye una mejora numérica a la corrección.
 - La prueba usó Chrome con almacenamiento de proyecto temporal; no cambió ningún proyecto del usuario ni guardó el texto transitorio del formulario.
 
+## Continuación T-028 — carga diferida y mapas de escala — 2026-11-17
+
+### Separación del canvas
+
+React Flow, su proveedor de contexto y sus estilos se movieron a `MapCanvas.tsx`, cargado bajo demanda cuando se muestra el lienzo. Mientras se descarga aparece un estado `role="status"`; la vista de lista no carga el canvas. El renderizado de elementos visibles se conserva desde 100 ideas y la vista de lista mantiene acceso a todas.
+
+`npm run build` terminó correctamente. El chunk de entrada pasó de 519,26 kB (159,21 kB gzip) a 333,57 kB (99,61 kB gzip); el canvas queda en un chunk diferido de 185,84 kB (60,23 kB gzip). La suma de ambos es aproximadamente 519,41 kB sin comprimir: la separación reduce lo que debe parsearse al inicio y elimina el aviso de chunk de entrada de Vite, pero no reduce el JavaScript total. El CSS del canvas también se difiere.
+
+### Perfil controlado
+
+Se generaron fixtures aisladas de 100, 1.000 y 10.000 ideas. La instancia temporal usó directorios propios para proyectos, configuración y perfil; no se tocaron datos reales. Chrome se ejecutó a CPU 4× y Fast 3G, viewport 1280×900.
+
+| Escenario de 100 ideas | Antes de dividir el canvas | Después de dividirlo |
+|---|---:|---:|
+| LCP | 5.908 ms | 5.085 ms |
+| TTFB | 565 ms | 566 ms |
+| Demora de renderizado LCP | 5.342 ms | 4.519 ms |
+| CLS | 0,00 | 0,00 |
+| Chunk de entrada transferido | 519.568 B | 333.879 B |
+
+La diferencia de LCP fue de 823 ms (13,9 %) en estas dos corridas de laboratorio; no es una serie estadística ni una garantía de mejora en producción. El chunk diferido se obtuvo desde caché (304) en la medición posterior, así que no se atribuye ahorro de bytes de transferencia total. No hay datos de usuarios reales.
+
+En la página de 1.000 ideas, la compilación nueva montó 224 nodos y 693 conexiones, con 5.275 elementos DOM en la instantánea de página. El JSON del proyecto midió 197.988 B. La navegación cargó y el canvas respondió, pero Chrome devolvió `NO_NAVIGATION` para esa traza y no se registra un LCP comparable. Antes del cambio, 1.000 ideas dio LCP 5.780 ms bajo la misma emulación, aunque no constituye una comparación A/B de la nueva versión.
+
+El fixture de 10.000 ideas tenía un JSON de 2.035.696 B. Antes de dividir el canvas, la instantánea observó aproximadamente 27.255 elementos DOM, 294 nodos y 3.833 conexiones visibles/montadas en ese momento. El cambio de proyecto dejó el renderizador sin responder en esa sesión; el escenario de 10.000 no se repitió tras el code split. Las trazas también señalaron actualización de layout y reflujo forzado. Estas muestras varían según el momento de captura; no deben interpretarse como un conteo estable de todos los elementos del grafo.
+
+### Estado y siguiente trabajo
+
+- `T-028` permanece parcial. Se verificaron tamaños 100/1.000/10.000, pero faltan perfiles completos de interacción, memoria y diapositivas en cada escala.
+- Perfilar y optimizar 10.000 ideas después de la carga diferida, especialmente el coste de conexiones, layout, medición y persistencia.
+- Repetir varias corridas comparables con caché fría y medir zoom, selección, edición, cambio de mapa, lista y editor de diapositivas; documentar variabilidad.
+- Considerar una estrategia de renderizado de conexiones o agrupación adaptativa solo si la nueva traza confirma que son el cuello de botella.
+- Repetir en viewport móvil/CPU lenta y revisar que el fallback de carga diferida siga accesible.
+
 ## Pendiente
 
-1. Comparar interacción y carga de mapas con 100, 1.000 y 10.000 ideas, incluyendo zoom, selección, edición, vista de lista y apertura de diapositivas.
-2. Repetir en perfiles de CPU lenta y Fast/Slow 4G, registrando LCP, INP, CLS, memoria y nodos montados.
-3. Perfilar el bundle para identificar candidatos reales a carga diferida. No bajar el umbral de aviso de Vite sin reducir carga efectiva.
-4. Revisar si la miniatura, medición del layout, serialización y autoguardado siguen siendo coste dominante en grafos grandes.
+1. Completar perfiles de interacción, memoria, lista y diapositivas a 100/1.000/10.000 ideas.
+2. Repetir comparaciones con varias corridas y caché fría, y en móvil/CPU lenta.
+3. Identificar con trazas si conexiones, miniatura, layout, serialización o autosave dominan el caso de 10.000.
 
 T-028 sigue parcial. Las métricas observadas en este informe son de laboratorio y no equivalen a experiencia de usuarios reales.
