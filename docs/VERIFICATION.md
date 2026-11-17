@@ -696,3 +696,8 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 
 - El nombre de prueba `127.0.0.1.nip.io` resolvió a `127.0.0.1`. Se guardó un perfil compatible con OpenAI usando HTTPS y un puerto aleatorio de un listener TCP canario en loopback; `testProviderConnection` rechazó el destino con HTTP 400 y el listener registró cero sockets aceptados.
 - El servicio rechazó la IP obtenida por DNS antes de abrir la conexión. La prueba usó solo un nombre de fixture sin claves o datos del proyecto, configuración temporal y eliminó los archivos. No simula que las respuestas DNS cambien entre dos consultas y no cierra la prueba de DNS rebinding.
+
+### Enlaces internos de la documentación — T-004 — 2026-11-17
+
+- Se revisaron los 51 archivos Markdown versionados: el escáner encontró 169 enlaces locales a archivos y 14 enlaces a secciones. No quedaron destinos de archivo ni anclas rotas.
+- La comprobación de anclas siguió las reglas publicadas por GitHub: minúsculas, espacios a guiones y puntuación eliminada; mantiene la separación de palabras alrededor de guiones largos. No valida enlaces externos ni garantiza el render de todos los dialectos Markdown. [Reglas de GitHub para enlaces a secciones](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#section-links). T-004 permanece abierta por el resto de documentación pendiente.

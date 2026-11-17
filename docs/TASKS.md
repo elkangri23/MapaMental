@@ -2,6 +2,8 @@
 
 Esta es la lista única de trabajo. Marca una tarea como terminada solo cuando cumpla su criterio y se hayan actualizado los documentos afectados. **En curso:** T-004, T-009, T-010, T-013, T-015 y T-017.
 
+- **Seguimiento de T-004 — enlaces de Markdown.** Escaneo de 51 archivos, 169 enlaces locales a archivos y 14 enlaces a secciones: sin destinos rotos. Esto valida rutas/anclas internas, no la integridad general ni la instalación del proyecto.
+
 ## Investigación y diseño
 
 - [x] **T-001 — Investigar MyMap con REA.** Evidencia, flujos observados y límites de observación registrados en `analisis/README.md`.
