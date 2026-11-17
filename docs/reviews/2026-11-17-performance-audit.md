@@ -48,6 +48,18 @@ La inspección de la implementación instalada de `@xyflow/react` confirmó que 
 
 **Medición posterior:** un arnés temporal de Vite en Chromium cargó 10.000 ideas y 9.999 conexiones sintéticas. En una comparación con el mismo conteo montado del canvas (756 nodos y 810 aristas), el estado sin minimapa registró 7.819 elementos DOM; un override temporal que volvió a montar el minimapa registró 17.823, incluidos 10.000 rectángulos SVG. La diferencia observada fue de 10.004 elementos DOM (56 % menos en esa instantánea). En otra corrida, 1.000 ideas mostraron el minimapa con 1.000 rectángulos; a 10.000 el minimapa se ocultó y el botón «Ajustar mapa a la vista» siguió presente y cambió la transformación del viewport al pulsarlo. Es una comparación única del componente en servidor de desarrollo, sin emulación ni persistencia: no mide el arranque de producción, memoria estable ni variabilidad entre corridas. El arnés y el override se retiraron.
 
+### Perfil de producción a 10.000 ideas y vista textual — 2026-11-17
+
+Se sirvió el build de producción local desde una raíz de proyectos, perfil de navegador y carpetas de configuración creados dentro de `.perf-run`; el fixture tenía 10.000 ideas, 9.999 conexiones y 1.857.983 bytes. No se usaron proyectos ni proveedores del usuario.
+
+- La navegación con caché vacía y CPU 1× dio LCP 966 ms (TTFB 14 ms, demora de render 952 ms) y CLS 0,00. Es una única muestra local. En el momento de la instantánea, el canvas tenía 6.540 elementos DOM, 612 nodos y 681 aristas montados; el minimapa no estaba presente.
+- La traza señaló una actualización de layout de 403 ms (80.013 nodos afectados), recálculo de estilos de 416 ms (60.003 elementos) y 58 ms de reflujo forzado dentro del chunk de React Flow. Son hallazgos de esa navegación, no una suma de tiempos de usuario.
+- Antes de optimizar la lista, cambiar del lienzo a lista tardó 2.414 ms en una corrida, con 40.128 elementos DOM, 10.000 filas principales y 19.999 elementos `li` por la repetición de relaciones directas.
+- En mapas de más de 1.000 ideas se añadió `content-visibility: auto` a las filas principales con tamaño intrínseco estimado de 76 px. Tres cambios de vista en producción tardaron 577, 365 y 352 ms (mediana 365 ms). Se conservaron las 10.000 filas y los 40.128 elementos DOM; no es una reducción de memoria/DOM. Al desplazar hasta el final, «Idea sintetica 9999» quedó visible y se pudo seleccionar. El estimado intrínseco es aproximado y el DOM sigue grande.
+- El CSS inicial pasó de 33,93 kB (8,05 kB gzip) a 34,01 kB (8,09 kB gzip); JS principal y chunk del canvas cambiaron solo por el rebuild (333,62 y 185,86 kB respectivamente).
+
+La comparación de 2.414 ms frente a tres corridas tras el cambio no es una serie A/B balanceada; orienta la corrección, no demuestra una mejora garantizada. Siguiente foco: reducir el número de filas/relaciones renderizadas sin perder acceso a las 10.000 ideas y aislar el coste del canvas y sus reflows.
+
 ## Comprobaciones posteriores
 
 - `npm run build`: correcto.
@@ -86,7 +98,8 @@ El fixture de 10.000 ideas tenía un JSON de 2.035.696 B. Antes de dividir el ca
 
 - `T-028` permanece parcial. Se verificaron tamaños 100/1.000/10.000, pero faltan perfiles completos de interacción, memoria y diapositivas en cada escala.
 - Perfilado inicial a 10.000 ideas completado con arnés de desarrollo: la comparación de una captura observó 10.004 elementos DOM menos al omitir el minimapa y confirmó que «Ajustar mapa a la vista» sigue operativo. Falta un perfil de producción y medidas repetidas.
-- Perfilar y optimizar 10.000 ideas, especialmente el coste de conexiones, layout, medición y persistencia; medir memoria y tiempo de respuesta bajo cargas repetibles.
+- Build de producción perfilado con 10.000 ideas: LCP 966 ms y CLS 0 en una corrida. Se aplicó `content-visibility: auto` en la lista grande; tres transiciones dieron mediana de 365 ms y el último elemento siguió seleccionable. DOM de la lista sigue en 40.128 elementos.
+- Reducir DOM/relaciones duplicadas de lista sin perder acceso a todas las ideas; perfilar repetidamente 10.000 ideas, especialmente conexiones, layout, reflows, memoria y persistencia.
 - Repetir varias corridas comparables con caché fría y medir zoom, selección, edición, cambio de mapa, lista y editor de diapositivas; documentar variabilidad.
 - Considerar una estrategia de renderizado de conexiones o agrupación adaptativa solo si la nueva traza confirma que son el cuello de botella.
 - Repetir en viewport móvil/CPU lenta y revisar que el fallback de carga diferida siga accesible.

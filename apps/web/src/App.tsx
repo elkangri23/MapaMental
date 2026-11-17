@@ -1718,7 +1718,7 @@ export default function App() {
             <div className="canvas-badge"><span className="badge-dot" /> Mapa de ideas <span className="badge-separator">·</span> {nodes.length} ideas</div>
             {loading && <div className="canvas-overlay">Abriendo tu espacio…</div>}
             {!loading && !nodes.length && <div className="canvas-empty">Añade una idea para empezar tu mapa.</div>}
-            {!loading && mapListView && <ol className="map-text-list">{nodes.map((node) => <li key={node.id}><button type="button" onClick={() => setSelectedNodeId(node.id)} aria-current={selectedNodeId === node.id ? 'true' : undefined}>{node.data.label}</button><ul>{(mapListChildren.get(node.id) ?? []).map((child) => <li key={child.id}>{child.label}</li>)}</ul></li>)}</ol>}
+            {!loading && mapListView && <ol className={`map-text-list${nodes.length > 1_000 ? ' map-text-list--large' : ''}`}>{nodes.map((node) => <li key={node.id}><button type="button" onClick={() => setSelectedNodeId(node.id)} aria-current={selectedNodeId === node.id ? 'true' : undefined}>{node.data.label}</button><ul>{(mapListChildren.get(node.id) ?? []).map((child) => <li key={child.id}>{child.label}</li>)}</ul></li>)}</ol>}
             {!loading && !mapListView && <Suspense fallback={<div className="canvas-overlay" role="status">Cargando el mapa…</div>}>
               <MapCanvas nodes={nodesWithCallbacks} edges={edgesWithAccessibleLabels} setNodes={setNodes} setEdges={setEdges}
                 setSelectedNodeId={setSelectedNodeId} aiBusy={aiBusy} />

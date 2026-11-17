@@ -330,6 +330,7 @@ button:disabled:focus-visible { outline-color: #5143b5; }
 .sparkle, .assistant-glyph, .context-icon { color: #5d4fac; }
 .map-text-list { position: absolute; inset: 54px 0 0; overflow: auto; margin: 0; padding: 10px 24px 24px 48px; color: #343747; line-height: 1.7; }
 .map-text-list > li { padding: 8px 0; }
+.map-text-list--large > li { content-visibility: auto; contain-intrinsic-size: auto 76px; }
 .map-text-list button { border: 0; padding: 3px 6px; border-radius: 5px; color: #3f367f; background: #f3f1ff; text-align: left; cursor: pointer; }
 .map-text-list button[aria-current="true"] { outline: 2px solid #5143b5; }
 .map-text-list ul { padding-left: 24px; color: #44485a; }
