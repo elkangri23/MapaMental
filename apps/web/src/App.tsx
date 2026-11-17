@@ -201,6 +201,10 @@ export default function App() {
   const revisionRef = useRef(0);
   const savedMapRef = useRef('');
   const savedSlidesRef = useRef('');
+  const serializedMapRef = useRef<ReturnType<typeof serializeMap> | null>(null);
+  const mapSnapshotRef = useRef('');
+  const slidesSnapshotRef = useRef('');
+  const chatSnapshotRef = useRef('');
   const projectRef = useRef(project);
   const recoveryDialogRef = useRef<HTMLElement>(null);
   const providerDialogRef = useRef<HTMLElement>(null);
@@ -214,6 +218,14 @@ export default function App() {
   edgesRef.current = edges;
   slidesRef.current = slides;
   chatMessagesRef.current = chatMessages;
+  const serializedMap = useMemo(() => serializeMap(nodes, edges), [nodes, edges]);
+  const mapSnapshot = useMemo(() => JSON.stringify(serializedMap), [serializedMap]);
+  const slidesSnapshot = useMemo(() => JSON.stringify(slides), [slides]);
+  const chatSnapshot = useMemo(() => JSON.stringify(chatMessages), [chatMessages]);
+  serializedMapRef.current = serializedMap;
+  mapSnapshotRef.current = mapSnapshot;
+  slidesSnapshotRef.current = slidesSnapshot;
+  chatSnapshotRef.current = chatSnapshot;
 
   useEffect(() => {
     const chatBody = chatBodyRef.current;
@@ -292,11 +304,11 @@ export default function App() {
         if (!isCurrent()) return;
         const current = projectRef.current;
         if (!current) return;
-        const cleanMap = serializeMap(nodesRef.current, edgesRef.current);
-        const mapSnapshot = JSON.stringify(cleanMap);
-        const slidesSnapshot = JSON.stringify(slidesRef.current);
+        const cleanMap = serializedMapRef.current ?? serializeMap(nodesRef.current, edgesRef.current);
+        const mapSnapshot = mapSnapshotRef.current || JSON.stringify(cleanMap);
+        const slidesSnapshot = slidesSnapshotRef.current || JSON.stringify(slidesRef.current);
         const conversation = chatMessagesRef.current;
-        const chatSnapshot = JSON.stringify(conversation);
+        const chatSnapshot = chatSnapshotRef.current || JSON.stringify(conversation);
         if (mapSnapshot === savedMapRef.current && slidesSnapshot === savedSlidesRef.current
           && chatSnapshot === JSON.stringify(current.conversation)) return;
         const snapshot: ProjectDocument = { ...current, map: cleanMap, presentation: { slides: slidesRef.current }, conversation };
@@ -307,8 +319,8 @@ export default function App() {
         savedSlidesRef.current = slidesSnapshot;
         projectRef.current = saved;
         setProject(saved);
-        const hasNewerEdits = JSON.stringify(serializeMap(nodesRef.current, edgesRef.current)) !== mapSnapshot
-          || JSON.stringify(slidesRef.current) !== slidesSnapshot || JSON.stringify(chatMessagesRef.current) !== chatSnapshot;
+        const hasNewerEdits = mapSnapshotRef.current !== mapSnapshot
+          || slidesSnapshotRef.current !== slidesSnapshot || chatSnapshotRef.current !== chatSnapshot;
         setSaveState(hasNewerEdits ? 'saving' : 'saved');
         setStorageError('');
         setRevisionConflict(false);
@@ -320,9 +332,9 @@ export default function App() {
       saveQueue.current = operation;
       await operation;
       if (!isCurrent()) return false;
-      if (JSON.stringify(serializeMap(nodesRef.current, edgesRef.current)) !== savedMapRef.current
-        || JSON.stringify(slidesRef.current) !== savedSlidesRef.current
-        || JSON.stringify(chatMessagesRef.current) !== JSON.stringify(projectRef.current?.conversation)) return flushPendingSave();
+      if (mapSnapshotRef.current !== savedMapRef.current
+        || slidesSnapshotRef.current !== savedSlidesRef.current
+        || chatSnapshotRef.current !== JSON.stringify(projectRef.current?.conversation)) return flushPendingSave();
       return true;
     } catch (error) {
       if (!isCurrent()) return false;
@@ -476,21 +488,21 @@ export default function App() {
 
   useEffect(() => {
     if (!project || futureProject || loading) return;
-    const mapChanged = JSON.stringify(serializeMap(nodes, edges)) !== savedMapRef.current;
-    const slidesChanged = JSON.stringify(slides) !== savedSlidesRef.current;
-    const chatChanged = JSON.stringify(chatMessages) !== JSON.stringify(project.conversation);
+    const mapChanged = mapSnapshot !== savedMapRef.current;
+    const slidesChanged = slidesSnapshot !== savedSlidesRef.current;
+    const chatChanged = chatSnapshot !== JSON.stringify(project.conversation);
     if (!mapChanged && !slidesChanged && !chatChanged) return;
     setSaveState('saving');
     const timer = window.setTimeout(() => { void flushPendingSave(); }, 700);
     return () => window.clearTimeout(timer);
-  }, [nodes, edges, slides, chatMessages, loading, project, futureProject, flushPendingSave]);
+  }, [mapSnapshot, slidesSnapshot, chatSnapshot, loading, project, futureProject, flushPendingSave]);
 
   useEffect(() => {
     if (!project || futureProject || saveState === 'saved') return;
     const warnIfUnsaved = (event: BeforeUnloadEvent) => {
-      if (JSON.stringify(serializeMap(nodesRef.current, edgesRef.current)) === savedMapRef.current
-        && JSON.stringify(slidesRef.current) === savedSlidesRef.current
-        && JSON.stringify(chatMessagesRef.current) === JSON.stringify(projectRef.current?.conversation)) return;
+      if (mapSnapshotRef.current === savedMapRef.current
+        && slidesSnapshotRef.current === savedSlidesRef.current
+        && chatSnapshotRef.current === JSON.stringify(projectRef.current?.conversation)) return;
       event.preventDefault();
       event.returnValue = '';
     };

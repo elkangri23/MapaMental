@@ -1,5 +1,6 @@
 # Cambios
 
+- El autosave comparte snapshots memoizados de mapas, diapositivas y conversación para evitar serializar repetidamente el mismo estado durante la detección de cambios y el guardado.
 - El canvas evita duplicar los datos de cada nodo para pasar la acción de edición y reutiliza etiquetas accesibles de conexiones cuando siguen vigentes.
 - En mapas grandes vistos desde móvil, el zoom automático respeta un tamaño mínimo para tocar los botones de ideas; el enlace de atribución también tiene un área táctil mayor.
 - La revisión Lighthouse móvil del mapa sintético de 10.000 ideas volvió a 100/100 en accesibilidad. Lighthouse agotaba el tiempo en la vista textual de 10.000 filas; la lista ahora está paginada para reducir el DOM montado.

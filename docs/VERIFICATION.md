@@ -1,5 +1,11 @@
 # Criterios de aceptación
 
+## Serialización compartida en autosave — T-028 — 2026-11-17
+
+- Inspección del flujo: el snapshot serializado del mapa ahora se memoiza por las referencias de nodos/conexiones y se reutiliza en detección de cambios, preparación de guardado y comprobación de ediciones nuevas. Diapositivas y conversación también exponen snapshots memoizados. El efecto de autosave observa los snapshots persistibles y no vuelve a programarse solo por referencias transitorias si el contenido no cambió.
+- `npm run build`: pasó para dominio, servidor y web; Vite generó el bundle de cliente sin errores.
+- No se midió latencia con cronómetro ni se hizo un A/B. Cada cambio real de nodos o conexiones sigue serializando el mapa completo una vez (O(n + e)); falta medirlo con fixture grande.
+
 ## Vista de lista paginada en mapas grandes — T-028/T-016 — 2026-11-17
 
 - Fixture aislado de 10.000 ideas. La lista presenta 250 botones por página, 40 páginas en total y anuncia el rango visible. Seleccionar la última idea mostró el rango 9.751–10.000 y la mantuvo seleccionada; las ideas fuera de la página no se duplican en el DOM.
