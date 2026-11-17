@@ -383,11 +383,32 @@ function slideContext(project: ProjectDocument, slide: PresentationSlide) {
 }
 
 export const aiRoutes: FastifyPluginAsync = async (app) => {
+  const maxConcurrentGenerations = 3;
+  let activeGenerations = 0;
+  const admittedRequests = new WeakSet<FastifyRequest>();
+
   app.addHook('preHandler', async (request, reply) => {
     if (!isExpectedHost(request.headers.host) || !isExpectedOrigin(request.headers.origin, request.headers['sec-fetch-site'], request.headers['x-espacio-visual-client']) || !isValidSession(request.headers.cookie, requiredSessionMode())) {
       return reply.code(403).send({ message: 'La sesión local no es válida. Recarga la aplicación para iniciar una sesión nueva.' });
     }
     if (request.headers['content-type']?.split(';')[0] !== 'application/json') return reply.code(415).send({ message: 'Esta acción requiere una petición JSON.' });
+  });
+
+  app.addHook('preHandler', async (request, reply) => {
+    const route = request.routeOptions.url ?? '';
+    const isGeneration = request.method === 'POST' && /\/ai\/(?:chat|proposals|slides\/proposals|deck\/proposals)$/.test(route);
+    if (!isGeneration) return;
+    if (activeGenerations >= maxConcurrentGenerations) {
+      reply.header('retry-after', '30');
+      return reply.code(429).send({ message: 'Ya hay tres generaciones IA en curso. Espera un momento e inténtalo de nuevo.' });
+    }
+    activeGenerations += 1;
+    admittedRequests.add(request);
+  });
+
+  app.addHook('onResponse', async (request) => {
+    if (!admittedRequests.delete(request)) return;
+    activeGenerations = Math.max(0, activeGenerations - 1);
   });
 
   app.post<{ Params: { id: string }; Body: { message: string; scopeNodeIds: string[]; history?: AiChatMessage[] } }>('/projects/:id/ai/chat', async (request, reply) => streamGeneration(request, reply, async (signal, report) => {

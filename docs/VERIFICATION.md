@@ -727,6 +727,13 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Perfil, configuración, certificados y datos de aplicación se aislaron bajo `%TEMP%`; no se usaron claves, proyectos del usuario ni conexiones a proveedores externos. El perfil de prueba se eliminó tras el recorrido.
 - Esto verifica la cadena confiable, validación de hostname, consulta HTTPS y SNI para la ruta de conexión del proveedor en el runtime actual. No cubre DNS rebinding entre resolución y socket, IP literal/SAN, OIDC, certificado inválido, proveedor real ni el paquete instalado; T-015 permanece parcial.
 
+### Concurrencia de generaciones IA — T-015 — 2026-11-17
+
+- Se arrancó el servidor de producción con `APPDATA`, `LOCALAPPDATA` y la raíz de proyectos aislados; se canjeó un nonce temporal, se creó un proyecto de fixture y se activó un proveedor compatible de loopback.
+- El proveedor simulado retuvo tres respuestas. Las tres peticiones de chat llegaron al upstream; una cuarta petición simultánea recibió HTTP 429, `Retry-After: 30` y el mensaje de límite, sin una cuarta conexión upstream. Al liberar las respuestas, las tres operaciones admitidas terminaron con HTTP 200.
+- Se verificó así el tope por proceso y la liberación de plazas al completarse. El fixture no usó claves reales, proyectos del usuario ni servicios externos. La primera ejecución de smoke expiró mientras esperaba el arranque de PowerShell/validación de volumen; se amplió el tiempo de espera y la repetición terminó correctamente.
+- El límite protege la concurrencia del proceso local; no sustituye los presupuestos de coste ni es una cuota diaria o por usuario. T-015 sigue parcial por DNS rebinding determinista, errores/permisos de disco y análisis formal de amenazas.
+
 ### Nombres accesibles de nodos y conexiones del mapa — T-016 — 2026-11-17
 
 - En el snapshot inicial de Chrome, React Flow exponía `Edge from root to audience` y otros identificadores en inglés; además, el grupo enfocable de cada idea no tenía nombre. Se añadió `ariaLabel` a conexiones con los nombres visibles de origen/destino y a los grupos de nodos con la etiqueta de la idea.

@@ -12,7 +12,7 @@ Actualizado: 2026-11-17. El estado se refiere a la documentación, no a que la f
 | [`DEVELOPMENT.md`](DEVELOPMENT.md) | Preparación del entorno de desarrollo | En curso |
 | [`PROVIDERS.md`](PROVIDERS.md) | Configuración de modelos y presupuesto | Mock Ollama validado y ciclos de IA evaluados con FreeLLMAPI; Ollama/LM Studio locales reales pendientes |
 | [`STORAGE.md`](STORAGE.md) | Archivo de proyecto, guardado, copias y migraciones | Contrato JSON v3 en ADR-0015; volumen fijo validado al inicio en ADR-0017; migración 2→3 y esquema futuro de solo lectura verificados |
-| [`SECURITY.md`](SECURITY.md) | Límites locales, credenciales, datos remotos y registros | Checks SSRF de redirección y DNS, rangos muestrales, TLS/SNI local; siguen pendientes DNS rebinding y otros controles |
+| [`SECURITY.md`](SECURITY.md) | Límites locales, credenciales, datos remotos y registros | Checks SSRF, TLS/SNI local y concurrencia IA limitada; siguen pendientes DNS rebinding y otros controles |
 | [`AUTH_OAUTH_MFA_PASSKEYS.md`](AUTH_OAUTH_MFA_PASSKEYS.md) | Contrato y tareas para login OIDC, MFA y passkeys | T-018–T-020 y T-022 cerradas; T-021 y T-023–T-025 parciales; T-026 con revisión estática y registro local parcial; falta recorrido real |
 | [`AUTH_OPERATIONS.md`](AUTH_OPERATIONS.md) | Gestionar el perfil, configurar el modo protegido y recuperar o desvincular la identidad | Guía escrita; flujos de IdP y autenticadores reales pendientes |
 | [`COMPLIANCE.md`](COMPLIANCE.md) | Cruce inicial de OWASP Top 10:2025 y WCAG 2.0 AA | Actualización del 2026-11-17; revisión parcial, con verificaciones dinámicas y pendientes explícitos |
