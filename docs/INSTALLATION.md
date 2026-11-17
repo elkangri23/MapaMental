@@ -23,16 +23,16 @@ El lanzador reinicia una instancia activa si cambia el modo. Para volver al modo
 
 ## Instalador Inno Setup
 
-El proyecto del instalador está preparado en `packaging\windows\setup.iss`. Está configurado para instalar por usuario, crear accesos directos en el menú Inicio y ofrecer un acceso directo opcional en el escritorio. Las versiones 0.1.0 y 0.1.1 se compilaron con Inno Setup 6.7.3. El 2026-11-17, una prueba Windows aislada instaló 0.1.0, guardó un proyecto, actualizó en la misma carpeta a 0.1.1, abrió el mapa conservado y desinstaló el programa sin borrar los datos. Una reinstalación temporal de 0.1.1 creó los accesos de Inicio `Espacio Visual` y `Detener Espacio Visual` y el de escritorio opcional. Con el instalador ejecutado sin privilegios de administrador, el acceso de inicio respondió HTTP 200 y el acceso de parada detuvo el servicio. La ruta de desinstalación desde Configuración sigue pendiente. Detalle en [`VERIFICATION.md`](VERIFICATION.md#actualizacion-del-instalador-windows-y-conservacion-de-proyectos--t-013).
+El proyecto del instalador está preparado en `packaging\windows\setup.iss`. Está configurado para instalar por usuario, crear accesos directos en el menú Inicio y ofrecer un acceso directo opcional en el escritorio. Las versiones 0.1.0 y 0.1.1 se compilaron con Inno Setup 6.7.3. El 2026-11-17, una prueba aislada instaló 0.1.0, guardó un proyecto, actualizó en la misma carpeta a 0.1.1, abrió el mapa conservado y desinstaló el programa sin borrar los datos. La instalación 0.1.1 actualizada creó accesos; sin privilegios de administrador, el acceso de inicio respondió HTTP 200 y el de parada detuvo el servicio. El uninstaller retiró la aplicación/accesos y dejó el marcador del proyecto. No se completó la ruta visual de Configuración porque la herramienta de control devolvió `GetCursorPos failed: Acceso denegado`. Detalle en [`VERIFICATION.md`](VERIFICATION.md#actualizacion-del-instalador-windows-y-conservacion-de-proyectos--t-013).
 
 ### Recorrido pendiente del instalador
 
-La instalación y los accesos se comprobaron en una sesión sin privilegios de administrador, con datos bajo `%TEMP%`. Para cerrar T-013, queda desinstalar desde Configuración y comprobar que se retiran aplicación/accesos y se conserva el proyecto de prueba.
+La instalación y los accesos se comprobaron en una sesión sin privilegios de administrador, con datos bajo `%TEMP%`. El uninstaller confirmó la retirada y conservación del proyecto. Para cerrar T-013 falta comprobar la entrada y desinstalación desde Configuración; no fue posible abrir esa UI con la herramienta de control disponible.
 
 1. Ya verificado: el instalador se ejecutó sin privilegios de administrador y creó los accesos esperados.
 2. Ya verificado: Inicio respondió HTTP 200 y el acceso de parada detuvo el proceso.
 3. Ya verificado con los scripts del paquete: instala 0.1.0, guarda un proyecto, actualiza a 0.1.1 en la misma carpeta y comprueba que el mapa se conserva.
-4. Desinstala desde Configuración de Windows. Comprueba que se retiran la aplicación y sus accesos directos, y que el mapa sigue en la carpeta de proyectos. La desinstalación mediante `unins000.exe` ya dejó los datos intactos.
+4. Pendiente: desinstala desde Configuración de Windows. Comprueba la entrada, la retirada de aplicación/accesos y que el mapa sigue en la carpeta de proyectos. `unins000.exe` ya confirmó retirada y conservación, pero no reemplaza esta comprobación de la UI.
 
 ## Datos, actualización y retirada del paquete portátil
 

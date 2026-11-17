@@ -33,7 +33,7 @@ npm install
 npm run dev
 ```
 
-La interfaz de desarrollo y el servicio local se abrirán en puertos de loopback. Este flujo es para desarrollo. El instalador de Windows 0.1.1 está compilado; la instalación, sus accesos, la actualización y la conservación de proyectos se verificaron. La aceptación final del instalador requiere comprobar la desinstalación desde Configuración. Consulta [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) y [`docs/INSTALLATION.md`](docs/INSTALLATION.md).
+La interfaz de desarrollo y el servicio local se abrirán en puertos de loopback. Este flujo es para desarrollo. El instalador de Windows 0.1.1 está compilado; se verificaron instalación, accesos, actualización y conservación de proyectos. La ruta de desinstalación desde Configuración sigue pendiente porque la herramienta de control de Windows no pudo abrir esa interfaz. Consulta [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) y [`docs/INSTALLATION.md`](docs/INSTALLATION.md).
 
 **Dependencias instaladas con Node portátil 24.22.2; build y flujo básico de producción comprobados en Chromium.**
 
