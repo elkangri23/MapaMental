@@ -26,6 +26,13 @@
 - Se reabrió el editor con F2, se escribió otro borrador y la API permaneció en revisión 3 hasta pulsar Escape. Escape confirmó el borrador, ambas etiquetas accesibles de conexión se actualizaron y el autosave terminó en «Guardado local», revisión 4.
 - El fixture y configuración estaban bajo `.perf-run`; se cerró la pestaña de prueba, detuvieron los servicios y retiró el directorio. El recorrido confirma el comportamiento del commit-on-blur y que no se persisten caracteres intermedios. No mide INP ni rendimiento de un mapa grande.
 
+## Sondeo de canvas grande con edición confirmada — T-028 — 2026-11-17
+
+- Fixture aislado de 10.000 ideas y 9.999 conexiones, móvil 390×844, CPU 1×, red sin limitación. DOM consultable tras montar el canvas: 448 nodos y 513 conexiones visibles en esa muestra.
+- Se enfocó por script el botón de `node-3443` y se envió F2/Control+A/texto/Enter mediante teclado DevTools. Mientras el borrador estaba abierto, la API siguió en revisión 1 con el título previo. Enter guardó el título nuevo en revisión 2, la UI mostró «Guardado local» y dos etiquetas accesibles de conexión usaron el nombre actualizado.
+- La traza del ciclo observó un `keydown` de 2.407 ms (3 ms input delay, 1.733 ms procesamiento, 671 ms presentación), CLS 0 y 38 ms de reflow sin función atribuida. El resumen no permite identificar con certeza cuál tecla generó el máximo; el foco programático y el teclado DevTools hacen que esto sea una señal de laboratorio, no INP físico ni dato de campo.
+- Se cerró la pestaña, detuvieron los servicios y retiró el fixture. Próximo: reducir/probar coste del canvas inicial y capturar entradas por una ruta UI atribuible con tamaños distintos.
+
 ## Vista de lista paginada en mapas grandes — T-028/T-016 — 2026-11-17
 
 - Fixture aislado de 10.000 ideas. La lista presenta 250 botones por página, 40 páginas en total y anuncia el rango visible. Seleccionar la última idea mostró el rango 9.751–10.000 y la mantuvo seleccionada; las ideas fuera de la página no se duplican en el DOM.
