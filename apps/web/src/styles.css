@@ -247,6 +247,7 @@ kbd { border: 1px solid #e5e6ed; border-radius: 4px; padding: 2px 4px; backgroun
 .idea-node--mint .idea-node__eyebrow { color: #7da797; }
 .idea-node--peach .idea-node__eyebrow { color: #b99883; }
 .idea-node__label { display: block; width: 100%; padding: 0; border: 0; background: transparent; text-align: left; color: #414255; font-size: 12px; line-height: 1.42; font-weight: 600; cursor: text; }
+@media (max-width: 760px) { .idea-node__label { min-height: 60px; } }
 .idea-node--root .idea-node__label { font-family: Georgia, serif; font-size: 15px; font-weight: 500; line-height: 1.3; }
 .idea-node__input { display: block; width: 100%; padding: 1px 3px; border: 1px solid #b2a8ed; border-radius: 4px; outline: none; background: rgba(255,255,255,.8); color: #414255; font-size: 12px; }
 .react-flow__edge-path { stroke: #c9c4df; stroke-width: 1.6; }
@@ -326,7 +327,7 @@ button:disabled:focus-visible { outline-color: #5143b5; }
 .slide-editor__subtitle, .slide-ai-proposal__subtitle, .slide-source, .slide-mock-form__notice,
 .slide-mock-form__sample, .slide-ai-panel__provider, .slide-ai-proposal > small, .slide-flow-preview__item b,
 .composer-tool { color: #55596b; }
-.react-flow__attribution a { color: #55596b; }
+.react-flow__attribution a { display: inline-flex; min-height: 28px; align-items: center; padding: 0 4px; box-sizing: border-box; color: #55596b; }
 .sparkle, .assistant-glyph, .context-icon { color: #5d4fac; }
 .map-text-list { position: absolute; inset: 54px 0 0; overflow: auto; margin: 0; padding: 10px 24px 24px 48px; color: #343747; line-height: 1.7; }
 .map-text-list > li { padding: 8px 0; }

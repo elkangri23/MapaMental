@@ -1,4 +1,4 @@
-import { memo, useCallback, useState, type Dispatch, type MouseEvent as ReactMouseEvent, type SetStateAction } from 'react';
+import { memo, useCallback, useEffect, useState, type Dispatch, type MouseEvent as ReactMouseEvent, type SetStateAction } from 'react';
 import '@xyflow/react/dist/style.css';
 import {
   addEdge,
@@ -82,6 +82,13 @@ const ariaLabelConfig = {
 };
 
 function MapCanvas({ nodes, edges, setNodes, setEdges, setSelectedNodeId, aiBusy }: Props) {
+  const [minimumZoom, setMinimumZoom] = useState(() => window.matchMedia('(max-width: 760px)').matches ? 0.4 : 0.25);
+  useEffect(() => {
+    const mobileViewport = window.matchMedia('(max-width: 760px)');
+    const updateMinimumZoom = () => setMinimumZoom(mobileViewport.matches ? 0.4 : 0.25);
+    mobileViewport.addEventListener('change', updateMinimumZoom);
+    return () => mobileViewport.removeEventListener('change', updateMinimumZoom);
+  }, []);
   const onNodesChange: OnNodesChange<IdeaNode> = useCallback((changes) => {
     if (aiBusy) return;
     setNodes((current) => applyNodeChanges(changes, current) as IdeaNode[]);
@@ -101,7 +108,7 @@ function MapCanvas({ nodes, edges, setNodes, setEdges, setSelectedNodeId, aiBusy
       <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} ariaLabelConfig={ariaLabelConfig}
         onlyRenderVisibleElements={nodes.length >= 100} nodesDraggable={!aiBusy} nodesConnectable={!aiBusy}
         elementsSelectable={!aiBusy} deleteKeyCode={null} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
-        onConnect={onConnect} onNodeClick={onNodeClick} fitView fitViewOptions={fitViewOptions} minZoom={0.25} maxZoom={1.6}>
+        onConnect={onConnect} onNodeClick={onNodeClick} fitView fitViewOptions={fitViewOptions} minZoom={minimumZoom} maxZoom={1.6}>
         <Background variant={BackgroundVariant.Dots} gap={23} size={1} color="#dfe3ee" />
         <Controls position="bottom-left" showInteractive={false} />
         {nodes.length <= minimapMaxNodes && <MiniMap position="bottom-right" pannable zoomable nodeStrokeWidth={2} />}
