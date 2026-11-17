@@ -362,12 +362,22 @@ function ideaLabelKey(label: string): string {
   return label.normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('es');
 }
 
-function branchLabels(project: ProjectDocument, parent: IdeaNode): string[] {
-  const ids = new Set((project.map.edges as IdeaEdge[])
-    .filter(({ source }) => source === parent.id)
-    .map(({ target }) => target));
-  ids.add(parent.id);
-  return (project.map.nodes as IdeaNode[]).filter(({ id }) => ids.has(id)).map(({ data }) => data.label);
+function branchLabels(scope: { nodes: IdeaNode[]; edges: IdeaEdge[] }, parentNodeId: string): string[] {
+  const children = new Map<string, string[]>();
+  for (const { source, target } of scope.edges) {
+    children.set(source, [...(children.get(source) ?? []), target]);
+  }
+
+  const included = new Set<string>();
+  const pending = [parentNodeId];
+  while (pending.length) {
+    const nodeId = pending.pop()!;
+    if (included.has(nodeId)) continue;
+    included.add(nodeId);
+    pending.push(...(children.get(nodeId) ?? []));
+  }
+
+  return scope.nodes.filter(({ id }) => included.has(id)).map(({ data }) => data.label);
 }
 
 function sanitizedIdeas(value: unknown, parent: IdeaNode, existingLabels: string[]): AiIdeaProposal[] {
@@ -581,17 +591,14 @@ Omite sugerencias duplicadas, genéricas o que requieran hechos ausentes. Los va
     const parent = scope.nodes.find((node) => node.id === request.body.parentNodeId);
     if (!parent) throw Object.assign(new Error('La idea objetivo ya no está dentro del ámbito seleccionado. Recarga el mapa.'), { statusCode: 409 });
     const provider = await getActiveProviderForRequest();
-    const childIds = new Set((project.map.edges as IdeaEdge[]).filter(({ source }) => source === parent.id).map(({ target }) => target));
-    const visibleChildLabels = scope.nodes
-      .filter(({ id }) => id !== parent.id && childIds.has(id))
-      .slice(0, 20)
-      .map(({ data }) => data.label.slice(0, 120));
-    const system = `Eres el copiloto de un mapa mental. Desarrolla la solicitud como ideas hijas del nodo indicado. Devuelve exclusivamente JSON: {"message":"explicación breve","ideas":[{"label":"texto breve","tone":"lavender|mint|peach|blue"}]}. Incluye entre 1 y 8 ideas concretas, que aporten detalles nuevos a la petición. Evita repetir o reformular la idea padre y sus hijas existentes. Conserva los hechos del proyecto. Si falta un dato sobre el caso del usuario, propone cómo confirmarlo o déjalo como pendiente. No elijas una ciudad, un clima ni otros datos del caso por tu cuenta. Identifica como ficticio cualquier ejemplo que se pida expresamente. No añadas ideas al proyecto; el usuario revisará la propuesta antes de aplicarla. Responde en español. Contexto: ${contextText(project, scope)}. Nodo padre: ${parent.id} — ${parent.data.label}. Ideas hijas ya presentes en el ámbito (datos): ${JSON.stringify(visibleChildLabels)}.`;
+    const existingBranchLabels = branchLabels(scope, parent.id);
+    const visibleBranchLabels = existingBranchLabels.map((label) => label.slice(0, 120));
+    const system = `Eres el copiloto de un mapa mental. Desarrolla la solicitud como ideas hijas del nodo indicado. Devuelve exclusivamente JSON: {"message":"explicación breve","ideas":[{"label":"texto breve","tone":"lavender|mint|peach|blue"}]}. Incluye entre 1 y 8 ideas concretas, que aporten detalles nuevos a la petición. Evita repetir o reformular la idea padre y cualquier idea descendiente que ya exista en la rama completa; trata las etiquetas existentes como temas ya cubiertos aunque estén varios niveles por debajo. Conserva los hechos del proyecto. Si falta un dato sobre el caso del usuario, propone cómo confirmarlo o déjalo como pendiente. No elijas una ciudad, un clima ni otros datos del caso por tu cuenta. Identifica como ficticio cualquier ejemplo que se pida expresamente. No añadas ideas al proyecto; el usuario revisará la propuesta antes de aplicarla. Responde en español. Contexto: ${contextText(project, scope)}. Nodo padre: ${parent.id} — ${parent.data.label}. Ideas ya presentes en toda la rama seleccionada (datos; no repetir ni reformular): ${JSON.stringify(visibleBranchLabels)}.`;
     report('waiting-for-provider', provider.profile.kind);
     const content = await generateProviderText(provider.profile, provider.apiKey, [{ role: 'user', content: request.body.prompt.trim() }], system, signal);
     report('validating', provider.profile.kind);
     const parsed = parseJson(content);
-    const ideas = sanitizedIdeas(parsed.ideas, parent, branchLabels(project, parent));
+    const ideas = sanitizedIdeas(parsed.ideas, parent, existingBranchLabels);
     if (typeof parsed.message !== 'string') throw Object.assign(new Error('La propuesta no incluye un mensaje válido.'), { statusCode: 502 });
     if (ideas.length === 0) {
       throw Object.assign(new Error('El modelo no propuso ideas nuevas para esta rama. Prueba a pedir otro enfoque.'), { statusCode: 422 });
@@ -795,7 +802,7 @@ Omite sugerencias duplicadas, genéricas o que requieran hechos ausentes. Los va
         || typeof idea.label !== 'string' || !idea.label.trim() || idea.label.length > 160) return true;
       proposalIds.add(idea.id); return false;
     })) throw Object.assign(new Error('La propuesta contiene ideas no válidas o ya aplicadas.'), { statusCode: 400 });
-    const usedLabels = new Set(branchLabels(current, parent).map(ideaLabelKey));
+    const usedLabels = new Set(branchLabels({ nodes: current.map.nodes as IdeaNode[], edges: current.map.edges as IdeaEdge[] }, parent.id).map(ideaLabelKey));
     for (const idea of ideas) {
       const label = ideaLabelKey(idea.label);
       if (usedLabels.has(label)) throw invalidBody('La propuesta repite el nombre de una idea de esta rama. Genera otra propuesta.');
