@@ -1,5 +1,7 @@
 # Cambios
 
+- Las sugerencias que piden explícitamente un formulario ficticio recuperan el formato de formulario aunque el modelo omita la etiqueta.
+
 - El chat mantiene abierta la conexión mientras el modelo prepara una respuesta lenta.
 
 - Las tarjetas que proponen crear un recorrido visual explícito abren una diapositiva con diagrama aunque el modelo las clasifique como ideas del mapa.

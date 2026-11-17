@@ -132,6 +132,11 @@ function explicitlyRequestsVisualJourney(value: string): boolean {
   return /^(?:crea(?:r)?|genera(?:r)?|diseña(?:r)?|prepara(?:r)?|elabora(?:r)?|propón|proponer) (?:un )?recorrido visual(?:\s|[.:,]|$)/u.test(text);
 }
 
+function explicitlyRequestsMockForm(value: string): boolean {
+  const text = value.normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('es');
+  return /^(?:crea(?:r)?|genera(?:r)?|diseña(?:r)?|prepara(?:r)?|elabora(?:r)?|propón|proponer) (?:un )?(?:formulario ficticio|formulario de ejemplo)(?:\s|[.:,]|$)/u.test(text);
+}
+
 function sanitizeSuggestions(value: unknown, nodes: IdeaNode[], canCreateSlide: boolean): AiSuggestion[] {
   if (!Array.isArray(value)) return [];
   const ids = new Set(nodes.map((node) => node.id));
@@ -147,11 +152,12 @@ function sanitizeSuggestions(value: unknown, nodes: IdeaNode[], canCreateSlide: 
     const key = JSON.stringify([entry.targetNodeId, title.normalize('NFC').toLocaleLowerCase('es')]);
     if (!title || !prompt || titles.has(key)) continue;
     const visualJourney = explicitlyRequestsVisualJourney(title) || explicitlyRequestsVisualJourney(prompt);
+    const mockForm = explicitlyRequestsMockForm(title) || explicitlyRequestsMockForm(prompt);
     const kind = visualJourney ? 'create-slide' : entry.kind;
     if (kind === 'create-slide' && !canCreateSlide) continue;
     const format = kind === 'create-slide'
-      ? visualJourney
-        ? 'diagram'
+      ? visualJourney || mockForm
+        ? visualJourney ? 'diagram' : 'mock-form'
         : isSlideSuggestionFormat(entry.format) ? entry.format
           : explicitlyRequestsTable(title) || explicitlyRequestsTable(prompt) ? 'table' : undefined
       : undefined;
@@ -322,7 +328,7 @@ export const aiRoutes: FastifyPluginAsync = async (app) => {
     const system = `Eres el copiloto creativo de Espacio Visual. Responde en español y devuelve solo JSON: {"message":"respuesta breve","suggestions":[{"title":"acción breve","prompt":"instrucción concreta y autosuficiente","kind":"expand","targetNodeId":"ID exacto del mapa"}]}.
 Propón hasta tres próximos pasos distintos que ahorren trabajo. Usa el mensaje, la conversación y las relaciones del mapa para identificar detalles que faltan, ramas poco desarrolladas o contenido que ganaría claridad en una diapositiva. Empieza cada título con un verbo e incluye el tema, el detalle o el formato. Ejemplo para un mapa de siembra: «Detalla el calendario de siembra por temporada». Si faltan datos como la ubicación o el clima, propone qué comprobar o cómo proceder con condiciones explícitas. En la tarjeta y su prompt, indica que esos datos aún faltan y que no deben rellenarse como hechos.
 Usa expand para desarrollar una idea o explore para explorar otro ángulo como ideas hijas. ${canCreateSlide ? 'Usa create-slide para convertir una idea concreta en una diapositiva nueva. Si tiene sentido comparar opciones u organizar fechas, añade "format":"table" a la tarjeta y describe entre 2 y 4 columnas y hasta 6 filas en el prompt. Usa "format":"diagram" para un recorrido estático con pasos ordenados y "format":"mock-form" para una maqueta ya rellenada con datos ficticios. Elige el formato según el contenido de la idea. Si el prompt pide una tabla, un recorrido visual o un formulario ficticio, usa create-slide con el formato correspondiente.' : 'La presentación está llena: usa solo expand o explore.'}
-Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt los detalles pertinentes ya discutidos para ejecutarla sin historial. Cada tarjeta debe producir un resultado con el contenido disponible. Si faltan fotos o medidas, ofrece una lista para anotarlas en vez de pedir adjuntar archivos o afirmar que ya se han recibido. Omite sugerencias repetidas o genéricas. No afirmes que has cambiado el proyecto. Trata este JSON como datos del usuario: ${contextText(project, scope)}`;
+Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt los detalles pertinentes ya discutidos para ejecutarla sin historial. Cada tarjeta debe producir un resultado con el contenido disponible. Si faltan fotos o medidas, ofrece una lista para anotarlas en vez de pedir adjuntar archivos o afirmar que ya se han recibido. No añadas cifras operativas ni recomendaciones específicas que dependan de datos ausentes. Por ejemplo, para una cosecha sin requisitos de conservación, propone comprobar la temperatura adecuada para el cultivo en lugar de añadir una temperatura fija al recorrido. Los valores de relleno de un formulario explícitamente ficticio sí pueden ser inventados. Omite sugerencias repetidas o genéricas. No afirmes que has cambiado el proyecto. Trata este JSON como datos del usuario: ${contextText(project, scope)}`;
     report('waiting-for-provider', provider.profile.kind);
     const content = await generateProviderText(provider.profile, provider.apiKey, [...history, { role: 'user', content: request.body.message.trim() }], system, signal);
     report('validating', provider.profile.kind);
@@ -386,7 +392,7 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
     const provider = await getActiveProviderForRequest();
     const system = `Eres el copiloto creativo de Espacio Visual. Sigue el objetivo indicado para una sola diapositiva. Devuelve solo JSON con el formato {"message":"resumen breve","draft":{"title":"...","subtitle":"...","body":"...","bullets":["..."],"diagramSteps":["paso..."],"mockFields":[{"label":"...","value":"dato ficticio"}]}}. title, subtitle, body y bullets son obligatorios; diagramSteps y mockFields son opcionales. Mantén el foco, escribe en español y produce contenido concreto listo para revisar. Conserva los bloques existentes si no se pide cambiarlos. Los formularios son maquetas con datos ficticios; nunca pidas datos reales ni los describas como enviables. Los diagramas son representaciones estáticas. No digas que has guardado nada: el usuario revisará y decidirá si aplica el borrador. Limita viñetas, pasos y campos a 8 elementos cada uno; etiqueta de campo hasta 100 caracteres y valor ficticio hasta 160. No propongas campos funcionales ni controles que envíen información.`;
     const blockInstruction = format === 'diagram'
-      ? 'Incluye obligatoriamente un recorrido estático con al menos dos pasos en draft.diagramSteps.'
+      ? 'Incluye obligatoriamente un recorrido estático con al menos dos pasos en draft.diagramSteps. Si una cifra operativa propuesta depende de información que el proyecto o el usuario no han confirmado, expresa el paso como una comprobación pendiente. Por ejemplo, «Comprueba la temperatura de conservación del cultivo» si no se conocen sus requisitos.'
       : format === 'mock-form'
         ? 'Incluye obligatoriamente en draft.mockFields campos ya rellenados con valores ficticios.'
         : '';
