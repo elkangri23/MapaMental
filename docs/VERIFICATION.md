@@ -889,6 +889,11 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - En una segunda fixture temporal que sí documentaba cuatro pasos, los cuatro quedaron intactos y sin marca de pendiente; las tres viñetas operativas que el modelo añadió, al no estar respaldadas por el mapa, se marcaron «Pendiente de confirmar». El texto del cuerpo se neutralizó para no afirmar resultados del proceso. Se aplicó la diapositiva y la API confirmó persistencia; el deshacer volvió a dejar cero diapositivas y sin undo. Esta muestra confirma el caso documentado para ese mapa/modelo; quedan mapas y modelos adicionales, incluidos proveedores locales.
 
 
+### Fallo simultáneo al copiar y retirar una copia — T-015/T-017 — 2026-11-17
+
+- En una fixture bajo `%TEMP%`, el almacén compilado recibió un `copyFile` simulado que escribió un parcial y falló con `ENOSPC`; el `rm` del destino se simuló con `EACCES`. El guardado propagó el `ENOSPC` original, conservó el `project.json` byte a byte y dejó el parcial porque no pudo retirarlo.
+- Al restaurar las operaciones reales, el reintento creó la revisión 2. Se eliminó el fixture temporal. Esto no llena un volumen real ni comprueba ACL reales.
+
 ### Rechazo de rutas enlazadas en almacenamiento de proyectos — T-015/T-017 — 2026-11-17
 
 - La revisión estática identificó que el servicio podía seguir enlaces locales desde el directorio de un proyecto, su `project.json` y `backups`. Se añadió comprobación con `lstat` para exigir directorios/archivos regulares antes de leer, restaurar y guardar; las copias enlazadas se excluyen o rechazan.
