@@ -27,6 +27,22 @@ export function sendApiError(request: FastifyRequest, reply: FastifyReply, statu
   return reply.code(statusCode).send({ code: apiErrorCode(statusCode), message: safeMessage, correlationId: request.id });
 }
 
+/** Keep expected application errors useful while hiding unexpected library and storage errors. */
+export function sendCaughtApiError(request: FastifyRequest, reply: FastifyReply, error: unknown) {
+  const failure = error as { statusCode?: unknown; message?: unknown; name?: unknown } | null;
+  const statusCode = Number.isInteger(failure?.statusCode)
+    && (failure!.statusCode as number) >= 400 && (failure!.statusCode as number) < 500
+    ? failure!.statusCode as number
+    : 500;
+  if (statusCode >= 500) {
+    request.log.error({ reqId: request.id, name: typeof failure?.name === 'string' ? failure.name : 'UnknownError' }, 'Error interno de una operación protegida; detalle omitido.');
+  }
+  const message = statusCode >= 500
+    ? 'No se pudo completar la operación. Inténtalo de nuevo.'
+    : typeof failure?.message === 'string' ? failure.message : 'No se pudo completar la operación.';
+  return sendApiError(request, reply, statusCode, message);
+}
+
 export function normalizeApiErrorPayload(request: FastifyRequest, statusCode: number, payload: string): string {
   let body: Record<string, unknown> = {};
   try {

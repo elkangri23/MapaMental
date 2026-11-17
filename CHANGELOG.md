@@ -1,5 +1,7 @@
 # Cambios
 
+- Las rutas de autenticación responden con error genérico ante fallos internos y ya no filtran mensajes de bibliotecas o almacenamiento.
+
 - Las tarjetas que prometen un diagrama o flujo de proceso recuperan el formato `diagram` cuando el modelo lo omite.
 
 - gpt-oss-120b devolvió sugerencias coherentes para el mapa completo y Cosecha; una respuesta simulada confirmó el descarte de una tarjeta sobre Siembra mal dirigida.

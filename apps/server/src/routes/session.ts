@@ -5,6 +5,7 @@ import { beginOidcAuthorization, completeOidcAuthorization, consumeOidcTransacti
 import { beginPasskeyAuthentication, beginPasskeyReauthentication, beginPasskeyRegistration, finishPasskeyAuthentication, finishPasskeyReauthentication, finishPasskeyRegistration, renamePasskey, revokePasskey } from '../services/passkeys.js';
 import { beginTotpEnrollment, confirmTotpEnrollment, disableTotp, totpStatus, verifyTotpRecovery } from '../services/totp.js';
 import { recordSecurityEvent, type SecurityEvent, type SecurityOutcome } from '../services/security-audit.js';
+import { sendCaughtApiError } from '../services/api-errors.js';
 
 function isRecord(value: unknown): value is Record<string, unknown> { return !!value && typeof value === 'object' && !Array.isArray(value); }
 
@@ -126,8 +127,7 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
       reply.header('cache-control', 'no-store');
       return options;
     } catch (error) {
-      const failure = error as Error & { statusCode?: number };
-      return reply.code(failure.statusCode ?? 400).send({ message: failure.message ?? 'No se pudo iniciar el registro WebAuthn.' });
+      return sendCaughtApiError(request, reply, error);
     }
   });
 
@@ -160,8 +160,7 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
       return result;
     } catch (error) {
       await audit(request, 'passkey.register', 'failure');
-      const failure = error as Error & { statusCode?: number };
-      return reply.code(failure.statusCode ?? 400).send({ message: failure.message ?? 'No se pudo validar la passkey.' });
+      return sendCaughtApiError(request, reply, error);
     }
   });
 
@@ -188,7 +187,7 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
       const result = await confirmTotpEnrollment(sessionId, request.body.code);
       await audit(request, 'totp.enroll');
       reply.header('cache-control', 'no-store'); return result;
-    } catch (error) { await audit(request, 'totp.enroll', 'failure'); const failure = error as Error & { statusCode?: number }; return reply.code(failure.statusCode ?? 400).send({ message: failure.message }); }
+    } catch (error) { await audit(request, 'totp.enroll', 'failure'); return sendCaughtApiError(request, reply, error); }
   });
 
   app.post('/session/totp/disable', async (request, reply) => {
@@ -204,8 +203,7 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
       return result;
     } catch (error) {
       await audit(request, 'totp.disable', 'failure');
-      const failure = error as Error & { statusCode?: number };
-      return reply.code(failure.statusCode ?? 500).send({ message: failure.statusCode ? failure.message : 'No se pudo desactivar TOTP.' });
+      return sendCaughtApiError(request, reply, error);
     }
   });
 
@@ -234,7 +232,7 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
       reply.header('cache-control', 'no-store');
       await audit(request, 'totp.recovery');
       return { recovery: true, scope: 'passkey-registration-only' };
-    } catch (error) { await audit(request, 'totp.recovery', 'failure'); const failure = error as Error & { statusCode?: number }; return reply.code(failure.statusCode ?? 400).send({ message: failure.message }); }
+    } catch (error) { await audit(request, 'totp.recovery', 'failure'); return sendCaughtApiError(request, reply, error); }
   });
 
   app.get('/session/recovery/status', async (request, reply) => {
@@ -258,8 +256,7 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
       reply.header('cache-control', 'no-store');
       return options;
     } catch (error) {
-      const failure = error as Error & { statusCode?: number };
-      return reply.code(failure.statusCode ?? 400).send({ message: failure.message ?? 'No se pudo iniciar la reautenticación.' });
+      return sendCaughtApiError(request, reply, error);
     }
   });
 
@@ -277,8 +274,7 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
       return result;
     } catch (error) {
       await audit(request, 'passkey.reauthentication', 'failure');
-      const failure = error as Error & { statusCode?: number };
-      return reply.code(failure.statusCode ?? 400).send({ message: failure.message ?? 'No se pudo verificar la passkey.' });
+      return sendCaughtApiError(request, reply, error);
     }
   });
 
@@ -301,8 +297,7 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
       return { passkeys: passkeys.map(({ id, name, createdAt, lastUsedAt, deviceType, backedUp }) => ({ id, name, createdAt, lastUsedAt, deviceType, backedUp })) };
     } catch (error) {
       await audit(request, 'passkey.rename', 'failure');
-      const failure = error as Error & { statusCode?: number };
-      return reply.code(failure.statusCode ?? 400).send({ message: failure.message ?? 'No se pudo renombrar la passkey.' });
+      return sendCaughtApiError(request, reply, error);
     }
   });
 
@@ -326,8 +321,7 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
       return { passkeys: passkeys.map(({ id, name, createdAt, lastUsedAt, deviceType, backedUp }) => ({ id, name, createdAt, lastUsedAt, deviceType, backedUp })) };
     } catch (error) {
       await audit(request, 'passkey.revoke', 'failure');
-      const failure = error as Error & { statusCode?: number };
-      return reply.code(failure.statusCode ?? 400).send({ message: failure.message ?? 'No se pudo revocar la passkey.' });
+      return sendCaughtApiError(request, reply, error);
     }
   });
 
@@ -344,8 +338,7 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
       reply.header('cache-control', 'no-store');
       return options;
     } catch (error) {
-      const failure = error as Error & { statusCode?: number };
-      return reply.code(failure.statusCode ?? 400).send({ message: failure.message ?? 'No se pudo iniciar WebAuthn.' });
+      return sendCaughtApiError(request, reply, error);
     }
   });
 
@@ -370,8 +363,7 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
       return { authenticated: true };
     } catch (error) {
       await audit(request, 'passkey.login', 'failure');
-      const failure = error as Error & { statusCode?: number };
-      return reply.code(failure.statusCode ?? 400).send({ message: failure.message ?? 'No se pudo validar la passkey.' });
+      return sendCaughtApiError(request, reply, error);
     }
   });
 

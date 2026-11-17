@@ -2,6 +2,8 @@
 
 Esta es la lista única de trabajo. Marca una tarea como terminada solo cuando cumpla su criterio y se hayan actualizado los documentos afectados. **En curso:** T-009, T-010, T-013, T-015 y T-017.
 
+- **Seguimiento de T-015/T-026 — errores internos en autenticación.** La revisión del 2026-11-17 encontró handlers que devolvían `error.message` de excepciones inesperadas como HTTP 400. Se centralizó el manejo: errores de aplicación 4xx conservan su mensaje; fallos imprevistos se responden como 500 genérico y el log solo guarda ID de petición y nombre del tipo. Build, `npm audit` y `git diff --check` pasaron. Evidencia y límites en [`reviews/2026-11-17-security-audit.md`](reviews/2026-11-17-security-audit.md). T-015/T-026 siguen parciales; no es pentest.
+
 - **Seguimiento de T-004 — enlaces de Markdown.** El informe de deriva actualizado y el escaneo final quedan registrados en VERIFICATION; tras las últimas actualizaciones, cubrió 52 archivos, 168 enlaces locales a archivos y 14 enlaces a secciones, sin destinos rotos. Esto valida rutas/anclas internas, no la integridad general ni la instalación del proyecto.
 
 ## Investigación y diseño
