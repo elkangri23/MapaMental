@@ -139,7 +139,7 @@ function validatedBaseUrl(kind: ProviderKind, value: string | undefined) {
 }
 
 function isBlockedRemoteHost(hostname: string) {
-  const host = hostname.toLowerCase().replace(/^\[|\]$/g, '');
+  const host = hostname.toLowerCase().replace(/^\[|\]$/g, '').replace(/\.$/, '');
   if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') || host.endsWith('.internal') || host === '::1' || host === '::') return true;
   if (isIP(host) === 6) {
     if (host.startsWith('::ffff:')) return true;
