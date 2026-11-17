@@ -66,6 +66,7 @@ function IdeaNodeView({ id, data, selected }: NodeProps<IdeaNode>) {
 
 const nodeTypes = { idea: memo(IdeaNodeView) };
 const fitViewOptions = { padding: 0.25 };
+const minimapMaxNodes = 1_000;
 const ariaLabelConfig = {
   'node.a11yDescription.default': 'Pulsa Intro o espacio para seleccionar una idea. Pulsa Suprimir para eliminarla o Escape para cancelar.',
   'node.a11yDescription.keyboardDisabled': 'Pulsa Intro o espacio para seleccionar una idea. Después usa las flechas para moverla, Suprimir para eliminarla o Escape para cancelar.',
@@ -103,7 +104,7 @@ function MapCanvas({ nodes, edges, setNodes, setEdges, setSelectedNodeId, aiBusy
         onConnect={onConnect} onNodeClick={onNodeClick} fitView fitViewOptions={fitViewOptions} minZoom={0.25} maxZoom={1.6}>
         <Background variant={BackgroundVariant.Dots} gap={23} size={1} color="#dfe3ee" />
         <Controls position="bottom-left" showInteractive={false} />
-        <MiniMap position="bottom-right" pannable zoomable nodeStrokeWidth={2} />
+        {nodes.length <= minimapMaxNodes && <MiniMap position="bottom-right" pannable zoomable nodeStrokeWidth={2} />}
       </ReactFlow>
     </ReactFlowProvider>
   );

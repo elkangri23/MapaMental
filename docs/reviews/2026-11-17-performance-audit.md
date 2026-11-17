@@ -40,6 +40,12 @@ El proyecto admite hasta 10.000 ideas. React Flow no limita por defecto el dibuj
 
 **Corrección:** la propiedad se activa a partir de 100 nodos para no imponer ese trabajo extra a los mapas pequeños. La vista de lista sigue disponible para recorrer el contenido completo. La carga con 1.000 o 10.000 ideas no se midió aún; el zoom inicial puede encuadrar una gran parte del mapa, así que esta opción no demuestra por sí sola una mejora del primer render. Referencia: [React Flow, API `onlyRenderVisibleElements`](https://reactflow.dev/api-reference/react-flow).
 
+### Minimapa y mapas de hasta 10.000 ideas — 2026-11-17
+
+La inspección de la implementación instalada de `@xyflow/react` confirmó que `MiniMapNodes` recorre `s.nodes` y monta un `NodeComponentWrapper` por cada ID; el minimapa no sigue el límite de elementos visibles del canvas. Con el máximo admitido, eso añade hasta 10.000 formas SVG y suscriptores aunque el canvas principal represente solo una parte del grafo.
+
+**Corrección aplicada:** el minimapa se muestra hasta 1.000 ideas y se omite por encima de ese umbral. Los controles de zoom y «Ajustar mapa a la vista» permanecen disponibles. El umbral es una medida de contención fundamentada en el coste lineal del minimapa; todavía no hay medición Chrome antes/después que demuestre su impacto real en memoria o respuesta.
+
 ## Comprobaciones posteriores
 
 - `npm run build`: correcto.
@@ -78,6 +84,7 @@ El fixture de 10.000 ideas tenía un JSON de 2.035.696 B. Antes de dividir el ca
 
 - `T-028` permanece parcial. Se verificaron tamaños 100/1.000/10.000, pero faltan perfiles completos de interacción, memoria y diapositivas en cada escala.
 - Perfilar y optimizar 10.000 ideas después de la carga diferida, especialmente el coste de conexiones, layout, medición y persistencia.
+- Medir en Chrome el nuevo umbral del minimapa con 1.000 y 10.000 ideas; confirmar conteo DOM, tiempo de respuesta y que ajustar/zoom y navegación siguen operativos.
 - Repetir varias corridas comparables con caché fría y medir zoom, selección, edición, cambio de mapa, lista y editor de diapositivas; documentar variabilidad.
 - Considerar una estrategia de renderizado de conexiones o agrupación adaptativa solo si la nueva traza confirma que son el cuello de botella.
 - Repetir en viewport móvil/CPU lenta y revisar que el fallback de carga diferida siga accesible.
