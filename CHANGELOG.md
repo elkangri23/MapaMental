@@ -1,5 +1,7 @@
 # Cambios
 
+- El servidor descarta sugerencias que mezclan términos distintivos de ramas hermanas con el destino, pero conserva comparaciones explícitas entre ramas.
+
 - Se reforzaron las instrucciones de sugerencias para asociar el tema con la rama elegida y el contexto actual, sin ejemplos de siembra reutilizables. La evaluación real posterior aún detectó deriva entre cosecha y siembra; consulta [Verificación](docs/VERIFICATION.md#deriva-temática-de-sugerencias-con-gpt-oss-120b).
 
 - Los perfiles con URL local registran y aplican límites de uso cuando el usuario configura presupuesto mensual o tarifas para el modelo.

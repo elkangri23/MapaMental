@@ -137,9 +137,59 @@ function explicitlyRequestsMockForm(value: string): boolean {
   return /^(?:crea(?:r)?|genera(?:r)?|diseña(?:r)?|prepara(?:r)?|elabora(?:r)?|propón|proponer) (?:un )?(?:formulario ficticio|formulario de ejemplo)(?:\s|[.:,]|$)/u.test(text);
 }
 
-function sanitizeSuggestions(value: unknown, nodes: IdeaNode[], canCreateSlide: boolean): AiSuggestion[] {
+function topicTokens(value: string): Set<string> {
+  const common = new Set(['para', 'como', 'desde', 'hasta', 'sobre', 'entre', 'ideas', 'prueba', 'añade', 'crear', 'crea', 'desarrolla', 'detalle', 'contenido', 'diapositiva', 'tabla', 'formulario', 'recorrido']);
+  return new Set(value.normalize('NFC').toLocaleLowerCase('es').match(/[\p{L}\p{N}]{4,}/gu)?.filter((token) => !common.has(token)) ?? []);
+}
+
+function mentionsAnotherBranch(title: string, prompt: string, targetNodeId: string, nodes: IdeaNode[], edges: IdeaEdge[]): boolean {
+  const nodeIds = new Set(nodes.map(({ id }) => id));
+  const parents = new Map<string, string[]>();
+  const children = new Map<string, string[]>();
+  for (const { source, target } of edges) {
+    if (!nodeIds.has(source) || !nodeIds.has(target)) continue;
+    children.set(source, [...(children.get(source) ?? []), target]);
+    parents.set(target, [...(parents.get(target) ?? []), source]);
+  }
+  const collect = (seeds: string[], links: Map<string, string[]>) => {
+    const found = new Set<string>();
+    const pending = [...seeds];
+    while (pending.length) {
+      const id = pending.pop()!;
+      if (found.has(id)) continue;
+      found.add(id);
+      pending.push(...(links.get(id) ?? []));
+    }
+    return found;
+  };
+  const ownIds = collect([targetNodeId], children);
+  const ancestorIds = collect([targetNodeId], parents);
+  const otherIds = new Set<string>();
+  for (const ancestorId of ancestorIds) {
+    for (const childId of children.get(ancestorId) ?? []) {
+      if (ownIds.has(childId) || ancestorIds.has(childId)) continue;
+      for (const otherId of collect([childId], children)) otherIds.add(otherId);
+    }
+  }
+  if (otherIds.size === 0) return false;
+  const ownTerms = new Set<string>();
+  const otherTerms = new Set<string>();
+  for (const node of nodes) {
+    const tokens = topicTokens(node.data.label);
+    const destination = ownIds.has(node.id) || ancestorIds.has(node.id) ? ownTerms : otherIds.has(node.id) ? otherTerms : undefined;
+    for (const token of tokens) destination?.add(token);
+  }
+  for (const term of ownTerms) otherTerms.delete(term);
+  if (otherTerms.size === 0) return false;
+  const text = `${title} ${prompt}`.normalize('NFC').toLocaleLowerCase('es');
+  const comparisonIntent = /\b(compar\w*|relacion\w*|contrasta\w*|ambas ramas|entre .{1,50} y .{1,50})\b/u.test(text);
+  const suggestionTerms = topicTokens(text);
+  return !comparisonIntent && [...otherTerms].some((term) => suggestionTerms.has(term));
+}
+
+function sanitizeSuggestions(value: unknown, scopeNodes: IdeaNode[], mapNodes: IdeaNode[], mapEdges: IdeaEdge[], canCreateSlide: boolean): AiSuggestion[] {
   if (!Array.isArray(value)) return [];
-  const ids = new Set(nodes.map((node) => node.id));
+  const ids = new Set(scopeNodes.map((node) => node.id));
   const titles = new Set<string>();
   const actions = new Set<string>();
   const suggestions: AiSuggestion[] = [];
@@ -151,6 +201,7 @@ function sanitizeSuggestions(value: unknown, nodes: IdeaNode[], canCreateSlide: 
     const prompt = entry.prompt.trim().slice(0, 700);
     const key = JSON.stringify([entry.targetNodeId, title.normalize('NFC').toLocaleLowerCase('es')]);
     if (!title || !prompt || titles.has(key)) continue;
+    if (mentionsAnotherBranch(title, prompt, entry.targetNodeId, mapNodes, mapEdges)) continue;
     const visualJourney = explicitlyRequestsVisualJourney(title) || explicitlyRequestsVisualJourney(prompt);
     const mockForm = explicitlyRequestsMockForm(title) || explicitlyRequestsMockForm(prompt);
     const kind = visualJourney ? 'create-slide' : entry.kind;
@@ -334,7 +385,7 @@ Usa expand para desarrollar una idea o explore para explorar otro ángulo como i
     report('validating', provider.profile.kind);
     const parsed = parseJson(content);
     if (typeof parsed.message !== 'string' || !parsed.message.trim()) throw Object.assign(new Error('La respuesta del modelo no incluye un mensaje.'), { statusCode: 502 });
-    return { message: parsed.message.trim().slice(0, 5000), suggestions: sanitizeSuggestions(parsed.suggestions, scope.nodes, canCreateSlide), provider: provider.profile.name, contextNodeIds: scope.nodes.map((node) => node.id) };
+    return { message: parsed.message.trim().slice(0, 5000), suggestions: sanitizeSuggestions(parsed.suggestions, scope.nodes, project.map.nodes as IdeaNode[], project.map.edges as IdeaEdge[], canCreateSlide), provider: provider.profile.name, contextNodeIds: scope.nodes.map((node) => node.id) };
   }));
 
   app.post<{ Params: { id: string }; Body: { prompt: string; parentNodeId: string; scopeNodeIds: string[] } }>('/projects/:id/ai/proposals', async (request, reply) => streamGeneration(request, reply, async (signal, report) => {
