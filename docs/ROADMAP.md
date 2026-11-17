@@ -13,6 +13,8 @@ Los hitos son incrementos internos de implementación v1, no productos comercial
 
 La línea base transversal de seguridad y accesibilidad se sigue en T-015 y T-016 de [`TASKS.md`](TASKS.md). La auditoría de código del 2026-11-15 corrigió la fijación DNS para SSRF, validación de configuración/documentos y errores; el build y el audit de dependencias pasan. Siguen pendientes los recorridos negativos de rutas, validación de proveedores en Windows y evaluación manual WCAG; no declarar conformidad hasta cerrarlos. Informe: [`reviews/2026-11-15-security-audit.md`](reviews/2026-11-15-security-audit.md).
 
+El modelo inicial de amenazas se registró en [`THREAT_MODEL.md`](THREAT_MODEL.md): enumera activos, límites de confianza y riesgos residuales sin afirmar auditoría formal. T-015 sigue en curso hasta contrastar sus escenarios con el recorrido HTTP de rebinding y los errores de almacenamiento pendientes.
+
 En T-015, el 2026-11-17 se verificó con un proveedor compatible simulado que la consulta de modelos rechaza una redirección sin solicitar su destino (`302` → solo `/v1/models`, no `/redirect-target`). La matriz DNS y TLS/SNI sigue pendiente; evidencia en [`VERIFICATION.md`](VERIFICATION.md#redirección-del-endpoint-de-modelos-del-proveedor--t-015--2026-11-17).
 
 La clasificación de URL se contrastó además con 32 direcciones representativas de los registros IANA IPv4/IPv6: 25 rangos especiales bloqueados, cinco direcciones públicas permitidas y loopback permitido solo por la configuración local. Sin discrepancias en las muestras; la prueba no resolvió DNS ni hizo conexiones a las direcciones. T-015 sigue parcial. [Evidencia](VERIFICATION.md#matriz-acotada-de-rangos-especiales-iana--t-015--2026-11-17).

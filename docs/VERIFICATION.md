@@ -740,6 +740,11 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - El callback de socket devolvió únicamente `93.184.216.34`, sin una segunda consulta DNS (contador: una). Un hostname alternativo fue rechazado sin dirección, y una nueva ejecución de la política DNS con respuesta loopback fue rechazada con HTTP-equivalente 400.
 - La simulación cubre en memoria resolución → validación SSRF → lookup fijado de Undici, sin petición DNS ni conexión de red. No ejercita la petición HTTP completa ni un socket real; ese recorrido integrado, los errores de disco y el análisis formal de amenazas siguen pendientes.
 
+### Modelo inicial de amenazas — T-015 — 2026-11-17
+
+- Se redactó [`THREAT_MODEL.md`](THREAT_MODEL.md) a partir de la arquitectura, los controles descritos y la evidencia ya registrada. Incluye activos, límites de confianza, adversarios, once escenarios con controles y riesgo residual, supuestos y prioridades.
+- Es una revisión documental inicial. No valida por sí sola la eficacia de los controles ni reemplaza pruebas dinámicas, un pentest o una revisión independiente. Debe actualizarse al cerrar las pruebas de DNS/HTTP, fallos de almacenamiento y autenticación real.
+
 ### Nombres accesibles de nodos y conexiones del mapa — T-016 — 2026-11-17
 
 - En el snapshot inicial de Chrome, React Flow exponía `Edge from root to audience` y otros identificadores en inglés; además, el grupo enfocable de cada idea no tenía nombre. Se añadió `ariaLabel` a conexiones con los nombres visibles de origen/destino y a los grupos de nodos con la etiqueta de la idea.
