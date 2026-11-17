@@ -80,6 +80,11 @@ Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos ta
 
 ### Primera evaluación real con FreeLLMAPI
 
+#### Ronda de mapa completo y rama de cosecha con gpt-oss-120b
+
+- En un proyecto temporal, el mapa completo produjo una expansión para recoger la ubicación/clima pendientes y dos diapositivas distintas para cosecha: calendario de tabla y ficha con formulario ficticio. La consulta de la rama Cosecha devolvió tres tarjetas: expansión del calendario, formulario ficticio para Ficha de ejemplo de cosecha y recorrido visual para Cosecha.
+- Los destinos de las tres tarjetas de rama pertenecían a la selección enviada. Las tarjetas anunciaron `mock-form` y `diagram` para las diapositivas. La respuesta generó dos propuestas diferentes en 3,7 segundos. Esta ronda mejora la cobertura de selección global y de rama, pero no completa dos rondas de aceptación completas ni el ciclo de aplicar/deshacer de cada formato.
+
 #### Modelos adicionales y respuestas lentas
 
 - El catálogo de FreeLLMAPI anunció los alias `qwen3.5-9b` y `gemma-4-31b-it`. Se repitió por la API de MapaMental la consulta que pide un recorrido y un formulario ficticio en el mapa temporal de cosecha.
