@@ -623,3 +623,10 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - El empaquetado portátil en modo offline completó la compilación. El ZIP se extrajo en una carpeta temporal, con proyectos y perfiles de prueba separados.
 - Con una ruta de red, el lanzador abortó el inicio y mostró el aviso específico de validación del almacenamiento. Con una carpeta local, el servicio arrancó y sirvió la interfaz con HTTP 200.
 - El segundo inicio reutilizó el mismo proceso. El lanzador lo detuvo y se comprobó que el proceso había salido. Queda pendiente el recorrido del instalador Inno Setup.
+
+### Deriva temática de sugerencias con gpt-oss-120b
+
+- En una repetición aislada mediante FreeLLMAPI, el mapa de prueba tenía la rama «Cosecha» y su ficha. La respuesta generó una ficha de cosecha con una tabla pertinente y un recorrido de etapas de cultivo, pero mezcló conceptos de siembra en la tabla y no mantuvo el contenido estrictamente dentro del contexto de la rama.
+- Se retiró el ejemplo concreto de calendario de siembra del prompt de sugerencias y se reforzó que las propuestas se basen en etiquetas y relaciones presentes. También se aclaró la relación entre el destino y el tema, evitando ejemplos ajenos al proyecto.
+- La compilación del servidor pasó tras el cambio de instrucciones. La respuesta real observada ya no propuso el calendario de siembra como sugerencia, aunque conservó referencias a fechas de siembra dentro de una tabla para cosecha y sugirió etapas de cultivo. Por tanto, esta modificación reduce un sesgo explícito, pero no resuelve la deriva semántica; T-010 permanece abierta.
+- La siguiente iteración debe comprobar la selección y el destino de cada tarjeta frente al subgrafo incluido en el contexto, y repetir la consulta real con mapa completo y rama seleccionada. No se considera aceptado hasta que tarjetas, prompts y borradores sean coherentes con el tema de su destino.
