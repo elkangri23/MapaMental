@@ -44,7 +44,9 @@ El proyecto admite hasta 10.000 ideas. React Flow no limita por defecto el dibuj
 
 La inspección de la implementación instalada de `@xyflow/react` confirmó que `MiniMapNodes` recorre `s.nodes` y monta un `NodeComponentWrapper` por cada ID; el minimapa no sigue el límite de elementos visibles del canvas. Con el máximo admitido, eso añade hasta 10.000 formas SVG y suscriptores aunque el canvas principal represente solo una parte del grafo.
 
-**Corrección aplicada:** el minimapa se muestra hasta 1.000 ideas y se omite por encima de ese umbral. Los controles de zoom y «Ajustar mapa a la vista» permanecen disponibles. El umbral es una medida de contención fundamentada en el coste lineal del minimapa; todavía no hay medición Chrome antes/después que demuestre su impacto real en memoria o respuesta.
+**Corrección aplicada:** el minimapa se muestra hasta 1.000 ideas y se omite por encima de ese umbral. Los controles de zoom y «Ajustar mapa a la vista» permanecen disponibles. El umbral es una medida de contención fundamentada en el coste lineal del minimapa; la medición controlada siguiente observó una reducción DOM, pero aún no determina el impacto estable en memoria o respuesta.
+
+**Medición posterior:** un arnés temporal de Vite en Chromium cargó 10.000 ideas y 9.999 conexiones sintéticas. En una comparación con el mismo conteo montado del canvas (756 nodos y 810 aristas), el estado sin minimapa registró 7.819 elementos DOM; un override temporal que volvió a montar el minimapa registró 17.823, incluidos 10.000 rectángulos SVG. La diferencia observada fue de 10.004 elementos DOM (56 % menos en esa instantánea). En otra corrida, 1.000 ideas mostraron el minimapa con 1.000 rectángulos; a 10.000 el minimapa se ocultó y el botón «Ajustar mapa a la vista» siguió presente y cambió la transformación del viewport al pulsarlo. Es una comparación única del componente en servidor de desarrollo, sin emulación ni persistencia: no mide el arranque de producción, memoria estable ni variabilidad entre corridas. El arnés y el override se retiraron.
 
 ## Comprobaciones posteriores
 
@@ -83,8 +85,8 @@ El fixture de 10.000 ideas tenía un JSON de 2.035.696 B. Antes de dividir el ca
 ### Estado y siguiente trabajo
 
 - `T-028` permanece parcial. Se verificaron tamaños 100/1.000/10.000, pero faltan perfiles completos de interacción, memoria y diapositivas en cada escala.
-- Perfilar y optimizar 10.000 ideas después de la carga diferida, especialmente el coste de conexiones, layout, medición y persistencia.
-- Medir en Chrome el nuevo umbral del minimapa con 1.000 y 10.000 ideas; confirmar conteo DOM, tiempo de respuesta y que ajustar/zoom y navegación siguen operativos.
+- Perfilado inicial a 10.000 ideas completado con arnés de desarrollo: la comparación de una captura observó 10.004 elementos DOM menos al omitir el minimapa y confirmó que «Ajustar mapa a la vista» sigue operativo. Falta un perfil de producción y medidas repetidas.
+- Perfilar y optimizar 10.000 ideas, especialmente el coste de conexiones, layout, medición y persistencia; medir memoria y tiempo de respuesta bajo cargas repetibles.
 - Repetir varias corridas comparables con caché fría y medir zoom, selección, edición, cambio de mapa, lista y editor de diapositivas; documentar variabilidad.
 - Considerar una estrategia de renderizado de conexiones o agrupación adaptativa solo si la nueva traza confirma que son el cuello de botella.
 - Repetir en viewport móvil/CPU lenta y revisar que el fallback de carga diferida siga accesible.

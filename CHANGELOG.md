@@ -1,6 +1,7 @@
 # Cambios
 
 - En mapas de más de 1.000 ideas se omite el minimapa, que representaba todos los nodos incluso cuando el lienzo limitaba los elementos visibles.
+- La comparación temporal a 10.000 ideas observó 10.004 elementos DOM menos con el minimapa oculto; la medición de desarrollo queda documentada como una muestra única.
 
 - En móvil, el editor de diapositivas deja que el contenido alargado empuje el pie en vez de solaparlo; el botón de copias tiene más altura y separación táctil.
 - La vista previa y el proxy de desarrollo usan IPv6 loopback, igual que el servicio local, y el servidor de vista previa permanece limitado a loopback.
