@@ -85,10 +85,10 @@ async function readProject(id: string): Promise<ProjectDocument> {
     const backupDirectory = join(projectDirectory(id), 'backups');
     await mkdir(backupDirectory, { recursive: true });
     const backup = join(backupDirectory, `pre-migration-${Date.now()}-${crypto.randomUUID()}.json`);
-    await copyFile(file, backup, constants.COPYFILE_EXCL);
-    const original = await readFile(file);
-    const copied = await readFile(backup);
-    if (!original.equals(copied)) { await rm(backup, { force: true }); throw new Error('No se pudo verificar la copia previa a migración.'); }
+    await copyVerifiedSnapshot(file, backup, async (path) => {
+      const [original, copied] = await Promise.all([readFile(file), readFile(path)]);
+      if (!original.equals(copied)) throw new Error('No se pudo verificar la copia previa a migración.');
+    });
     migrated.updatedAt = new Date().toISOString();
     await durableWrite(file, JSON.stringify(migrated, null, 2));
     await pruneProjectBackups(backupDirectory, id).catch(() => undefined);
@@ -168,6 +168,29 @@ async function durableWrite(file: string, content: string) {
     await rename(temp, file);
   } catch (error) {
     await rm(temp, { force: true }).catch(() => undefined);
+    throw error;
+  }
+}
+
+/** Best-effort removal of a possibly partial destination if an exclusive copy fails mid-write. */
+async function copyFileExclusive(source: string, destination: string) {
+  try {
+    await copyFile(source, destination, constants.COPYFILE_EXCL);
+  } catch (error) {
+    // EEXIST means the destination belongs to an earlier snapshot; preserve it.
+    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
+      await rm(destination, { force: true }).catch(() => undefined);
+    }
+    throw error;
+  }
+}
+
+async function copyVerifiedSnapshot(source: string, destination: string, verify: (path: string) => Promise<void>) {
+  await copyFileExclusive(source, destination);
+  try {
+    await verify(destination);
+  } catch (error) {
+    await rm(destination, { force: true }).catch(() => undefined);
     throw error;
   }
 }
@@ -271,16 +294,18 @@ async function restoreProjectBackupUnlocked(id: string, fileName: string, expect
   const directory = projectDirectory(id);
   if (current) {
     const currentCopy = join(directory, 'backups', `${current.revision}-${current.updatedAt.replace(/[:.]/g, '-')}-before-restore-${crypto.randomUUID()}.json`);
-    await copyFile(join(directory, 'project.json'), currentCopy, constants.COPYFILE_EXCL);
-    try {
-      const verify = JSON.parse(await readFile(currentCopy, 'utf8'));
+    const currentFile = join(directory, 'project.json');
+    await copyVerifiedSnapshot(currentFile, currentCopy, async (path) => {
+      const verify = JSON.parse(await readFile(path, 'utf8'));
       if (!validateProject(verify) || verify.revision !== current.revision) throw new Error('La copia previa a restauración no es válida.');
-    } catch (error) { await rm(currentCopy, { force: true }).catch(() => undefined); throw error; }
+      const [original, copied] = await Promise.all([readFile(currentFile), readFile(path)]);
+      if (!original.equals(copied)) throw new Error('La copia previa a restauración no coincide con el proyecto actual.');
+    });
   } else {
     await mkdir(join(directory, 'backups'), { recursive: true });
     try {
       const damagedCopy = join(directory, 'backups', `project-corrupt-${Date.now()}-${crypto.randomUUID()}.json.invalid`);
-      await copyFile(join(directory, 'project.json'), damagedCopy, constants.COPYFILE_EXCL);
+      await copyFileExclusive(join(directory, 'project.json'), damagedCopy);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
     }
@@ -345,14 +370,14 @@ async function saveProjectUnlocked(id: string, input: SaveProjectInput) {
   let backup = join(backupDirectory, `${current.revision}-${current.updatedAt.replace(/[:.]/g, '-')}.json`);
   let createdBackup = false;
   try {
-    await copyFile(file, backup, constants.COPYFILE_EXCL);
+    await copyFileExclusive(file, backup);
     createdBackup = true;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
     const [source, existing] = await Promise.all([readFile(file), readFile(backup)]);
     if (!source.equals(existing)) {
       backup = join(backupDirectory, `${current.revision}-${current.updatedAt.replace(/[:.]/g, '-')}-${crypto.randomUUID()}.json`);
-      await copyFile(file, backup, constants.COPYFILE_EXCL);
+      await copyFileExclusive(file, backup);
       createdBackup = true;
     }
   }

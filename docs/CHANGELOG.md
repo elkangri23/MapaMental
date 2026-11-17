@@ -2,6 +2,10 @@
 
 ## Sin publicar
 
+### Seguridad y persistencia
+
+- Las copias de proyectos limpian archivos destino parciales cuando falla la escritura o la verificación; un destino preexistente por `EEXIST` se conserva.
+
 ### Rendimiento
 
 - Se estabilizaron las propiedades de React Flow y el callback de selección para no invalidar el canvas por cambios de estado del panel lateral.

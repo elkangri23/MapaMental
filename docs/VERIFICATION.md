@@ -757,6 +757,13 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - El archivo de perfil y `APPDATA` quedaron bajo `%TEMP%`; no se guardaron claves. La ruta de borrado eliminó el perfil y se retiró el directorio temporal. El arnés de una primera pasada tuvo un error de ámbito en su limpieza después de capturar el resultado; se eliminó ese fixture y se repitió con cleanup corregido. La repetición terminó con código 0 y sin errores.
 - Esto integra resolución DNS real, validación, ruta HTTP y la comprobación de que un destino loopback no abre socket. No simula que el hostname cambie de IP entre validación y conexión. Para esa carrera, la evidencia disponible sigue siendo la simulación determinista del apartado anterior; el recorrido de rebinding HTTP completo permanece pendiente.
 
+### Limpieza de copias parciales ante fallos — T-015/T-017 — 2026-11-17
+
+- La revisión estática de `project-store` encontró que varios flujos llamaban directamente a `copyFile`. Si una operación fallaba después de crear el destino, podía quedar un archivo parcial en `backups`; en migración y restauración también había rutas donde una copia fallida quedaba fuera del `catch` de verificación.
+- Se centralizó `copyFileExclusive`: en errores distintos de `EEXIST` intenta retirar el destino parcial y vuelve a lanzar el error original; `EEXIST` conserva el archivo previo. `copyVerifiedSnapshot` también intenta retirar el archivo si no pasa la verificación. Los cambios cubren snapshots de migración, el backup previo a restauración, la copia del documento dañado y backups de guardado/reintento.
+- `npm run build --workspace @espacio-visual/server` terminó con código 0. `git diff --check` no informó errores.
+- No se provocó ENOSPC ni interrupción durante copia en esta pasada. La eliminación es best-effort: si también falla la operación de limpieza por ACL o un fallo físico, podría persistir un parcial. Mantener T-015/T-017 abiertas hasta probar el caso de runtime y otros fallos de disco.
+
 ### Modelo inicial de amenazas — T-015 — 2026-11-17
 
 - Se redactó [`THREAT_MODEL.md`](THREAT_MODEL.md) a partir de la arquitectura, los controles descritos y la evidencia ya registrada. Incluye activos, límites de confianza, adversarios, once escenarios con controles y riesgo residual, supuestos y prioridades.
