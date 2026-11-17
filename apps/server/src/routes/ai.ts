@@ -403,6 +403,16 @@ Cada tarjeta debe referenciar un ID real del mapa incluido. Incluye en su prompt
     const parsed = parseJson(content);
     if (typeof parsed.message !== 'string' || !parsed.message.trim() || !isRecord(parsed.draft)) throw Object.assign(new Error('La respuesta no incluye un borrador de diapositiva válido.'), { statusCode: 502 });
     const draft = sanitizedSlideDraft(parsed.draft, slide, 502);
+    if (format === 'diagram') {
+      delete draft.mockFields;
+      delete draft.table;
+    } else if (format === 'mock-form') {
+      delete draft.diagramSteps;
+      delete draft.table;
+    } else if (format === 'table') {
+      delete draft.diagramSteps;
+      delete draft.mockFields;
+    }
     if (format === 'diagram' && (draft.diagramSteps?.length ?? 0) < 2) {
       throw new InvalidModelOutput('El modelo no devolvió un recorrido con al menos dos pasos. Vuelve a intentar la sugerencia.');
     }

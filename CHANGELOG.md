@@ -1,5 +1,7 @@
 # Cambios
 
+- Las diapositivas de recorrido, formulario y tabla solo conservan el bloque visual del formato pedido.
+
 - Las sugerencias que piden explícitamente un formulario ficticio recuperan el formato de formulario aunque el modelo omita la etiqueta.
 
 - El chat mantiene abierta la conexión mientras el modelo prepara una respuesta lenta.
