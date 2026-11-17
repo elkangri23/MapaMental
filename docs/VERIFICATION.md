@@ -4,7 +4,14 @@
 
 - Inspección del flujo: el snapshot serializado del mapa ahora se memoiza por las referencias de nodos/conexiones y se reutiliza en detección de cambios, preparación de guardado y comprobación de ediciones nuevas. Diapositivas y conversación también exponen snapshots memoizados. El efecto de autosave observa los snapshots persistibles y no vuelve a programarse solo por referencias transitorias si el contenido no cambió.
 - `npm run build`: pasó para dominio, servidor y web; Vite generó el bundle de cliente sin errores.
-- No se midió latencia con cronómetro ni se hizo un A/B. Cada cambio real de nodos o conexiones sigue serializando el mapa completo una vez (O(n + e)); falta medirlo con fixture grande.
+- No se midió latencia comparativa ni A/B. Cada cambio real de nodos o conexiones sigue serializando el mapa completo una vez (O(n + e)); el recorrido aislado con fixture grande y sus límites se documenta abajo.
+
+## Edición y autosave con fixture de 10.000 ideas — T-028 — 2026-11-17
+
+- Se levantaron API y perfil Chromium con carpetas temporales aisladas en el workspace. El proyecto tenía 10.000 ideas y 9.999 conexiones. En viewport móvil 390×844, CPU 1× y red Fast 4G, el canvas informó 4.896 elementos DOM, con 448 nodos y 513 conexiones renderizados.
+- Se cambió el nombre del nodo visible `node-3443`; la API devolvió el nuevo nombre en revisión 2 y la interfaz mostró «Guardado local». Después se restauró el nombre original y la API confirmó revisión 3. La entrada se cambió con un evento DOM programático; no equivale a medir INP de una interacción física ni permite atribuir duración al tecleo.
+- `performance.memory.usedJSHeapSize` produjo cinco muestras durante 12 s: 66.234.042–66.238.530 bytes. No se forzó GC; la estabilidad de esta ventana no demuestra el heap retenido después de recolección ni permite comparar contra otra versión.
+- La traza capturó CLS 0. No se registró INP atribuible a la edición. No se afirma una mejora temporal. Se retiró el fixture aislado al cerrar la sesión.
 
 ## Vista de lista paginada en mapas grandes — T-028/T-016 — 2026-11-17
 
