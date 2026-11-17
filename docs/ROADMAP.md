@@ -36,7 +36,7 @@ No se incluye colaboración en tiempo real, formularios funcionales, prototipos 
 
 ## Progreso vigente
 
-En T-004 se revisaron los enlaces internos de los 51 documentos Markdown versionados: 169 rutas locales y 14 anclas, sin destinos rotos. La tarea continúa abierta hasta cerrar el resto de documentación y criterios de aceptación. [Evidencia](VERIFICATION.md#enlaces-internos-de-la-documentación--t-004--2026-11-17).
+En T-004 se revisaron los enlaces internos de 52 documentos Markdown versionados: 168 rutas locales y 14 anclas, sin destinos rotos. La tarea continúa abierta hasta cerrar el resto de documentación y criterios de aceptación. [Evidencia](VERIFICATION.md#enlaces-internos-de-la-documentación--t-004--2026-11-17).
 
 T-011 ya permite elegir la cantidad de diapositivas en la conversión local. T-013 cuenta con ZIP portátil y sigue pendiente de compilar y recorrer el instalador. Consulta [Tareas](TASKS.md) para los criterios y la verificación.
 

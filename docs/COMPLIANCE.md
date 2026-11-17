@@ -1,6 +1,6 @@
 # Matriz de seguridad y accesibilidad
 
-**Actualizada:** 2026-11-16  
+**Actualizada:** 2026-11-17
 **Estado:** controles base implementados; no es una declaración de conformidad certificada.
 
 **Auditoría de código, seguridad e interfaz (2026-11-16):** build completo con Node 24.22.2 correcto; `npm audit --omit=dev` reportó cero vulnerabilidades. En Chrome temporal aislado, Lighthouse dio 100/100 en accesibilidad móvil y escritorio, con 35 auditorías disponibles aprobadas y cero fallidas tanto en el mapa como en una diapositiva con recorrido, formulario ficticio y tabla. Revisión manual encontró textos auxiliares con contraste bajo, un landmark sin nombre, controles/instrucciones de React Flow en inglés y dos etiquetas de orden de diapositivas que no coincidían con el nombre accesible; se corrigieron y el recorrido final pasó. Teclado comprobado en skip link, foco del diálogo, Tab circular, Escape, devolución de foco, selección de idea en lista y edición de nodo con F2. Reflujo sin desbordamiento horizontal a 320 y 640 CSS px; diálogo móvil con scroll interno. No equivale a conformidad WCAG: no se usó lector de pantalla, faltan estados/criterios por revisar y no se ejecutó pentest. Ver [`reviews/2026-11-15-code-audit.md`](reviews/2026-11-15-code-audit.md), [`reviews/2026-11-15-security-audit.md`](reviews/2026-11-15-security-audit.md) y [`VERIFICATION.md`](VERIFICATION.md).
@@ -68,3 +68,7 @@ Los criterios de WCAG 2.0 completos también incluyen contenido multimedia, tabl
 ## Auditoría de seguridad (2026-11-15)
 
 Cambios correctivos y límites: [`reviews/2026-11-15-security-audit.md`](reviews/2026-11-15-security-audit.md). `npm run build` y `npm audit --omit=dev` pasaron; no se realizó pentest ni evaluación manual completa.
+
+### Seguimiento OWASP — 2026-11-17
+
+En T-015 se verificaron 32 direcciones representativas de los registros IANA (25 especiales rechazadas, cinco públicas y dos loopback locales aceptadas), el rechazo de redirecciones sin solicitar su destino y el rechazo de `127.0.0.1.nip.io` al resolver a loopback, con cero sockets al canario. Se corrigió el rechazo estático de `localhost.`, `.local.` e `.internal.`. Continúan pendientes DNS rebinding determinista, TLS/SNI, permisos/errores de disco, cuota de solicitudes y análisis formal de amenazas; el alcance sigue siendo una revisión parcial, no una certificación.

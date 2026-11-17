@@ -699,5 +699,5 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 
 ### Enlaces internos de la documentación — T-004 — 2026-11-17
 
-- Se revisaron los 51 archivos Markdown versionados: el escáner encontró 169 enlaces locales a archivos y 14 enlaces a secciones. No quedaron destinos de archivo ni anclas rotas.
+- La primera pasada revisó 51 archivos (169 enlaces locales y 14 anclas), sin destinos rotos. Tras añadir el informe EGM vigente, la pasada final revisó 52 archivos, 168 enlaces locales y 14 anclas; tampoco encontró destinos rotos.
 - La comprobación de anclas siguió las reglas publicadas por GitHub: minúsculas, espacios a guiones y puntuación eliminada; mantiene la separación de palabras alrededor de guiones largos. No valida enlaces externos ni garantiza el render de todos los dialectos Markdown. [Reglas de GitHub para enlaces a secciones](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#section-links). T-004 permanece abierta por el resto de documentación pendiente.
