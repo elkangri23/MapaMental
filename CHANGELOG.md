@@ -568,3 +568,5 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 
 - En Windows, el servicio comprueba antes de escuchar que el directorio de proyectos está en un volumen fijo y de bus local permitido; UNC, red y tipos desconocidos fallan cerrados (ADR-0017).
 - La función compilada aceptó una ruta temporal sobre C: y rechazó una ruta UNC sintética. No había unidad extraíble conectada para comprobarla en hardware.
+
+- La API recorrió con FreeLLMAPI el ciclo de diapositiva de diagrama: cinco pasos, aplicación, persistencia y deshacer.
