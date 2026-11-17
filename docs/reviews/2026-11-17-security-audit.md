@@ -17,7 +17,7 @@ Las rutas de OIDC/MFA/passkeys convertían varias excepciones sin `statusCode` e
 
 ## Riesgos y trabajo abierto
 
-- T-015 sigue parcial: falta recorrido HTTP integrado de DNS rebinding hasta socket, validación de errores adicionales de disco/ACL y revisión dinámica completa de rutas.
+- En T-015, la ruta HTTP real de prueba de proveedores ahora rechaza `127.0.0.1.nip.io` al resolver a loopback (HTTP 400 y cero conexiones en listener canario). Junto con la simulación determinista anterior, confirma dos partes del control. Sigue faltando reproducir el cambio de respuesta DNS entre validación y socket en un recorrido HTTP real; también quedan errores adicionales de disco/ACL y revisión dinámica completa de rutas.
 - T-021 y T-023–T-026 siguen pendientes de recorridos con IdP OIDC, autenticador WebAuthn y aplicación TOTP reales.
 - El análisis no incluye pentest, revisión de todos los criterios OWASP, lector de pantalla ni verificación WCAG manual.
 - La auditoría global permanece abierta; ver [`THREAT_MODEL.md`](../THREAT_MODEL.md), [`SECURITY.md`](../SECURITY.md) y [`TASKS.md`](../TASKS.md).

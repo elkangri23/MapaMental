@@ -750,6 +750,13 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - El callback de socket devolvió únicamente `93.184.216.34`, sin una segunda consulta DNS (contador: una). Un hostname alternativo fue rechazado sin dirección, y una nueva ejecución de la política DNS con respuesta loopback fue rechazada con HTTP-equivalente 400.
 - La simulación cubre en memoria resolución → validación SSRF → lookup fijado de Undici, sin petición DNS ni conexión de red. No ejercita la petición HTTP completa ni un socket real; ese recorrido integrado, los errores de disco y el análisis formal de amenazas siguen pendientes.
 
+### Ruta HTTP de proveedores ante DNS que resuelve a loopback — T-015 — 2026-11-17
+
+- En un proceso Node aislado se registraron las rutas reales `sessionRoutes` y `providerRoutes` en Fastify. Se completaron bootstrap, canje de nonce, alta de perfil compatible y llamada a `POST /api/providers/:id/test`.
+- `127.0.0.1.nip.io` resolvió a `127.0.0.1`. La prueba respondió HTTP 400 con «La URL del proveedor resuelve a una dirección local o privada.» Un listener TCP canario en ese puerto registró cero conexiones.
+- El archivo de perfil y `APPDATA` quedaron bajo `%TEMP%`; no se guardaron claves. La ruta de borrado eliminó el perfil y se retiró el directorio temporal. El arnés de una primera pasada tuvo un error de ámbito en su limpieza después de capturar el resultado; se eliminó ese fixture y se repitió con cleanup corregido. La repetición terminó con código 0 y sin errores.
+- Esto integra resolución DNS real, validación, ruta HTTP y la comprobación de que un destino loopback no abre socket. No simula que el hostname cambie de IP entre validación y conexión. Para esa carrera, la evidencia disponible sigue siendo la simulación determinista del apartado anterior; el recorrido de rebinding HTTP completo permanece pendiente.
+
 ### Modelo inicial de amenazas — T-015 — 2026-11-17
 
 - Se redactó [`THREAT_MODEL.md`](THREAT_MODEL.md) a partir de la arquitectura, los controles descritos y la evidencia ya registrada. Incluye activos, límites de confianza, adversarios, once escenarios con controles y riesgo residual, supuestos y prioridades.
