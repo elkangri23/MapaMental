@@ -691,3 +691,8 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - La revisión dinámica de `https://localhost.` mostró que el perfil pasaba la validación estática, aunque la resolución del sistema devolvía `::1` y `127.0.0.1` y la comprobación de conexión lo rechazaba antes de abrir socket. Por tanto, no se observó acceso a la red local; sí una inconsistencia que dejaba guardar un perfil inutilizable. El mismo patrón aplicaba a sufijos `.local.` y `.internal.`.
 - `isBlockedRemoteHost` ahora elimina el punto DNS final antes de clasificar el nombre. Después del build del servidor, una comprobación temporal rechazó `localhost.`, `service.local.` y `service.internal.` con 400; aceptó `example.com.` y el loopback explícito `http://localhost`.
 - La comprobación no hizo peticiones a los nombres públicos; usó `APPDATA` temporal y eliminó sus fixtures. T-015 sigue parcial por las pruebas DNS/TLS/SNI y de rebinding que faltan.
+
+### Resolución DNS a loopback bloqueada antes de conectar — T-015 — 2026-11-17
+
+- El nombre de prueba `127.0.0.1.nip.io` resolvió a `127.0.0.1`. Se guardó un perfil compatible con OpenAI usando HTTPS y un puerto aleatorio de un listener TCP canario en loopback; `testProviderConnection` rechazó el destino con HTTP 400 y el listener registró cero sockets aceptados.
+- El servicio rechazó la IP obtenida por DNS antes de abrir la conexión. La prueba usó solo un nombre de fixture sin claves o datos del proyecto, configuración temporal y eliminó los archivos. No simula que las respuestas DNS cambien entre dos consultas y no cierra la prueba de DNS rebinding.

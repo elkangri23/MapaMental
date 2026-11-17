@@ -19,6 +19,8 @@ La clasificación de URL se contrastó además con 32 direcciones representativa
 
 También se endureció la clasificación de nombres DNS con punto final: `localhost.`, `service.local.` y `service.internal.` ahora se rechazan al guardar, mientras se conserva `http://localhost` para un proveedor local y los FQDN públicos. La comprobación de `localhost.` había confirmado que la capa DNS ya lo bloqueaba antes de conectar; el cambio hace que la configuración sea coherente desde el alta. [Evidencia](VERIFICATION.md#normalización-de-host-con-punto-final--t-015--2026-11-17).
 
+La petición de conexión a `127.0.0.1.nip.io`, resuelto a loopback, se rechazó con 400 antes de abrir socket; un listener canario confirmó cero conexiones. Esto verifica el rechazo de una respuesta DNS privada, no una carrera de DNS rebinding ni TLS/SNI. [Evidencia](VERIFICATION.md#resolución-dns-a-loopback-bloqueada-antes-de-conectar--t-015--2026-11-17).
+
 ### Puerta de entrada a M5
 
 M5 es una ampliación solicitada. **T-018 y T-019 están cerradas:** alcance de una persona Windows/loopback y contrato OIDC + passkey WebAuthn `UV`; TOTP opcional de recuperación; RP ID `localhost`; ADR-0012 aceptado. **T-020 está cerrada. T-021 sigue parcial.** TOTP ya tiene implementación parcial: enrolamiento tras reautenticación, secreto/anti-replay en Credential Manager, bloqueo tras fallos, y recuperación limitada a registrar una passkey nueva y revocar las anteriores. Falta validar IdP, apps autenticadoras y autenticadores reales. El modo protegido depende de Internet para OIDC; el modo local sigue disponible. No habrá acceso por red, multiusuario ni sincronización en nube.

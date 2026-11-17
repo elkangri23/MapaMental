@@ -50,6 +50,8 @@ Implementado en T-010: la vista previa y el contexto del proveedor incluyen un r
 
 - **Seguimiento de T-015 — nombres DNS con punto final.** El punto final se normaliza al revisar sufijos privados, de modo que `localhost.`, `.local.` y `.internal.` se rechazan al guardar el perfil. El servidor compiló y la matriz temporal también confirmó que un dominio público con punto final y el `http://localhost` explícito siguen permitidos.
 
+- **Seguimiento de T-015 — respuesta DNS privada.** `127.0.0.1.nip.io` resolvió a loopback; el control de proveedor devolvió 400 antes de conectar y el listener canario registró cero sockets. Falta simular rebinding entre resolución y conexión y completar TLS/SNI.
+
 ## Pausa de desarrollo — estabilización
 
 - **Seguimiento de T-017.** En Chrome se comprobaron el fallo de guardado previo a crear proyecto, el reintento, la restauración con autosave pendiente y la bifurcación después de una revisión externa enviada por API. El guardado previo a una acción y el autosave usan el mismo flujo. Se añadió aviso antes de cerrar con cambios pendientes.
