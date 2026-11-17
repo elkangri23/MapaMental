@@ -62,6 +62,17 @@ Se sirvió el build de producción local desde una raíz de proyectos, perfil de
 
 La comparación de 2.414 ms frente a las corridas tras los cambios no es una serie A/B balanceada; orienta la corrección, no demuestra una mejora garantizada. Siguiente foco: revisar con lector de pantalla la presentación de relaciones, medir memoria y aislar el coste del canvas y sus reflows.
 
+### Perfil móvil Fast 3G/CPU 4× y compresión JSON — 2026-11-17
+
+Se repitió el mapa de 10.000 ideas en Chrome a 390×844 CSS, densidad 3, CPU 4×, Fast 3G y movimiento reducido. La respuesta del proyecto se mide en la sesión del servidor local; los únicos datos fueron sintéticos.
+
+- Antes de comprimir respuestas, la navegación dio LCP 6.910 ms (TTFB 566 ms, demora de render 6.344 ms) y CLS 0,01. La traza indicó una respuesta de proyecto de 1,86 MB en la ruta crítica.
+- Se añadió gzip negociado a respuestas JSON de al menos 1 KiB cuando el cliente lo admite; se establece `Vary: Accept-Encoding` y se conservan sin compresión HTML, streams y respuestas pequeñas. El JSON del fixture era 1.857.990 B; el endpoint respondió `Content-Encoding: gzip`, `Content-Length: 134.148` y `Vary: Accept-Encoding` (92,8 % menos bytes).
+- Tras el cambio, una navegación con la misma emulación dio LCP 4.817 ms (TTFB 566 ms, demora de render 4.252 ms) y CLS 0,01. El navegador descomprimió el cuerpo y la UI mostró el proyecto; el canvas montó nodos/aristas visibles. La diferencia de LCP fue de 2.093 ms, pero una corrida por variante no demuestra causalidad ni es un A/B balanceado.
+- La vista de lista en móvil tardó 2.306 ms con CPU 4×/Fast 3G, mantuvo 10.000 botones y 30.128 elementos DOM; la medición confirma que la compresión no alteró el contenido decodificado.
+
+La compresión recorta transferencia de mapas grandes; todavía se debe repetir el perfil móvil y mejorar la demora de render, que sigue siendo 4.252 ms en esta muestra.
+
 ## Comprobaciones posteriores
 
 - `npm run build`: correcto.
@@ -101,6 +112,7 @@ El fixture de 10.000 ideas tenía un JSON de 2.035.696 B. Antes de dividir el ca
 - `T-028` permanece parcial. Se verificaron tamaños 100/1.000/10.000, pero faltan perfiles completos de interacción, memoria y diapositivas en cada escala.
 - Perfilado inicial a 10.000 ideas completado con arnés de desarrollo: la comparación de una captura observó 10.004 elementos DOM menos al omitir el minimapa y confirmó que «Ajustar mapa a la vista» sigue operativo. Falta un perfil de producción y medidas repetidas.
 - Build de producción perfilado con 10.000 ideas: LCP 966 ms y CLS 0 en una corrida. La lista consolidó relaciones en texto dentro de cada botón; bajó de 40.128 a 30.128 elementos DOM (25 %), mantiene los 10.000 botones/ideas y selecciona la última. Tres recorridos dieron mediana 462 ms; el A/B no fue balanceado.
+- Se incorporó gzip para JSON grande; en móvil Fast 3G/CPU 4× el endpoint de proyecto bajó de 1.857.990 a 134.148 bytes. LCP observado 6.910→4.817 ms en dos muestras únicas no balanceadas; el navegador cargó y decodificó el mapa completo.
 - Revisar la lista de relaciones con lector de pantalla y medir memoria; perfilar repetidamente 10.000 ideas, especialmente conexiones, layout, reflows y persistencia.
 - Repetir varias corridas comparables con caché fría y medir zoom, selección, edición, cambio de mapa, lista y editor de diapositivas; documentar variabilidad.
 - Considerar una estrategia de renderizado de conexiones o agrupación adaptativa solo si la nueva traza confirma que son el cuello de botella.

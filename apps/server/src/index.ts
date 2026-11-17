@@ -1,7 +1,9 @@
 import Fastify from 'fastify';
 import fastifyStatic from '@fastify/static';
 import { existsSync } from 'node:fs';
+import { gzip as gzipCallback } from 'node:zlib';
 import { dirname, resolve } from 'node:path';
+import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { healthRoutes } from './routes/health.js';
 import { projectRoutes } from './routes/projects.js';
@@ -13,6 +15,8 @@ import { requiredSessionMode } from './services/session.js';
 import { pruneSecurityEvents, recordSecurityEvent } from './services/security-audit.js';
 import { normalizeApiErrorPayload, sendApiError } from './services/api-errors.js';
 import { validateProjectStorageRoot } from './services/project-store.js';
+
+const gzip = promisify(gzipCallback);
 
 requiredSessionMode();
 
@@ -58,6 +62,22 @@ app.addHook('onSend', async (request, reply, payload) => {
   reply.header('cross-origin-opener-policy', 'same-origin');
   if (process.env.NODE_ENV === 'production') {
     reply.header('content-security-policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
+  }
+  const contentType = reply.getHeader('content-type')?.toString().toLowerCase() ?? '';
+  const acceptsGzip = request.headers['accept-encoding']?.split(',').some((encoding) => {
+    const [name, ...directives] = encoding.trim().split(';');
+    return name?.toLowerCase() === 'gzip' && !directives.some((directive) => /^q\s*=\s*0(?:\.0*)?$/i.test(directive.trim()));
+  });
+  if (acceptsGzip && typeof payload === 'string' && Buffer.byteLength(payload) >= 1_024
+    && contentType.includes('application/json') && reply.statusCode >= 200 && reply.statusCode !== 204 && reply.statusCode !== 304
+    && !reply.hasHeader('content-encoding')) {
+    const compressed = await gzip(payload);
+    const existingVary = reply.getHeader('vary')?.toString();
+    if (!existingVary || existingVary === '*') reply.header('vary', existingVary ?? 'Accept-Encoding');
+    else if (!existingVary.split(',').some((value) => value.trim().toLowerCase() === 'accept-encoding')) reply.header('vary', `${existingVary}, Accept-Encoding`);
+    reply.header('content-encoding', 'gzip');
+    reply.header('content-length', compressed.byteLength);
+    payload = compressed;
   }
   return payload;
 });

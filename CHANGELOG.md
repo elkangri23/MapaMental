@@ -4,6 +4,7 @@
 - La comparación temporal a 10.000 ideas observó 10.004 elementos DOM menos con el minimapa oculto; la medición de desarrollo queda documentada como una muestra única.
 - En la vista de lista de mapas grandes, el navegador difiere el renderizado de filas fuera de pantalla; el contenido completo y la selección siguen disponibles.
 - Las relaciones del mapa en la vista de lista se presentan junto a cada idea; se elimina la fila duplicada de cada conexión.
+- El servicio comprime con gzip las respuestas JSON grandes cuando el navegador lo admite; los mapas pesados transfieren menos datos.
 
 - En móvil, el editor de diapositivas deja que el contenido alargado empuje el pie en vez de solaparlo; el botón de copias tiene más altura y separación táctil.
 - La vista previa y el proxy de desarrollo usan IPv6 loopback, igual que el servicio local, y el servidor de vista previa permanece limitado a loopback.
