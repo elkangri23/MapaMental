@@ -25,6 +25,8 @@ En T-015, la conexión HTTPS fija explícitamente el SNI al hostname del perfil 
 
 También en T-015 se limitó a tres el número de generaciones IA simultáneas por proceso. El recorrido aislado mantuvo tres solicitudes abiertas en el proveedor simulado; la cuarta recibió HTTP 429 con `Retry-After: 30`, sin una cuarta llamada upstream. Las tres aceptadas terminaron con HTTP 200. [Evidencia](VERIFICATION.md#concurrencia-de-generaciones-ia--t-015--2026-11-17).
 
+En la protección DNS de T-015, la función de lookup del socket se separó y se simuló un cambio de la respuesta validada `93.184.216.34` a `127.0.0.1`; Undici siguió recibiendo la dirección fijada y rechazó un hostname alternativo. Esto confirma el componente de pinning, pero no reproduce aún el recorrido completo con un DNS fixture ni abre una conexión de red. [Evidencia](VERIFICATION.md#simulación-determinista-de-fijación-ante-cambio-dns--t-015--2026-11-17).
+
 ### Puerta de entrada a M5
 
 M5 es una ampliación solicitada. **T-018 y T-019 están cerradas:** alcance de una persona Windows/loopback y contrato OIDC + passkey WebAuthn `UV`; TOTP opcional de recuperación; RP ID `localhost`; ADR-0012 aceptado. **T-020 está cerrada. T-021 sigue parcial.** TOTP ya tiene implementación parcial: enrolamiento tras reautenticación, secreto/anti-replay en Credential Manager, bloqueo tras fallos, y recuperación limitada a registrar una passkey nueva y revocar las anteriores. Falta validar IdP, apps autenticadoras y autenticadores reales. El modo protegido depende de Internet para OIDC; el modo local sigue disponible. No habrá acceso por red, multiusuario ni sincronización en nube.

@@ -196,6 +196,18 @@ async function resolveSafeProviderTarget(url: URL, signal: AbortSignal) {
   return addresses.map(({ address }) => address);
 }
 
+/** Create the socket resolver from the addresses validated before the request. */
+export function createPinnedProviderLookup(originalHostname: string, addresses: readonly string[]) {
+  const expectedHostname = originalHostname.replace(/^\[|\]$/g, '').toLowerCase();
+  const pinnedAddresses = addresses.map((address) => ({ address, family: isIP(address) }));
+  return (hostname: string, options: { all?: boolean }, callback: (...args: unknown[]) => void) => {
+    if (hostname.replace(/^\[|\]$/g, '').toLowerCase() !== expectedHostname) return callback(new Error('Destino de conexión inesperado.'));
+    if (!pinnedAddresses.length) return callback(new Error('No hay direcciones DNS fijadas para el proveedor.'));
+    if (options.all) return callback(null, pinnedAddresses);
+    return callback(null, pinnedAddresses[0].address, pinnedAddresses[0].family);
+  };
+}
+
 async function fetchBounded(url: URL, init: RequestInit, timeoutMs: number, maxBytes: number) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -218,12 +230,7 @@ async function fetchBounded(url: URL, init: RequestInit, timeoutMs: number, maxB
         // and must not be sent as a DNS SNI name.
         ...(isIP(originalHostname) === 0 ? { servername: originalHostname } : {}),
         rejectUnauthorized: true,
-        lookup: ((hostname: string, options: { all?: boolean }, callback: (...args: unknown[]) => void) => {
-          if (hostname.replace(/^\[|\]$/g, '').toLowerCase() !== originalHostname.toLowerCase()) return callback(new Error('Destino de conexión inesperado.'));
-          const records = addresses.map((address) => ({ address, family: isIP(address) }));
-          if (options.all) return callback(null, records);
-          return callback(null, records[0].address, records[0].family);
-        }) as never,
+        lookup: createPinnedProviderLookup(originalHostname, addresses) as never,
       },
       connections: 1,
       maxOrigins: 1,

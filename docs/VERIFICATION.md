@@ -734,6 +734,12 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Se verificó así el tope por proceso y la liberación de plazas al completarse. El fixture no usó claves reales, proyectos del usuario ni servicios externos. La primera ejecución de smoke expiró mientras esperaba el arranque de PowerShell/validación de volumen; se amplió el tiempo de espera y la repetición terminó correctamente.
 - El límite protege la concurrencia del proceso local; no sustituye los presupuestos de coste ni es una cuota diaria o por usuario. T-015 sigue parcial por DNS rebinding determinista, errores/permisos de disco y análisis formal de amenazas.
 
+### Simulación determinista de fijación ante cambio DNS — T-015 — 2026-11-17
+
+- `createPinnedProviderLookup`, la misma función que se entrega a Undici Agent para abrir el socket, se ejecutó desde el módulo compilado. La fase de validación capturó `93.184.216.34`; luego se cambió la respuesta DNS simulada a `127.0.0.1` antes de invocar el lookup de conexión.
+- Las variantes `all: true` y primera dirección devolvieron únicamente `93.184.216.34`; no se hizo otra consulta DNS (contador: una). Un hostname de socket distinto fue rechazado y no recibió dirección.
+- Fue una simulación en memoria del callback de socket, sin peticiones DNS ni conexiones de red. Demuestra que el dial no toma una segunda respuesta cambiante, pero no valida la integración de resolver del sistema → política SSRF → socket real. Esa prueba de extremo a extremo permanece pendiente, igual que los errores de disco y el análisis formal de amenazas.
+
 ### Nombres accesibles de nodos y conexiones del mapa — T-016 — 2026-11-17
 
 - En el snapshot inicial de Chrome, React Flow exponía `Edge from root to audience` y otros identificadores en inglés; además, el grupo enfocable de cada idea no tenía nombre. Se añadió `ariaLabel` a conexiones con los nombres visibles de origen/destino y a los grupos de nodos con la etiqueta de la idea.
