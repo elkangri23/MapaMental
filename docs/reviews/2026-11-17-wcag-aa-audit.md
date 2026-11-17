@@ -23,6 +23,10 @@ Se recorrieron las vistas de mapa y editor de presentación en Chrome con la apl
 - En el perfil de 10.000 ideas, los botones del mapa midieron 24×67 px en el zoom mínimo de móvil. En vista de lista se conservaron 10.000 botones, 30.116 elementos DOM, conexiones anunciadas dentro de cada fila, foco visible y sin desbordamiento horizontal.
 - Lighthouse pudo auditar el canvas móvil de 10.000 ideas (100/100), pero la auditoría de la lista completa agotó el tiempo del protocolo del navegador. No se infiere un fallo de accesibilidad de esa interrupción; queda pendiente repetirla con carga por lotes o una muestra de tamaño controlado.
 
+## Continuación — paginación de la alternativa textual — 2026-11-17
+
+La alternativa textual presenta 250 ideas por página, con anterior/siguiente, rango anunciado y sincronización con la selección. En Chrome móvil a 390×844, un fixture de 10.000 ideas montó 250 botones (871 elementos DOM contando la aplicación); no hubo desplazamiento horizontal. Lighthouse snapshot dio 100/100 Accessibility (35 auditorías aprobadas) tanto en la primera como en la última página. Con teclado, Intro en «Anterior» cambió del rango 9.751–10.000 a 9.501–9.750 y mantuvo el foco. La lista completa de 10.000 elementos se reemplazó por páginas de 250; no se hizo prueba con lector de pantalla.
+
 ## Pendiente
 
 La línea T-016 sigue parcial: lector de pantalla real y anuncios en contexto, recorrido manual completo de teclado en todos los estados, zoom con cadenas largas, revisión de estados de foco/hover/deshabilitado y evaluación de todos los criterios A/AA aplicables. Lighthouse 100 no certifica WCAG. Los resultados de SEO y Agentic Browsing de Lighthouse no son criterios de accesibilidad: en desarrollo fallaron `robots.txt`, `llms.txt` y ARD.

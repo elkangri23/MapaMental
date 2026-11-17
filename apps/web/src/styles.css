@@ -329,7 +329,11 @@ button:disabled:focus-visible { outline-color: #5143b5; }
 .composer-tool { color: #55596b; }
 .react-flow__attribution a { display: inline-flex; min-height: 28px; align-items: center; padding: 0 4px; box-sizing: border-box; color: #55596b; }
 .sparkle, .assistant-glyph, .context-icon { color: #5d4fac; }
+.map-list-pagination { position: absolute; z-index: 2; inset: 54px 0 auto; display: flex; min-height: 48px; align-items: center; justify-content: center; gap: 12px; padding: 6px 12px; border-bottom: 1px solid #eceaf2; background: rgba(255,255,255,.96); color: #55596b; font-size: 12px; }
+.map-list-pagination button { min-height: 36px; padding: 6px 12px; border: 1px solid #dedbea; border-radius: 7px; color: #433987; background: #fff; cursor: pointer; }
+.map-list-pagination button:disabled { color: #77798a; background: #f7f6fa; cursor: not-allowed; }
 .map-text-list { position: absolute; inset: 54px 0 0; overflow: auto; margin: 0; padding: 10px 24px 24px 48px; color: #343747; line-height: 1.7; }
+.map-text-list--paged { top: 108px; }
 .map-text-list > li { padding: 8px 0; }
 .map-text-list--large > li { content-visibility: auto; contain-intrinsic-size: auto 76px; }
 .map-text-list button { border: 0; padding: 3px 6px; border-radius: 5px; color: #3f367f; background: #f3f1ff; text-align: left; cursor: pointer; }

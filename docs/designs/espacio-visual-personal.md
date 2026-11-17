@@ -25,6 +25,7 @@ La aplicación reunirá ese trabajo en un proyecto visual. La IA podrá crear un
 * Presentar diapositivas en el navegador y exportar PDF multipágina y PNG de la diapositiva actual.
 * Mantener lienzo central y chat lateral con estilo visual propio.
 * Guardar un perfil personal básico con nombre y correo en el equipo.
+* Ofrecer una lista textual accesible para mapas grandes, paginada en grupos de 250 ideas; todas las ideas siguen seleccionables y la página acompaña la selección actual.
 
 ## Non-Goals
 

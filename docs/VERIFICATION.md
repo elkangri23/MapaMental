@@ -1,5 +1,12 @@
 # Criterios de aceptación
 
+## Vista de lista paginada en mapas grandes — T-028/T-016 — 2026-11-17
+
+- Fixture aislado de 10.000 ideas. La lista presenta 250 botones por página, 40 páginas en total y anuncia el rango visible. Seleccionar la última idea mostró el rango 9.751–10.000 y la mantuvo seleccionada; las ideas fuera de la página no se duplican en el DOM.
+- La vista móvil 390×844 montó 871 elementos DOM en total y no tuvo scroll horizontal. Lighthouse snapshot en la primera y última página dio 100/100 Accessibility; 35 auditorías pasaron y solo fallaron robots.txt, llms.txt y ARD, que no son criterios de accesibilidad WCAG.
+- Con foco en «Anterior», Intro cambió del rango 9.751–10.000 a 9.501–9.750 y mantuvo el foco en el control. No se realizó recorrido con lector de pantalla real.
+- El perfil usó proyecto, perfil y configuración temporales; el fixture fue retirado al terminar. El límite de 250 reduce la carga del árbol accesible que hacía agotar el tiempo del protocolo al auditar 10.000 filas en una sola página.
+
 ## Revisión de accesibilidad — 2026-11-17
 
 En la app local conectada, Lighthouse snapshot quedó en 100/100 Accessibility para mapa móvil/escritorio y presentación móvil/escritorio. A 320 px se corrigió el solapamiento entre el bloque de ideas vinculadas y el pie de presentación; el contenido ahora desplaza el pie y el botón «Copias» deja de fallar `target-size`. El editor no desborda horizontalmente a 320 o 640 CSS px. El chevrón decorativo se oscureció de 2,91:1 a 4,34:1. También se verificaron nombres en controles y foco visible del skip link. Informe y límites: [`reviews/2026-11-17-wcag-aa-audit.md`](reviews/2026-11-17-wcag-aa-audit.md). Esto no sustituye lector de pantalla ni evaluación completa de criterios A/AA.

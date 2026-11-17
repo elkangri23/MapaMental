@@ -1,7 +1,8 @@
 # Cambios
 
 - En mapas grandes vistos desde móvil, el zoom automático respeta un tamaño mínimo para tocar los botones de ideas; el enlace de atribución también tiene un área táctil mayor.
-- La revisión Lighthouse móvil del mapa sintético de 10.000 ideas volvió a 100/100 en accesibilidad. La vista de lista mantiene las 10.000 ideas, aunque Lighthouse agotó el tiempo al analizar su DOM completo.
+- La revisión Lighthouse móvil del mapa sintético de 10.000 ideas volvió a 100/100 en accesibilidad. Lighthouse agotaba el tiempo en la vista textual de 10.000 filas; la lista ahora está paginada para reducir el DOM montado.
+- La vista de lista de mapas grandes ahora muestra 250 ideas por página, con botones anterior/siguiente y selección sincronizada. En un perfil de 10.000 ideas, redujo la lista montada a 250 botones y Lighthouse móvil dio 100/100 Accessibility.
 - En mapas de más de 1.000 ideas se omite el minimapa, que representaba todos los nodos incluso cuando el lienzo limitaba los elementos visibles.
 - La comparación temporal a 10.000 ideas observó 10.004 elementos DOM menos con el minimapa oculto; la medición de desarrollo queda documentada como una muestra única.
 - En la vista de lista de mapas grandes, el navegador difiere el renderizado de filas fuera de pantalla; el contenido completo y la selección siguen disponibles.
