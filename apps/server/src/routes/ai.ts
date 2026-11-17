@@ -301,6 +301,24 @@ function sanitizedSlideDraft(value: unknown, current: Pick<AiSlideDraft, 'diagra
   return draft;
 }
 
+function slideTextTokens(value: string): Set<string> {
+  const ignored = new Set(['con', 'para', 'desde', 'hasta', 'como', 'este', 'esta', 'estos', 'estas', 'sobre', 'entre', 'cuando', 'donde', 'pendiente', 'confirmar']);
+  return new Set(value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLocaleLowerCase('es').match(/[\p{L}\p{N}]{3,}/gu)?.filter((token) => !ignored.has(token)) ?? []);
+}
+
+function removeRepeatedDiagramBullets(draft: AiSlideDraft): void {
+  if (!draft.diagramSteps?.length || !draft.bullets.length) return;
+  const stepTokens = draft.diagramSteps.map(slideTextTokens);
+  draft.bullets = draft.bullets.filter((bullet) => {
+    const bulletTokens = slideTextTokens(bullet);
+    if (bulletTokens.size < 2) return true;
+    return !stepTokens.some((tokens) => {
+      const shared = [...bulletTokens].filter((token) => tokens.has(token)).length;
+      return shared >= 2 && shared / Math.min(bulletTokens.size, tokens.size) >= 0.66;
+    });
+  });
+}
+
 function sanitizeDeckSlides(value: unknown, scope: ReturnType<typeof scopeFor>, statusCode: number, count?: number): AiDeckSlide[] {
   const invalid = (message: string) => statusCode === 502 ? new InvalidModelOutput(message) : invalidBody(message);
   if (!Array.isArray(value) || value.length < 1 || value.length > AI_DECK_SLIDE_LIMIT) {
@@ -449,7 +467,7 @@ Usa expand para desarrollar una idea o explore para explorar otro ángulo como i
     const provider = await getActiveProviderForRequest();
     const system = `Eres el copiloto creativo de Espacio Visual. Sigue el objetivo indicado para una sola diapositiva. Devuelve solo JSON con el formato {"message":"resumen breve","draft":{"title":"...","subtitle":"...","body":"...","bullets":["..."],"diagramSteps":["paso..."],"mockFields":[{"label":"...","value":"dato ficticio"}]}}. title, subtitle, body y bullets son obligatorios; diagramSteps y mockFields son opcionales. Mantén el foco, escribe en español y produce contenido concreto listo para revisar. Conserva los bloques existentes si no se pide cambiarlos. Los formularios son maquetas con datos ficticios; nunca pidas datos reales ni los describas como enviables. Los diagramas son representaciones estáticas. No digas que has guardado nada: el usuario revisará y decidirá si aplica el borrador. Limita viñetas, pasos y campos a 8 elementos cada uno; etiqueta de campo hasta 100 caracteres y valor ficticio hasta 160. No propongas campos funcionales ni controles que envíen información.`;
     const blockInstruction = format === 'diagram'
-      ? 'Incluye obligatoriamente un recorrido estático con al menos dos pasos en draft.diagramSteps. Si una cifra operativa propuesta depende de información que el proyecto o el usuario no han confirmado, expresa el paso como una comprobación pendiente. Por ejemplo, «Comprueba la temperatura de conservación del cultivo» si no se conocen sus requisitos.'
+      ? 'Incluye obligatoriamente un recorrido estático con al menos dos pasos en draft.diagramSteps. No repitas esos mismos pasos en draft.bullets; reserva las viñetas para advertencias o datos pendientes distintos. Si una cifra operativa propuesta depende de información que el proyecto o el usuario no han confirmado, expresa el paso como una comprobación pendiente. Por ejemplo, «Comprueba la temperatura de conservación del cultivo» si no se conocen sus requisitos.'
       : format === 'mock-form'
         ? 'Incluye obligatoriamente en draft.mockFields campos ya rellenados con valores ficticios.'
         : '';
@@ -463,6 +481,7 @@ Usa expand para desarrollar una idea o explore para explorar otro ángulo como i
     if (format === 'diagram') {
       delete draft.mockFields;
       delete draft.table;
+      removeRepeatedDiagramBullets(draft);
     } else if (format === 'mock-form') {
       delete draft.diagramSteps;
       delete draft.table;

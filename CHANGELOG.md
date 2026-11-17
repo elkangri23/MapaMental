@@ -570,3 +570,5 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 - La función compilada aceptó una ruta temporal sobre C: y rechazó una ruta UNC sintética. No había unidad extraíble conectada para comprobarla en hardware.
 
 - La API recorrió con FreeLLMAPI el ciclo de diapositiva de diagrama: cinco pasos, aplicación, persistencia y deshacer.
+
+- Los borradores de diagramas eliminan viñetas que repiten sus pasos; se verificó en Chrome la vista previa, aplicación, persistencia y deshacer.

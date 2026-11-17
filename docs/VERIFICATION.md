@@ -652,3 +652,11 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Se repitió la petición real con gpt-oss-20b. Generó dos tarjetas: expansión de Ficha de cosecha y tabla comparativa entre Siembra y Cosecha con destino en Cosecha. Ambas estaban en el ámbito; la comparación se conservó por ser explícita. Esa repetición no volvió a proponer el diagrama.
 - Una respuesta de proveedor compatible simulada que clasificaba el diagrama como expansión se filtró en la API como una tarjeta `create-slide`, formato `diagram`, con destino Cosecha.
 - `npm run build --workspace @espacio-visual/server` pasó tras el cambio. En un recorrido API posterior con FreeLLMAPI y gpt-oss-20b, el borrador produjo cinco pasos ordenados y ningún bloque de tabla o formulario. Se aplicó en revisión 2, persistió al volver a cargar el proyecto y se deshizo en revisión 3; el proyecto quedó sin diapositivas.
+
+### Ciclo de diagrama en Chrome y eliminación de pasos repetidos — T-010 — 2026-11-17
+
+- En Chrome aislado con el mapa temporal de huerto y FreeLLMAPI/gpt-oss-20b, el usuario pidió una diapositiva con diagrama de cosecha. El chat propuso «Crear diagrama de proceso de cosecha» y la tarjeta indicó el formato de recorrido.
+- La primera vista previa mostraba los mismos cuatro pasos como viñetas y como tarjetas del diagrama. Se cambió el prompt para reservar viñetas para información distinta y el servidor retira viñetas con alta coincidencia léxica con los pasos.
+- En la vista previa repetida se mostraron tres notas diferentes y cuatro pasos de diagrama; no hubo viñetas repetidas. La inspección visual confirmó el orden y la presentación del recorrido.
+- Se añadió la diapositiva desde Chrome. Tras recargar, el editor conservó título, subtítulo, notas y los cuatro pasos. «Deshacer diapositiva» la retiró, mostró el aviso y dejó la presentación en cero.
+- `npm run build` completó el build de dominio, servidor y web. Vite advirtió que el chunk principal supera 500 kB. El servicio y el perfil de prueba estaban aislados; el proyecto era ficticio.
