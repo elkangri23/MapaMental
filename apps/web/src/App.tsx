@@ -122,6 +122,10 @@ function withAccessibleEdgeLabels(nodes: IdeaNode[], edges: Edge[]) {
   });
 }
 
+function withAccessibleNodeLabels(nodes: IdeaNode[]) {
+  return nodes.map((node) => node.ariaLabel === node.data.label ? node : { ...node, ariaLabel: node.data.label });
+}
+
 const staleProposalMessage = 'El proyecto cambió. Carga la versión guardada para generar una propuesta nueva.';
 const mapListPageSize = 250;
 
@@ -477,7 +481,7 @@ export default function App() {
           revisionRef.current = created.revision;
           savedMapRef.current = JSON.stringify({ nodes: created.map.nodes, edges: created.map.edges });
           savedSlidesRef.current = JSON.stringify(created.presentation.slides);
-          setProject(created); setNodes(created.map.nodes as IdeaNode[]); setEdges(created.map.edges as Edge[]);
+          setProject(created); setNodes(withAccessibleNodeLabels(created.map.nodes as IdeaNode[])); setEdges(created.map.edges as Edge[]);
           setSlides(created.presentation.slides as PresentationSlide[]); setActiveSlideIndex(0);
           setSelectedNodeId('root'); await loadProjectList();
         }
@@ -524,7 +528,7 @@ export default function App() {
       revisionRef.current = fork.revision;
       savedMapRef.current = JSON.stringify(serializeMap(fork.map.nodes as IdeaNode[], fork.map.edges as Edge[]));
       savedSlidesRef.current = JSON.stringify(fork.presentation.slides);
-      setProject(fork); setNodes(fork.map.nodes as IdeaNode[]); setEdges(fork.map.edges as Edge[]);
+      setProject(fork); setNodes(withAccessibleNodeLabels(fork.map.nodes as IdeaNode[])); setEdges(fork.map.edges as Edge[]);
       setSlides(fork.presentation.slides as PresentationSlide[]);
       setActiveSlideIndex(0);
       resetChat(fork.conversation);
@@ -544,10 +548,6 @@ export default function App() {
     setNodeLabelRevision((revision) => revision + 1);
   }, [aiBusy]);
 
-  const nodesWithAccessibleLabels = useMemo(
-    () => nodes.map((node) => node.ariaLabel === node.data.label ? node : { ...node, ariaLabel: node.data.label }),
-    [nodes],
-  );
   const edgesWithAccessibleLabels = useMemo(() => withAccessibleEdgeLabels(nodes, edges), [edges, nodeLabelRevision]);
   const mapListChildren = useMemo(() => {
     if (!mapListView) return new Map<string, string>();
@@ -581,6 +581,7 @@ export default function App() {
         id: 'root',
         type: 'idea',
         position: { x: 500, y: 300 },
+        ariaLabel: label,
         data: { label, tone: 'root' },
       };
       setNodes([centralIdea]);
@@ -592,6 +593,7 @@ export default function App() {
     const next: IdeaNode = {
       id,
       type: 'idea',
+      ariaLabel: label,
       position: {
         x: parent.position.x + (parent.position.x > 999_700 ? -300 : 300),
         y: parent.position.y + (parent.position.y > 999_870 ? -130 : 130),
@@ -907,7 +909,7 @@ export default function App() {
     }
     try {
       const { project: saved } = await aiApi.apply(currentProject.id, proposal, [proposal.parentNodeId]);
-      const nextNodes = saved.map.nodes as IdeaNode[]; const nextEdges = saved.map.edges as Edge[];
+      const nextNodes = withAccessibleNodeLabels(saved.map.nodes as IdeaNode[]); const nextEdges = saved.map.edges as Edge[];
       revisionRef.current = saved.revision; savedMapRef.current = JSON.stringify(serializeMap(nextNodes, nextEdges));
       projectRef.current = saved;
       setProject(saved); setNodes(nextNodes); setEdges(nextEdges); setSelectedNodeId(proposal.parentNodeId); setAiProposal(null);
@@ -933,7 +935,7 @@ export default function App() {
     if (!currentProject?.lastAiUndo) { setAiBusy(false); return; }
     try {
       const { project: restored } = await aiApi.undo(currentProject.id, currentProject.revision);
-      const nextNodes = restored.map.nodes as IdeaNode[]; const nextEdges = restored.map.edges as Edge[];
+      const nextNodes = withAccessibleNodeLabels(restored.map.nodes as IdeaNode[]); const nextEdges = restored.map.edges as Edge[];
       revisionRef.current = restored.revision; savedMapRef.current = JSON.stringify(serializeMap(nextNodes, nextEdges));
       projectRef.current = restored;
       setProject(restored); setNodes(nextNodes); setEdges(nextEdges); setAiProposal(null); setNotice('Se deshizo la última acción de IA.');
@@ -1762,7 +1764,7 @@ export default function App() {
               </ol>
             </>}
             {!loading && !mapListView && <Suspense fallback={<div className="canvas-overlay" role="status">Cargando el mapa…</div>}>
-              <MapCanvas nodes={nodesWithAccessibleLabels} edges={edgesWithAccessibleLabels} setNodes={setNodes} setEdges={setEdges}
+              <MapCanvas nodes={nodes} edges={edgesWithAccessibleLabels} setNodes={setNodes} setEdges={setEdges}
                 setSelectedNodeId={setSelectedNodeId} onLabelChange={updateLabel} aiBusy={aiBusy} />
             </Suspense>}
             </>}

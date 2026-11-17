@@ -1,6 +1,6 @@
 # Cambios
 
-- El canvas reutiliza las etiquetas accesibles de las conexiones al mover o seleccionar nodos; solo las recalcula si cambia el grafo o una etiqueta.
+- El canvas mantiene etiquetas accesibles en nodos y conexiones desde su carga/creación y reutiliza ambos arrays al mover o seleccionar nodos.
 - Las tarjetas IA se orientan por la cobertura y los vacíos explícitos de cada rama; el calendario de siembra ya no hereda supuestos de clima o fechas añadidos por el modelo.
 
 - El almacenamiento local rechaza enlaces simbólicos o reparse points en las rutas de proyectos y copias antes de leerlos o modificarlos.
