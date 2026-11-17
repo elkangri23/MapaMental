@@ -54,6 +54,12 @@ La guía operativa está en [AUTH_OPERATIONS.md](AUTH_OPERATIONS.md). Las sesion
 - `npm run build` pasó con Node 24. Con un proveedor OpenAI-compatible simulado en loopback, la generación informó 100 tokens de entrada y 50 de salida. Con tarifa de 10 EUR por millón en ambas direcciones, el registro persistió 0,0015 EUR. Al fijar el presupuesto en 0,001 EUR, la siguiente petición devolvió 429 antes de llegar al proveedor (una petición upstream total). El presupuesto volvió a cero por ser un fixture temporal.
 - Con un perfil temporal compatible con OpenAI apuntando al proxy local de FreeLLMAPI, se configuraron un presupuesto de 100 EUR y tarifas de 0,05/0,1 EUR por millón de tokens. gpt-oss-120b respondió en 1,15 s y devolvió una sugerencia. El contador pasó de 0 a 0,000078 EUR, informó el mes actual, cero solicitudes incompletas y ningún guardado pendiente. La credencial se leyó del entorno local; no se registró ni se mostró.
 
+## Revisión de registro de direcciones especiales (T-015)
+
+- Se contrastaron las reglas de `isBlockedRemoteHost` con los registros actuales de direcciones especiales de IANA. IPv4 bloquea redes privadas, loopback, link-local, espacio compartido, documentación, benchmarking, multicast, reservado y broadcast. IPv6 permite solo global unicast y excluye `2001::/23`, `2001:db8::/32`, `2002::/16` y `3fff::/20`, además de espacio no global y direcciones IPv4 mapeadas.
+- No se hizo un cambio de código en esta revisión. La verificación fue documental y por lectura del validador, no una enumeración automatizada de cada prefijo. La matriz de DNS, TLS/SNI, hosts internacionales y operaciones negativas sigue abierta en T-015. Registros: [IANA IPv4](https://www.iana.org/assignments/iana-ipv4-special-registry) y [IANA IPv6](https://www.iana.org/assignments/iana-ipv6-special-registry).
+- El 2026-11-17, `npm audit --omit=dev` informó cero vulnerabilidades y `npm run build` pasó con Node 24.
+
 ## Calidad de las sugerencias con el mapa de siembra (T-010)
 
 Este recorrido está pendiente con un modelo real. Usa un proyecto de prueba llamado «Huerto de balcón». Añade a la idea central las ramas «Prueba A — Siembra» y «Prueba B — Cosecha». Bajo Siembra, añade tomate y lechuga. Deja Cosecha sin ideas hijas. Crea una diapositiva vinculada a Siembra titulada «Calendario de siembra», con los dos cultivos y los meses por concretar.
