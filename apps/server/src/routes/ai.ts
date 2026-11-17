@@ -601,6 +601,11 @@ Omite sugerencias duplicadas, genéricas o que requieran hechos ausentes. Los va
     } else if (format === 'table') {
       delete draft.diagramSteps;
       delete draft.mockFields;
+      if (draft.table?.rows.some((row) => row.some((cell) => /pendiente de confirmar/i.test(cell)))) {
+        draft.subtitle = 'Datos pendientes de confirmar';
+        draft.body = 'Completa los datos indicados en la tabla antes de utilizar sus valores.';
+        draft.bullets = [];
+      }
     }
     if (format === 'diagram' && (draft.diagramSteps?.length ?? 0) < 2) {
       throw new InvalidModelOutput('El modelo no devolvió un recorrido con al menos dos pasos. Vuelve a intentar la sugerencia.');
