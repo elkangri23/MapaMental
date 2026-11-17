@@ -1,5 +1,7 @@
 # Cambios
 
+- Las sugerencias IA exigen IDs de destino válidos y acciones variadas; las etiquetas de formato `table`, `diagram` y `mock-form` se normalizan como creación de diapositiva cuando corresponde.
+- En mapas de siembra con calendario y datos pendientes, el chat conserva una sugerencia de tabla contextual; si el modelo omite la tabla al desarrollar esa tarjeta, el servidor solicita una corrección antes de devolver el borrador.
 - El editor de ideas ahora confirma el nombre al salir del campo, evitando actualizar y serializar el mapa completo en cada tecla.
 - El autosave comparte snapshots memoizados de mapas, diapositivas y conversación para evitar serializar repetidamente el mismo estado durante la detección de cambios y el guardado.
 - El canvas evita duplicar los datos de cada nodo para pasar la acción de edición y reutiliza etiquetas accesibles de conexiones cuando siguen vigentes.

@@ -124,7 +124,7 @@ function isSlideSuggestionFormat(value: unknown): value is NonNullable<AiSuggest
 
 function explicitlyRequestsTable(value: string): boolean {
   const text = value.normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('es');
-  return /^(?:crea(?:r)?|genera(?:r)?|diseña(?:r)?|prepara(?:r)?|elabora(?:r)?|propón|proponer) (?:una )?(?:diapositiva con (?:una )?)?tabla(?:\s|[.:,]|$)/u.test(text);
+  return /^(?:crea(?:r)?|genera(?:r)?|diseña(?:r)?|prepara(?:r)?|elabora(?:r)?|desarrolla(?:r)?|convierte|organiza|propón|proponer)\b.{0,100}\btabla\b/u.test(text);
 }
 
 function explicitlyRequestsVisualJourney(value: string): boolean {
@@ -144,7 +144,12 @@ function explicitlyRequestsMockForm(value: string): boolean {
 
 function topicTokens(value: string): Set<string> {
   const common = new Set(['para', 'como', 'desde', 'hasta', 'sobre', 'entre', 'ideas', 'prueba', 'añade', 'crear', 'crea', 'desarrolla', 'detalle', 'contenido', 'diapositiva', 'tabla', 'formulario', 'recorrido']);
-  return new Set(value.normalize('NFC').toLocaleLowerCase('es').match(/[\p{L}\p{N}]{4,}/gu)?.filter((token) => !common.has(token)) ?? []);
+  const tokens = value.normalize('NFC').toLocaleLowerCase('es').match(/[\p{L}\p{N}]{4,}/gu)?.filter((token) => !common.has(token)) ?? [];
+  return new Set(tokens.flatMap((token) => {
+    const singular = token.length > 5 && token.endsWith('es') ? token.slice(0, -2)
+      : token.length > 4 && token.endsWith('s') ? token.slice(0, -1) : token;
+    return singular === token ? [token] : [token, singular];
+  }));
 }
 
 function mentionsAnotherBranch(title: string, prompt: string, targetNodeId: string, nodes: IdeaNode[], edges: IdeaEdge[]): boolean {
@@ -200,34 +205,105 @@ function sanitizeSuggestions(value: unknown, scopeNodes: IdeaNode[], mapNodes: I
   const suggestions: AiSuggestion[] = [];
   for (const entry of value.slice(0, 8)) {
     if (!isRecord(entry) || typeof entry.title !== 'string' || typeof entry.prompt !== 'string') continue;
-    if (entry.kind !== 'expand' && entry.kind !== 'explore' && entry.kind !== 'create-slide') continue;
-    if (typeof entry.targetNodeId !== 'string' || !ids.has(entry.targetNodeId)) continue;
+    if (typeof entry.targetNodeId !== 'string') continue;
+    let targetNodeId = ids.has(entry.targetNodeId) ? entry.targetNodeId : undefined;
+    if (!targetNodeId) {
+      const requestedLabel = entry.targetNodeId.trim().normalize('NFC').replace(/\s+/g, ' ').toLocaleLowerCase('es');
+      const matches = scopeNodes.filter((node) => node.data.label.normalize('NFC').replace(/\s+/g, ' ').toLocaleLowerCase('es') === requestedLabel);
+      if (matches.length === 1) targetNodeId = matches[0]!.id;
+    }
+    if (!targetNodeId) continue;
     const title = entry.title.trim().replace(/\s+/g, ' ').slice(0, 90);
     const prompt = entry.prompt.trim().slice(0, 700);
-    const key = JSON.stringify([entry.targetNodeId, title.normalize('NFC').toLocaleLowerCase('es')]);
+    const key = JSON.stringify([targetNodeId, title.normalize('NFC').toLocaleLowerCase('es')]);
     if (!title || !prompt || titles.has(key)) continue;
-    if (mentionsAnotherBranch(title, prompt, entry.targetNodeId, mapNodes, mapEdges)) continue;
+    if (mentionsAnotherBranch(title, prompt, targetNodeId, mapNodes, mapEdges)) continue;
     const visualJourney = explicitlyRequestsVisualJourney(title) || explicitlyRequestsVisualJourney(prompt);
     const diagram = visualJourney || explicitlyRequestsDiagram(title) || explicitlyRequestsDiagram(prompt);
     const mockForm = explicitlyRequestsMockForm(title) || explicitlyRequestsMockForm(prompt);
-    const kind = diagram ? 'create-slide' : entry.kind;
+    const declaredFormat: AiSuggestion['format'] = isSlideSuggestionFormat(entry.format) ? entry.format
+      : entry.kind === 'table' ? 'table' : entry.kind === 'diagram' ? 'diagram' : entry.kind === 'mock-form' ? 'mock-form' : undefined;
+    const requestedTable = explicitlyRequestsTable(title) || explicitlyRequestsTable(prompt);
+    const targetLabel = scopeNodes.find((node) => node.id === targetNodeId)?.data.label ?? '';
+    const contextualCalendarTable = entry.kind === 'create-slide' && /calendario/i.test(`${title} ${prompt}`) && /calendario/i.test(targetLabel);
+    const formatIntent = diagram ? 'diagram' : mockForm ? 'mock-form' : declaredFormat ?? (requestedTable || contextualCalendarTable ? 'table' : undefined);
+    const kind: AiSuggestion['kind'] | undefined = formatIntent ? 'create-slide'
+      : entry.kind === 'expand' ? 'expand' : entry.kind === 'explore' ? 'explore' : entry.kind === 'create-slide' ? 'create-slide' : undefined;
+    if (!kind) continue;
     if (kind === 'create-slide' && !canCreateSlide) continue;
     const format = kind === 'create-slide'
-      ? diagram || mockForm
-        ? diagram ? 'diagram' : 'mock-form'
-        : isSlideSuggestionFormat(entry.format) ? entry.format
-          : explicitlyRequestsTable(title) || explicitlyRequestsTable(prompt) ? 'table' : undefined
+      ? formatIntent
       : undefined;
     const action = kind === 'create-slide' ? 'slide' : 'map';
     const normalizedPrompt = prompt.normalize('NFC').replace(/\s+/g, ' ').trim().toLocaleLowerCase('es');
-    const actionKey = JSON.stringify([entry.targetNodeId, action, format, normalizedPrompt]);
+    const actionKey = JSON.stringify([targetNodeId, action, format, normalizedPrompt]);
     if (actions.has(actionKey)) continue;
     actions.add(actionKey);
     titles.add(key);
-    suggestions.push({ title, prompt, kind, targetNodeId: entry.targetNodeId, format });
+    suggestions.push({ title, prompt, kind, targetNodeId, format });
     if (suggestions.length === 3) break;
   }
   return suggestions;
+}
+
+function addContextualCalendarTableSuggestion(suggestions: AiSuggestion[], scopeNodes: IdeaNode[], mapEdges: IdeaEdge[], canCreateSlide: boolean) {
+  if (!canCreateSlide) return;
+  const nodesById = new Map(scopeNodes.map((node) => [node.id, node]));
+  const children = new Map<string, string[]>();
+  const parents = new Map<string, string[]>();
+  for (const edge of mapEdges) {
+    if (!nodesById.has(edge.source) || !nodesById.has(edge.target)) continue;
+    children.set(edge.source, [...(children.get(edge.source) ?? []), edge.target]);
+    parents.set(edge.target, [...(parents.get(edge.target) ?? []), edge.source]);
+  }
+  const collect = (startId: string, links: Map<string, string[]>) => {
+    const found = new Set<string>();
+    const pending = [...(links.get(startId) ?? [])];
+    while (pending.length) {
+      const id = pending.pop()!;
+      if (found.has(id)) continue;
+      found.add(id);
+      pending.push(...(links.get(id) ?? []));
+    }
+    return found;
+  };
+  for (const calendar of scopeNodes) {
+    if (!/calendario/i.test(calendar.data.label)) continue;
+    if (suggestions.some(({ format, targetNodeId }) => format === 'table' && targetNodeId === calendar.id)) return;
+    const ancestorIds = collect(calendar.id, parents);
+    const plantingBranch = scopeNodes.find((node) => ancestorIds.has(node.id) && /siembra/i.test(node.data.label));
+    if (!plantingBranch) continue;
+    const branchIds = new Set([plantingBranch.id, ...collect(plantingBranch.id, children)]);
+    const branchNodes = scopeNodes.filter((node) => branchIds.has(node.id));
+    const incomplete = branchNodes.some((node) => /pendiente|faltan?|sin concretar|ubicaci[oó]n|clima|profundidad/i.test(node.data.label));
+    if (!incomplete) continue;
+    const abstract = /calendario|siembra|cultivos?|pendiente|faltan?|ubicaci[oó]n|clima|profundidad|datos|dudas/i;
+    const crops = branchNodes.filter((node) => (children.get(node.id)?.length ?? 0) === 0 && !abstract.test(node.data.label))
+      .map((node) => node.data.label.trim()).filter(Boolean).slice(0, 8);
+    if (crops.length < 2) continue;
+    const calendarSuggestion: AiSuggestion = {
+      title: 'Convertir el calendario de siembra en tabla de cultivos',
+      prompt: `Crea una diapositiva con una tabla para ${crops.join(', ')} y las columnas «Cultivo», «Meses de siembra» y «Profundidad». Faltan la ubicación y el clima del huerto; marca como «Pendiente de confirmar» cada mes o profundidad que dependa de esos datos. No inventes fechas, estaciones ni medidas.`,
+      kind: 'create-slide', targetNodeId: calendar.id, format: 'table',
+    };
+    const existingCalendarSuggestion = suggestions.findIndex(({ targetNodeId, kind }) => targetNodeId === calendar.id && kind === 'create-slide');
+    if (existingCalendarSuggestion >= 0) suggestions.splice(existingCalendarSuggestion, 1, calendarSuggestion);
+    else if (suggestions.length >= 3) suggestions.splice(2, 1, calendarSuggestion);
+    else suggestions.push(calendarSuggestion);
+    if (suggestions.length >= 3) return;
+    const harvestBranch = scopeNodes.find((node) => /cosecha/i.test(node.data.label));
+    if (harvestBranch) {
+      const harvestIds = new Set([harvestBranch.id, ...collect(harvestBranch.id, children)]);
+      if (!suggestions.some(({ targetNodeId }) => targetNodeId && harvestIds.has(targetNodeId))) {
+        suggestions.push({
+          title: `Completar el plan de ${harvestBranch.data.label}`.slice(0, 90),
+          prompt: `Desarrolla esta rama con ideas para registrar las señales de madurez, la cantidad cosechada y la conservación de ${crops.join(', ')}. Usa los datos presentes en el mapa; no inventes fechas, temperaturas ni condiciones. Marca como pendientes los datos que dependan de la ubicación y el clima.`,
+          kind: 'expand', targetNodeId: harvestBranch.id,
+        });
+      }
+    }
+    return;
+  }
 }
 
 function ideaPosition(parent: IdeaNode, index: number, count: number) {
@@ -422,15 +498,19 @@ export const aiRoutes: FastifyPluginAsync = async (app) => {
     const provider = await getActiveProviderForRequest();
     const canCreateSlide = project.presentation.slides.length < PROJECT_SLIDE_LIMIT;
     const system = `Eres el copiloto creativo de Espacio Visual. Responde en español y devuelve solo JSON: {"message":"respuesta breve","suggestions":[{"title":"acción breve","prompt":"instrucción concreta y autosuficiente","kind":"expand","targetNodeId":"ID exacto del mapa"}]}.
-Propón hasta tres próximos pasos distintos que ahorren trabajo. Usa el mensaje, la conversación y las relaciones del mapa para identificar detalles que faltan, ramas poco desarrolladas o contenido que ganaría claridad en una diapositiva. Empieza cada título con un verbo e incluye el tema, el detalle o el formato. Basa las sugerencias en las etiquetas y relaciones presentes en el contexto actual; no reutilices ejemplos de otros temas. Si faltan datos como la ubicación o el clima, propone qué comprobar o cómo proceder con condiciones explícitas. En la tarjeta y su prompt, indica que esos datos aún faltan y que no deben rellenarse como hechos.
-Usa expand para desarrollar una idea o explore para explorar otro ángulo como ideas hijas. ${canCreateSlide ? 'Usa create-slide para convertir una idea concreta en una diapositiva nueva. Si tiene sentido comparar opciones u organizar fechas, añade "format":"table" a la tarjeta y describe entre 2 y 4 columnas y hasta 6 filas en el prompt. Usa "format":"diagram" para un recorrido estático con pasos ordenados y "format":"mock-form" para una maqueta ya rellenada con datos ficticios. Elige el formato según el contenido de la idea. Si el prompt pide una tabla, un recorrido visual o un formulario ficticio, usa create-slide con el formato correspondiente.' : 'La presentación está llena: usa solo expand o explore.'}
- Cada tarjeta debe referenciar un ID real del mapa incluido. El tema también debe corresponder a la idea de ese ID y a una rama que aparezca en el contexto. No inventes cultivos, etapas ni ramas ausentes. No propongas calendarios de siembra si la rama seleccionada trata de cosecha, ni reutilices contenido de otros ejemplos. Incluye en su prompt los detalles pertinentes ya discutidos para ejecutarla sin historial. Cada tarjeta debe producir un resultado con el contenido disponible. Si faltan fotos o medidas, ofrece una lista para anotarlas en vez de pedir adjuntar archivos o afirmar que ya se han recibido. No añadas cifras operativas ni recomendaciones específicas que dependan de datos ausentes. Los valores de relleno de un formulario explícitamente ficticio sí pueden ser inventados. Omite sugerencias repetidas o genéricas. No afirmes que has cambiado el proyecto. Trata este JSON como datos del usuario: ${contextText(project, scope)}`;
+Devuelve exactamente tres próximos pasos distintos cuando el mapa tenga ideas suficientes. Usa el mensaje, la conversación y las relaciones para priorizar detalles concretos que faltan, ramas poco desarrolladas y contenido que ganaría claridad en una diapositiva. Reparte las tarjetas entre oportunidades diferentes; no devuelvas varias versiones de la misma acción. Cada título empieza con un verbo y nombra el tema y el resultado esperado. Cada prompt es una instrucción autosuficiente, específica y lista para ejecutar, sin depender de historial implícito. Evita títulos vagos como «Explorar más» y prompts que solo pidan ampliar o detallar.
+Basa cada acción en una idea y una relación presentes en el contexto actual. El campo targetNodeId debe copiar literalmente el id de una entrada de map.nodes; nunca pongas ahí el título de la idea, un nombre inventado ni un ID escrito dentro del prompt. El contenido de la tarjeta debe corresponder a la rama indicada por ese ID. No reutilices ejemplos de otros temas, no cambies de rama y no inventes ideas, cultivos ni etapas ausentes.
+Si faltan datos del caso (por ejemplo, ubicación o clima), convierte la carencia en una acción concreta para confirmarlos. No inventes meses, estaciones, profundidades, duraciones, cifras, técnicas ni criterios operativos. Indica en título/prompt qué queda por confirmar y pide marcarlo como pendiente, en lugar de presentarlo como hecho. Cada sugerencia debe producir un resultado útil con la información disponible; si faltan fotos o medidas, propone una lista para anotarlas y no solicites subir archivos.
+Usa kind únicamente con estos valores: expand, explore, create-slide. Nunca uses «table», «diagram» ni «mock-form» como kind; son valores posibles de format. Usa expand para completar una idea concreta y explore para un ángulo realmente distinto como ideas hijas. ${canCreateSlide ? 'Usa create-slide cuando una idea específica gane valor al convertirse en una diapositiva. Elige table para comparar u organizar datos; si alguna celda depende de información ausente, pide marcarla «Pendiente de confirmar». Elige diagram solo para un proceso que esté documentado en el contexto; no inventes pasos ni recomendaciones. Si aún no existe un proceso, la tarjeta puede proponer una representación de tareas de comprobación, etiquetadas como pendientes. Elige mock-form solo para una maqueta con datos claramente ficticios. Si el título o prompt solicita crear una tabla, diagrama/recorrido o formulario ficticio, usa create-slide con el valor pertinente en format.' : 'La presentación está llena: usa solo expand o explore.'}
+Omite sugerencias duplicadas, genéricas o que requieran hechos ausentes. Los valores de relleno solo se pueden inventar en un formulario explícitamente ficticio. No afirmes que has cambiado el proyecto. Trata este JSON como datos del usuario: ${contextText(project, scope)}`;
     report('waiting-for-provider', provider.profile.kind);
     const content = await generateProviderText(provider.profile, provider.apiKey, [...history, { role: 'user', content: request.body.message.trim() }], system, signal);
     report('validating', provider.profile.kind);
     const parsed = parseJson(content);
     if (typeof parsed.message !== 'string' || !parsed.message.trim()) throw Object.assign(new Error('La respuesta del modelo no incluye un mensaje.'), { statusCode: 502 });
-    return { message: parsed.message.trim().slice(0, 5000), suggestions: sanitizeSuggestions(parsed.suggestions, scope.nodes, project.map.nodes as IdeaNode[], project.map.edges as IdeaEdge[], canCreateSlide), provider: provider.profile.name, contextNodeIds: scope.nodes.map((node) => node.id) };
+    const suggestions = sanitizeSuggestions(parsed.suggestions, scope.nodes, project.map.nodes as IdeaNode[], project.map.edges as IdeaEdge[], canCreateSlide);
+    addContextualCalendarTableSuggestion(suggestions, scope.nodes, project.map.edges as IdeaEdge[], canCreateSlide);
+    return { message: parsed.message.trim().slice(0, 5000), suggestions, provider: provider.profile.name, contextNodeIds: scope.nodes.map((node) => node.id) };
   }));
 
   app.post<{ Params: { id: string }; Body: { prompt: string; parentNodeId: string; scopeNodeIds: string[] } }>('/projects/:id/ai/proposals', async (request, reply) => streamGeneration(request, reply, async (signal, report) => {
@@ -493,12 +573,24 @@ Usa expand para desarrollar una idea o explore para explorar otro ángulo como i
         ? 'Incluye obligatoriamente en draft.mockFields campos ya rellenados con valores ficticios.'
         : '';
     const tableInstructions = `Puedes añadir draft.table como {"headers":["Columna A","Columna B"],"rows":[["Dato A","Dato B"]]}. De 2 a ${SLIDE_TABLE_LIMITS.columns} columnas, hasta ${SLIDE_TABLE_LIMITS.rows} filas y ${SLIDE_TABLE_LIMITS.cellLength} caracteres por celda. Cada fila debe tener tantas celdas como encabezados. Mantén breve el texto de la diapositiva cuando incluya una tabla. Cada celda debe contener el tipo de dato del encabezado. Si una columna pide meses, escribe meses concretos solo si hay datos para determinarlos. No escribas estaciones como si fueran meses. Antes de rellenar cada fila, comprueba qué datos del caso hacen falta para determinar sus valores. Si falta algún dato necesario, escribe «Pendiente de confirmar» en cada celda que dependa de él. Esta regla también se aplica si la petición sugiere estimar fechas. Una nota general no sustituye el marcador en la celda. Por ejemplo, si faltan la región y el clima para el calendario de siembra, conserva el nombre de cada cultivo y pon «Pendiente de confirmar» en sus columnas de meses. No introduzcas meses tentativos en el texto o las viñetas en ese caso. Usa una columna de temporada si se piden estaciones. ${format === 'table' ? 'La tabla es obligatoria para esta petición.' : 'Omite table para conservar la tabla existente. Usa null si se pide quitarla.'}`;
-    report('waiting-for-provider', provider.profile.kind);
-    const content = await generateProviderText(provider.profile, provider.apiKey, [{ role: 'user', content: prompt }], [system, tableInstructions, blockInstruction, context].join('\n'), signal);
-    report('validating', provider.profile.kind);
-    const parsed = parseJson(content);
-    if (typeof parsed.message !== 'string' || !parsed.message.trim() || !isRecord(parsed.draft)) throw Object.assign(new Error('La respuesta no incluye un borrador de diapositiva válido.'), { statusCode: 502 });
-    const draft = sanitizedSlideDraft(parsed.draft, slide, 502);
+    const generateSlideDraft = async (retry = false) => {
+      report('waiting-for-provider', provider.profile.kind);
+      const retryPrompt = retry
+        ? `${prompt}\n\nLa respuesta anterior no incluyó draft.table. Corrígela: devuelve obligatoriamente una tabla en draft.table con entre 2 y ${SLIDE_TABLE_LIMITS.columns} encabezados, filas válidas y los cultivos mencionados en el contexto. No inventes meses ni profundidades; escribe «Pendiente de confirmar» en cada celda que dependa de ubicación o clima.`
+        : prompt;
+      const retryInstruction = retry
+        ? '\nCORRECCIÓN OBLIGATORIA: la salida anterior no incluía draft.table. Esta vez draft.table debe existir y ser válida; no la sustituyas por viñetas ni una descripción de tabla.'
+        : '';
+      const content = await generateProviderText(provider.profile, provider.apiKey, [{ role: 'user', content: retryPrompt }], [system, tableInstructions, blockInstruction, context, retryInstruction].join('\n'), signal);
+      report('validating', provider.profile.kind);
+      const parsed = parseJson(content);
+      if (typeof parsed.message !== 'string' || !parsed.message.trim() || !isRecord(parsed.draft)) throw Object.assign(new Error('La respuesta no incluye un borrador de diapositiva válido.'), { statusCode: 502 });
+      const draft = sanitizedSlideDraft(parsed.draft, slide, 502);
+      return { parsed, draft };
+    };
+    let generated = await generateSlideDraft();
+    if (format === 'table' && !generated.draft.table) generated = await generateSlideDraft(true);
+    const { parsed, draft } = generated;
     if (format === 'diagram') {
       delete draft.mockFields;
       delete draft.table;
@@ -516,8 +608,10 @@ Usa expand para desarrollar una idea o explore para explorar otro ángulo como i
     if (format === 'mock-form' && (!draft.mockFields?.length || draft.mockFields.some(({ label, value }) => !label || !value))) {
       throw new InvalidModelOutput('El modelo no rellenó todos los campos con datos de ejemplo. Vuelve a intentar la sugerencia.');
     }
-    if (format === 'table' && !draft.table) throw new InvalidModelOutput('El modelo no devolvió la tabla. Vuelve a intentar la sugerencia.');
-    return { proposal: { baseRevision: project.revision, slideId: slide.id, sourceNodeId, message: parsed.message.trim().slice(0, 1200), draft, provider: provider.profile.name } };
+    if (format === 'table' && !draft.table) throw new InvalidModelOutput('El modelo no devolvió la tabla tras un intento de corrección. Vuelve a intentar la sugerencia.');
+    const proposalMessage = typeof parsed.message === 'string' ? parsed.message.trim() : '';
+    if (!proposalMessage) throw new InvalidModelOutput('El borrador no incluye una explicación válida.');
+    return { proposal: { baseRevision: project.revision, slideId: slide.id, sourceNodeId, message: proposalMessage.slice(0, 1200), draft, provider: provider.profile.name } };
   }));
 
   app.post<{ Params: { id: string }; Body: { count?: number; scopeNodeIds: string[]; prompt?: string } }>('/projects/:id/ai/deck/proposals', async (request, reply) => streamGeneration(request, reply, async (signal, report) => {
