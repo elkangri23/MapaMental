@@ -8,7 +8,7 @@
 - **Completadas:** fundamentos y diseño inicial (T-001–T-008, incluida T-004 documental), presentación y exportación PDF/PNG (T-011), presupuesto remoto (T-012), alcance/política inicial de identidad (T-018–T-020, T-022) y perfil personal (T-027).
 - **En curso:** T-009–T-010 (proveedores y calidad de IA), T-013 (instalador), T-015 (seguridad), T-016 (accesibilidad), T-017 (estabilidad de almacenamiento) y las verificaciones reales de T-021/T-023–T-026.
 - **T-009/T-010:** hubo evaluaciones anteriores con FreeLLMAPI y varios modelos, incluidos ciclos de sugerencia, vista previa, aplicación y deshacer. En la última repetición, Ollama y LM Studio no estaban activos y FreeLLMAPI agotó el tiempo a los 60 segundos. La calidad quedó sin reevaluar en esa petición.
-- **T-013:** el ZIP portátil se ha recorrido; el proyecto Inno Setup está preparado. No se encontró `ISCC.exe`, así que no se ha compilado ni recorrido el instalador.
+- **T-013:** ZIP e instalador compilados; prueba aislada de instalación, servicio HTTP 200, parada y desinstalación correcta. Falta actualización desde una versión posterior y comprobar conservación de proyectos.
 - **T-015:** build y varias verificaciones de host/SSRF están documentadas: matriz representativa IANA, redirección rechazada, hostname que resuelve a loopback bloqueado antes de conectar y normalización de sufijos con punto final. Siguen pendientes DNS rebinding determinista, TLS/SNI, errores/permisos de disco, cuota de solicitudes y análisis formal de amenazas.
 - **T-016:** hay mejoras semánticas, teclado y reflujo comprobados; faltan lector de pantalla real y revisión completa de teclado, contraste y estados.
 - **T-017:** se corrigieron colisiones de copias al reintentar guardados/restauraciones y se recorrieron fallos controlados. Siguen pendientes ACL, disco lleno e interrupciones físicas.
@@ -16,6 +16,6 @@
 
 ## Próximo trabajo
 
-Avanzar las verificaciones de DNS/TLS, errores y límites de T-015. En paralelo, cerrar la compilación y recorrido del instalador de T-013; las aceptaciones reales de proveedores, accesibilidad y modo protegido dependen de servicios o dispositivos disponibles.
+Avanzar las verificaciones de DNS/TLS, errores y límites de T-015. Para T-013, comprobar actualización y conservación de proyectos al publicar una versión posterior; las aceptaciones reales de proveedores, accesibilidad y modo protegido dependen de servicios o dispositivos disponibles.
 
 La lista de tareas y criterios está en [`TASKS.md`](TASKS.md); la secuencia y evidencia detallada, en [`ROADMAP.md`](ROADMAP.md) y [`VERIFICATION.md`](VERIFICATION.md).

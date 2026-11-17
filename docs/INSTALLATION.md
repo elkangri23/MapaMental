@@ -23,7 +23,7 @@ El lanzador reinicia una instancia activa si cambia el modo. Para volver al modo
 
 ## Instalador Inno Setup
 
-El proyecto del instalador está preparado en `packaging\windows\setup.iss`. Está configurado para instalar por usuario, crear accesos directos en el menú Inicio y ofrecer un acceso directo opcional en el escritorio. La compilación del instalador y el recorrido de instalación, actualización y desinstalación quedan pendientes.
+El proyecto del instalador está preparado en `packaging\windows\setup.iss`. Está configurado para instalar por usuario, crear accesos directos en el menú Inicio y ofrecer un acceso directo opcional en el escritorio. La versión 0.1.0 se compiló con Inno Setup 6.7.3. Una comprobación aislada instaló los archivos, inició el servicio (HTTP 200), lo detuvo y desinstaló la aplicación. Falta recorrer la actualización desde una versión anterior y comprobar que conserva proyectos; esta guía aún no se ha validado de principio a fin desde los accesos directos.
 
 ### Recorrido pendiente del instalador
 

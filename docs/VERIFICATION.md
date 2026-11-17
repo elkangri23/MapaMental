@@ -705,5 +705,11 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 ### Cierre documental de T-004 — 2026-11-17
 
 - Se cerraron las discrepancias del informe EGM, se alinearon README, arquitectura, seguridad, cumplimiento, especificación, ADR, tareas, roadmap e índice con la evidencia vigente y se incorporó a la especificación el perfil local de nombre/correo.
-- El escaneo final abarcó 52 archivos Markdown versionados: 168 destinos locales a archivo y 14 anclas; no encontró enlaces rotos. `git diff --check` no informó errores de formato.
+- El escaneo final tras actualizar todas las guías abarcó 52 archivos Markdown versionados: 167 destinos locales a archivo y 13 anclas; no encontró enlaces rotos. `git diff --check` no informó errores de formato.
 - T-004 cubría documentación y registro ADR. Los recorridos físicos pendientes de unidad extraíble pertenecen a la validación de almacenamiento/seguridad y no bloquean el cierre documental.
+
+### Instalador Windows aislado — T-013 — 2026-11-17
+
+- `scripts/package-windows.ps1` compiló el workspace, preparó dependencias de producción y terminó con código 0. Inno Setup 6.7.3 generó `EspacioVisual-0.1.0-Setup-x64.exe` (28.255.075 bytes) y el ZIP portátil (43.911.119 bytes); ambos artefactos están en `release/`, excluida de Git.
+- En una ruta temporal nueva, el instalador silencioso por usuario terminó con código 0. Se confirmaron `runtime/node.exe`, el servidor compilado, la web compilada y `unins000.exe`. Con `%APPDATA%`, `%LOCALAPPDATA%` y proyectos apuntando a un directorio temporal, `start-local.ps1 -NoBrowser -PassThru` inició el servicio y `/api/health` respondió HTTP 200; el lanzador lo detuvo correctamente.
+- El desinstalador silencioso terminó con código 0 y retiró la carpeta de aplicación. No se verificaron accesos directos ni actualización sobre una versión anterior con proyectos; T-013 sigue abierta. El perfil de datos temporal separado no se usó para proyectos del usuario.
