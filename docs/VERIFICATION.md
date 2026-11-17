@@ -51,7 +51,7 @@ La guía operativa está en [AUTH_OPERATIONS.md](AUTH_OPERATIONS.md). Las sesion
 
 - El servicio mantiene el camino local sin contador cuando el perfil no tiene presupuesto ni tarifas.
 - Si se configura un presupuesto mensual o tarifas para el modelo de un perfil local, el generador pasa por el registro y la verificación de gasto de T-012. Esto permite configurar FreeLLMAPI u otro proxy con URL loopback sin activar límites para instalaciones locales de forma predeterminada.
-- `npm run build` pasó con Node 24. Queda una comprobación de extremo a extremo con respuesta que incluya tokens conocidos, persistencia de uso y rechazo de la siguiente petición al alcanzar el presupuesto. La consulta anterior a FreeLLMAPI no actualizó el perfil porque la configuración del fixture no se aplicó, así que no se considera evidencia de uso real ni del bloqueo.
+- `npm run build` pasó con Node 24. Con un proveedor OpenAI-compatible simulado en loopback, la generación informó 100 tokens de entrada y 50 de salida. Con tarifa de 10 EUR por millón en ambas direcciones, el registro persistió 0,0015 EUR. Al fijar el presupuesto en 0,001 EUR, la siguiente petición devolvió 429 antes de llegar al proveedor (una petición upstream total). El presupuesto volvió a cero por ser un fixture temporal. La consulta anterior a FreeLLMAPI no actualizó el perfil porque la configuración del fixture no se aplicó, así que no se considera evidencia de uso real ni del bloqueo.
 
 ## Calidad de las sugerencias con el mapa de siembra (T-010)
 
