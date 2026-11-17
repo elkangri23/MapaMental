@@ -44,7 +44,7 @@ La validación IPv6 se endureció para rechazar `2001::/23` y `3fff::/20` compar
 | 2.4.7 Foco visible (AA) | Estilo global `:focus-visible` de alto contraste. | Implementado en CSS; falta inspección visual de widgets de terceros. |
 | 3.2.1 Al recibir foco (A) | Los controles de selección actúan en cambio explícito mediante evento estándar. | Pendiente revisión de todas las vistas. |
 | 3.3.1 Identificación de errores (A) | Errores de IA y almacenamiento se exponen con `role=alert`/mensajes. | Parcial; no todos los errores de formulario están asociados a campos. |
-| 4.1.2 Nombre, función, valor (A) | Controles iconográficos nombrados, React Flow localizado y landmarks de navegación/chat con nombres. Conversación expuesta como `log`; guardado y navegación de diapositivas como estados. | Parcial: inspección del árbol accesible en Chrome; requiere comprobar anuncios y operación con lector de pantalla real. |
+| 4.1.2 Nombre, función, valor (A) | Controles iconográficos nombrados, React Flow localizado y landmarks de navegación/chat con nombres. Nodos y conexiones del mapa anuncian sus etiquetas visibles; conversación expuesta como `log`; guardado y navegación de diapositivas como estados. | Parcial: inspección del árbol accesible y Tab en Chrome; requiere comprobar anuncios y operación con lector de pantalla real. |
 
 Los criterios de WCAG 2.0 completos también incluyen contenido multimedia, tablas, idioma, cambios de contexto, tiempo, navegación y robustez. Esta matriz es una guía inicial y no sustituye una evaluación de todos los criterios A/AA aplicables. Ya se midieron las combinaciones tipográficas muestreadas en el PDF; faltan ratios de otros estados, foco/hover/deshabilitado y elementos visuales no textuales.
 

@@ -38,7 +38,7 @@ No se incluye colaboración en tiempo real, formularios funcionales, prototipos 
 
 ## Progreso vigente
 
-T-004 queda completada: se actualizaron los documentos de producto y aceptación, se revisaron ADR-0001–0019 frente a la implementación y se registró el informe EGM de deriva. El escaneo final de 52 documentos Markdown confirmó 167 enlaces locales a archivo y 13 anclas sin destinos rotos. [Evidencia](VERIFICATION.md#cierre-documental-de-t-004--2026-11-17).
+T-004 queda completada: se actualizaron los documentos de producto y aceptación, se revisaron ADR-0001–0019 frente a la implementación y se registró el informe EGM de deriva. El escaneo final de 52 documentos Markdown confirmó 168 enlaces locales a archivo y 14 anclas sin destinos rotos. [Evidencia](VERIFICATION.md#cierre-documental-de-t-004--2026-11-17).
 
 T-011 ya permite elegir la cantidad de diapositivas en la conversión local. T-013 cuenta con ZIP e instalador compilados y un ciclo aislado de instalación/arranque/parada/desinstalación; queda verificar una actualización que conserve proyectos. Consulta [Tareas](TASKS.md) para los criterios y la verificación.
 

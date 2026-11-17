@@ -705,7 +705,7 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 ### Cierre documental de T-004 — 2026-11-17
 
 - Se cerraron las discrepancias del informe EGM, se alinearon README, arquitectura, seguridad, cumplimiento, especificación, ADR, tareas, roadmap e índice con la evidencia vigente y se incorporó a la especificación el perfil local de nombre/correo.
-- El escaneo final tras actualizar todas las guías abarcó 52 archivos Markdown versionados: 167 destinos locales a archivo y 13 anclas; no encontró enlaces rotos. `git diff --check` no informó errores de formato.
+- El escaneo final tras actualizar todas las guías abarcó 52 archivos Markdown versionados: 168 destinos locales a archivo y 14 anclas; no encontró enlaces rotos. `git diff --check` no informó errores de formato.
 - T-004 cubría documentación y registro ADR. Los recorridos físicos pendientes de unidad extraíble pertenecen a la validación de almacenamiento/seguridad y no bloquean el cierre documental.
 
 ### Instalador Windows aislado — T-013 — 2026-11-17
@@ -713,8 +713,15 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Tras el cambio de TLS/SNI, `scripts/package-windows.ps1 -CompilerPath ... -Offline` compiló el workspace, preparó dependencias de producción y terminó con código 0. Inno Setup 6.7.3 generó `EspacioVisual-0.1.0-Setup-x64.exe` (28.252.372 bytes) y el ZIP portátil (43.911.377 bytes); ambos artefactos están en `release/`, excluida de Git.
 - Se repitió el ciclo del instalador recién compilado en una ruta temporal: instalación silenciosa por usuario con código 0; presencia de `runtime/node.exe`, servidor/web compilados y `unins000.exe`; inicio desde la carpeta instalada con `%APPDATA%`, `%LOCALAPPDATA%` y proyectos aislados; `/api/health` respondió HTTP 200 y el lanzador detuvo el servicio.
 - El desinstalador silencioso terminó con código 0 y retiró la carpeta de aplicación. No se verificaron accesos directos ni actualización sobre una versión anterior con proyectos; T-013 sigue abierta. El perfil temporal separado no se usó para proyectos del usuario.
+- Después de los cambios de accesibilidad T-016, el script volvió a compilar offline y generó los artefactos actuales: instalador de 28.251.282 bytes y ZIP de 43.911.450 bytes. El build y la compilación ISCC pasaron; el smoke test de instalación/arranque/desinstalación no se repitió sobre esta compilación.
 
 ### Política explícita de TLS y SNI — T-015 — 2026-11-17
 
 - El agente HTTP del proveedor envía como SNI el hostname DNS configurado, aunque el socket resuelve contra la lista de IP públicas ya validada. Para perfiles configurados con una IP literal no se envía nombre SNI; la verificación TLS de Node queda explícitamente activada (`rejectUnauthorized: true`). La misma ruta se usa para llamadas LLM y OIDC.
 - `npm run build` con Node 24.22.2 compiló dominio, servidor y web. Esta comprobación es de código/build; no se conectó a un endpoint HTTPS ni se comprobó un certificado/SNI en ejecución. T-015 permanece parcial hasta el recorrido TLS y la simulación determinista de rebinding.
+
+### Nombres accesibles de nodos y conexiones del mapa — T-016 — 2026-11-17
+
+- En el snapshot inicial de Chrome, React Flow exponía `Edge from root to audience` y otros identificadores en inglés; además, el grupo enfocable de cada idea no tenía nombre. Se añadió `ariaLabel` a conexiones con los nombres visibles de origen/destino y a los grupos de nodos con la etiqueta de la idea.
+- Tras compilar con Node 24.22.2, un perfil Chrome aislado mostró «Conexión de «Un espacio para pensar mejor» a «Personas curiosas»» y el nombre de cada nodo. La navegación por Tab alcanzó primero el skip link, recorrió toolbar y conexiones, y enfocó un grupo de nodo con su etiqueta y descripción de teclado.
+- El proyecto y los perfiles usaron el directorio temporal `MapaMental-InstalledSmokeData`; no se guardaron cambios en el mapa. Se detuvo el servicio después del recorrido. No se usó lector de pantalla; T-016 sigue parcial.

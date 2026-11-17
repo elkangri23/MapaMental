@@ -572,9 +572,16 @@ export default function App() {
   }, [aiBusy]);
 
   const nodesWithCallbacks = useMemo(
-    () => nodes.map((node) => ({ ...node, data: { ...node.data, onLabelChange: updateLabel } })),
+    () => nodes.map((node) => ({ ...node, ariaLabel: node.data.label, data: { ...node.data, onLabelChange: updateLabel } })),
     [nodes, updateLabel],
   );
+  const edgesWithAccessibleLabels = useMemo(() => {
+    const labels = new Map(nodes.map((node) => [node.id, node.data.label]));
+    return edges.map((edge) => ({
+      ...edge,
+      ariaLabel: `Conexión de «${labels.get(edge.source) ?? 'idea desconocida'}» a «${labels.get(edge.target) ?? 'idea desconocida'}»`,
+    }));
+  }, [edges, nodes]);
 
   const onNodesChange: OnNodesChange<IdeaNode> = useCallback((changes) => {
     if (aiBusy) return;
@@ -1776,7 +1783,7 @@ export default function App() {
             {!loading && mapListView && <ol className="map-text-list">{nodes.map((node) => <li key={node.id}><button type="button" onClick={() => setSelectedNodeId(node.id)} aria-current={selectedNodeId === node.id ? 'true' : undefined}>{node.data.label}</button><ul>{edges.filter((edge) => edge.source === node.id).map((edge) => <li key={edge.id}>{nodes.find((item) => item.id === edge.target)?.data.label ?? 'Idea no disponible'}</li>)}</ul></li>)}</ol>}
             {!mapListView && <ReactFlow
               nodes={nodesWithCallbacks}
-              edges={edges}
+              edges={edgesWithAccessibleLabels}
               nodeTypes={nodeTypes}
               ariaLabelConfig={{
                 'node.a11yDescription.default': 'Pulsa Intro o espacio para seleccionar una idea. Pulsa Suprimir para eliminarla o Escape para cancelar.',
