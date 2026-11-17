@@ -1,12 +1,12 @@
 # Estado del proyecto
 
 **Actualizado:** 2026-11-17
-**Hito actual:** M3 — Presentaciones completado; M4 — Paquete Windows y T-004 documental siguen abiertos.
+**Hito actual:** M3 — Presentaciones completado; M4 — Paquete Windows en curso. T-004 documental completada.
 
 ## Estado
 
-- **Completadas:** fundamentos y diseño inicial (T-001–T-008), presentación y exportación PDF/PNG (T-011), presupuesto remoto (T-012), alcance/política inicial de identidad (T-018–T-020, T-022) y perfil personal (T-027).
-- **En curso:** T-004 (documentación), T-009–T-010 (proveedores y calidad de IA), T-013 (instalador), T-015 (seguridad), T-016 (accesibilidad), T-017 (estabilidad de almacenamiento) y las verificaciones reales de T-021/T-023–T-026.
+- **Completadas:** fundamentos y diseño inicial (T-001–T-008, incluida T-004 documental), presentación y exportación PDF/PNG (T-011), presupuesto remoto (T-012), alcance/política inicial de identidad (T-018–T-020, T-022) y perfil personal (T-027).
+- **En curso:** T-009–T-010 (proveedores y calidad de IA), T-013 (instalador), T-015 (seguridad), T-016 (accesibilidad), T-017 (estabilidad de almacenamiento) y las verificaciones reales de T-021/T-023–T-026.
 - **T-009/T-010:** hubo evaluaciones anteriores con FreeLLMAPI y varios modelos, incluidos ciclos de sugerencia, vista previa, aplicación y deshacer. En la última repetición, Ollama y LM Studio no estaban activos y FreeLLMAPI agotó el tiempo a los 60 segundos. La calidad quedó sin reevaluar en esa petición.
 - **T-013:** el ZIP portátil se ha recorrido; el proyecto Inno Setup está preparado. No se encontró `ISCC.exe`, así que no se ha compilado ni recorrido el instalador.
 - **T-015:** build y varias verificaciones de host/SSRF están documentadas: matriz representativa IANA, redirección rechazada, hostname que resuelve a loopback bloqueado antes de conectar y normalización de sufijos con punto final. Siguen pendientes DNS rebinding determinista, TLS/SNI, errores/permisos de disco, cuota de solicitudes y análisis formal de amenazas.
@@ -16,6 +16,6 @@
 
 ## Próximo trabajo
 
-Cerrar las discrepancias documentales de T-004 y seguir con las verificaciones de DNS/TLS y errores de T-015. Después, avanzar las aceptaciones reales de proveedores, instalador, accesibilidad y modo protegido según la disponibilidad de sus dependencias externas.
+Avanzar las verificaciones de DNS/TLS, errores y límites de T-015. En paralelo, cerrar la compilación y recorrido del instalador de T-013; las aceptaciones reales de proveedores, accesibilidad y modo protegido dependen de servicios o dispositivos disponibles.
 
 La lista de tareas y criterios está en [`TASKS.md`](TASKS.md); la secuencia y evidencia detallada, en [`ROADMAP.md`](ROADMAP.md) y [`VERIFICATION.md`](VERIFICATION.md).

@@ -544,7 +544,7 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 
 - Se cotejaron `ProjectDocument`, `PresentationSlide`, validadores y uso de almacenamiento con el modelo descrito en la especificación.
 - ADR-0015 fija el JSON v3 existente como contrato canónico y documenta las diferencias de representación. No se modificó el esquema ni se requiere migración.
-- Esta resolución documental no sustituye calidad de contexto IA ni la medición de capacidad y trazabilidad que se añadieron en recorridos posteriores; otros pendientes permanecen en T-004.
+- En la fecha de este registro quedaban pendientes calidad de contexto IA y medición de capacidad/trazabilidad; esas evidencias posteriores se añadieron en las secciones siguientes.
 
 ### Fragmentos acotados de diapositivas en contexto IA — 2026-11-16
 
@@ -700,4 +700,10 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 ### Enlaces internos de la documentación — T-004 — 2026-11-17
 
 - La primera pasada revisó 51 archivos (169 enlaces locales y 14 anclas), sin destinos rotos. Tras añadir el informe EGM vigente, la pasada final revisó 52 archivos, 168 enlaces locales y 14 anclas; tampoco encontró destinos rotos.
-- La comprobación de anclas siguió las reglas publicadas por GitHub: minúsculas, espacios a guiones y puntuación eliminada; mantiene la separación de palabras alrededor de guiones largos. No valida enlaces externos ni garantiza el render de todos los dialectos Markdown. [Reglas de GitHub para enlaces a secciones](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#section-links). T-004 permanece abierta por el resto de documentación pendiente.
+- La comprobación de anclas siguió las reglas publicadas por GitHub: minúsculas, espacios a guiones y puntuación eliminada; mantiene la separación de palabras alrededor de guiones largos. No valida enlaces externos ni garantiza el render de todos los dialectos Markdown. [Reglas de GitHub para enlaces a secciones](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#section-links).
+
+### Cierre documental de T-004 — 2026-11-17
+
+- Se cerraron las discrepancias del informe EGM, se alinearon README, arquitectura, seguridad, cumplimiento, especificación, ADR, tareas, roadmap e índice con la evidencia vigente y se incorporó a la especificación el perfil local de nombre/correo.
+- El escaneo final abarcó 52 archivos Markdown versionados: 168 destinos locales a archivo y 14 anclas; no encontró enlaces rotos. `git diff --check` no informó errores de formato.
+- T-004 cubría documentación y registro ADR. Los recorridos físicos pendientes de unidad extraíble pertenecen a la validación de almacenamiento/seguridad y no bloquean el cierre documental.

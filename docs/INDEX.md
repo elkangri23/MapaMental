@@ -18,8 +18,8 @@ Actualizado: 2026-11-17. El estado se refiere a la documentación, no a que la f
 | [`COMPLIANCE.md`](COMPLIANCE.md) | Cruce inicial de OWASP Top 10:2025 y WCAG 2.0 AA | Actualización del 2026-11-17; revisión parcial, con verificaciones dinámicas y pendientes explícitos |
 | [`VERIFICATION.md`](VERIFICATION.md) | Criterios de aceptación y escenarios de revisión | Contexto de diapositivas recorrido con proveedor simulado; PDF final guardado y estructura etiquetada inspeccionada |
 | [`2026-11-16_DRIFT_REPORT.md`](2026-11-16_DRIFT_REPORT.md) | Informe histórico de diferencias de diseño/código | Conserva el estado revisado el 2026-11-16 |
-| [`2026-11-17_DRIFT_REPORT.md`](2026-11-17_DRIFT_REPORT.md) | Diferencias actuales entre documentos de diseño y código | Actualizado con las discrepancias corregidas en T-004 |
-| [`STATUS.md`](STATUS.md) | Resumen de estado, bloqueos y próximo trabajo | Alineado con las tareas activas del 2026-11-17 |
+| [`2026-11-17_DRIFT_REPORT.md`](2026-11-17_DRIFT_REPORT.md) | Diferencias actuales entre documentos de diseño y código | Revisión cerrada en T-004; discrepancias corregidas |
+| [`STATUS.md`](STATUS.md) | Resumen de estado, bloqueos y próximo trabajo | T-004 cerrada; tareas activas actualizadas el 2026-11-17 |
 | [`ROADMAP.md`](ROADMAP.md) | Hitos y condiciones de salida | T-011 completada; resumen global de contexto IA implementado; validaciones externas/locales siguen pendientes |
 | [`TASKS.md`](TASKS.md) | Estado detallado de trabajo | Fuente única de progreso; T-010 incorpora resumen global estructural |
 | [`decisions/README.md`](decisions/README.md) | Índice de ADR y su estado | ADR-0012 y ADR-0014–0019 aceptados; identidad/MFA parcial, contratos, contexto, volumen y trazabilidad IA documentados |
