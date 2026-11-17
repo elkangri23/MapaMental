@@ -6,7 +6,7 @@
 ## Estado
 
 - **Completadas:** fundamentos y diseño inicial (T-001–T-008, incluida T-004 documental), presentación y exportación PDF/PNG (T-011), presupuesto remoto (T-012), alcance/política inicial de identidad (T-018–T-020, T-022) y perfil personal (T-027).
-- **En curso:** T-009–T-010 (proveedores y calidad de IA), T-013 (instalador), T-015 (seguridad), T-016 (accesibilidad), T-017 (estabilidad de almacenamiento) y las verificaciones reales de T-021/T-023–T-026.
+- **En curso:** T-009–T-010 (proveedores y calidad de IA), T-013 (instalador), T-015 (seguridad), T-016 (accesibilidad), T-017 (estabilidad de almacenamiento), T-028 (rendimiento) y las verificaciones reales de T-021/T-023–T-026.
 - **Seguridad (T-015/T-026):** auditoría estática retomada el 2026-11-17; se corrigió la exposición y clasificación de excepciones internas en autenticación. Build correcto y `npm audit` sin vulnerabilidades conocidas. Siguen abiertos los recorridos integrados de DNS rebinding, errores adicionales de almacenamiento y pruebas reales de OIDC/MFA; ver [`informe`](reviews/2026-11-17-security-audit.md).
 - **T-009/T-010:** hubo evaluaciones anteriores con FreeLLMAPI y varios modelos, incluidos ciclos de sugerencia, vista previa, aplicación y deshacer. En la última repetición, Ollama y LM Studio no estaban activos y FreeLLMAPI agotó el tiempo a los 60 segundos. La calidad quedó sin reevaluar en esa petición.
 - **T-013:** ZIP e instalador compilados; prueba aislada de instalación, servicio HTTP 200, parada y desinstalación correcta. Los artefactos se regeneraron tras la corrección T-016; falta repetir el smoke test de esta compilación, probar actualización desde una versión posterior y comprobar conservación de proyectos.
