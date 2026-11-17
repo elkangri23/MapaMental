@@ -73,6 +73,7 @@ Cierra la comprobación de calidad cuando ambas rondas produzcan al menos dos ta
 - Se ajustó el borrador de diapositiva para retirar tablas, formularios o recorridos que no corresponden con el formato solicitado por la tarjeta. La compilación pasó. Falta repetir en Chrome con Mistral para confirmar que ya no mezcla bloques y que las demás diapositivas conservan el contenido anunciado.
 - Se inició en Chrome una repetición de la consulta de recorrido y formulario con Mistral Small 3.2 24B y almacenamiento temporal. El proveedor no respondió durante la sesión de verificación y se canceló la generación. No se obtuvo un nuevo borrador para validar la corrección en la interfaz.
 - Un proveedor OpenAI-compatible simulado devolvió deliberadamente, para una tarjeta de recorrido, pasos, campos ficticios y tabla a la vez. La API conservó los pasos y retiró los bloques de formulario y tabla. La clasificación y el filtrado del servidor quedaron verificados; la confirmación con un modelo real y la interfaz de Chrome sigue pendiente.
+- La repetición directa por API con Mistral Small 3.2 24B sí respondió: la tarjeta de formulario ficticio se clasificó con `mock-form` y el borrador devolvió exactamente los tres campos solicitados: Cultivo, Cantidad y Destino, con valores ficticios rellenados. La aplicación, persistencia y deshacer en Chrome con el nuevo filtrado siguen pendientes.
 
 #### Vista previa de formulario y clasificación de recorrido en Chrome
 
