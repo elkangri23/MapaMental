@@ -132,7 +132,6 @@ const mapListPageSize = 250;
 export default function App() {
   const [nodes, setNodes] = useState<IdeaNode[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
-  const [nodeLabelRevision, setNodeLabelRevision] = useState(0);
   const [slides, setSlides] = useState<PresentationSlide[]>([]);
   const [workspaceView, setWorkspaceView] = useState<'map' | 'slides'>('map');
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
@@ -481,7 +480,8 @@ export default function App() {
           revisionRef.current = created.revision;
           savedMapRef.current = JSON.stringify({ nodes: created.map.nodes, edges: created.map.edges });
           savedSlidesRef.current = JSON.stringify(created.presentation.slides);
-          setProject(created); setNodes(withAccessibleNodeLabels(created.map.nodes as IdeaNode[])); setEdges(created.map.edges as Edge[]);
+          const createdNodes = withAccessibleNodeLabels(created.map.nodes as IdeaNode[]);
+          setProject(created); setNodes(createdNodes); setEdges(withAccessibleEdgeLabels(createdNodes, created.map.edges as Edge[]));
           setSlides(created.presentation.slides as PresentationSlide[]); setActiveSlideIndex(0);
           setSelectedNodeId('root'); await loadProjectList();
         }
@@ -528,7 +528,8 @@ export default function App() {
       revisionRef.current = fork.revision;
       savedMapRef.current = JSON.stringify(serializeMap(fork.map.nodes as IdeaNode[], fork.map.edges as Edge[]));
       savedSlidesRef.current = JSON.stringify(fork.presentation.slides);
-      setProject(fork); setNodes(withAccessibleNodeLabels(fork.map.nodes as IdeaNode[])); setEdges(fork.map.edges as Edge[]);
+      const forkNodes = withAccessibleNodeLabels(fork.map.nodes as IdeaNode[]);
+      setProject(fork); setNodes(forkNodes); setEdges(withAccessibleEdgeLabels(forkNodes, fork.map.edges as Edge[]));
       setSlides(fork.presentation.slides as PresentationSlide[]);
       setActiveSlideIndex(0);
       resetChat(fork.conversation);
@@ -545,10 +546,13 @@ export default function App() {
   const updateLabel = useCallback((id: string, label: string) => {
     if (aiBusy) return;
     setNodes((current) => current.map((node) => node.id === id ? { ...node, ariaLabel: label, data: { ...node.data, label } } : node));
-    setNodeLabelRevision((revision) => revision + 1);
+    const labels = new Map(nodesRef.current.map((node) => [node.id, node.data.label]));
+    labels.set(id, label);
+    setEdges((current) => current.map((edge) => edge.source === id || edge.target === id
+      ? { ...edge, ariaLabel: `Conexión de «${labels.get(edge.source) ?? 'idea desconocida'}» a «${labels.get(edge.target) ?? 'idea desconocida'}»` }
+      : edge));
   }, [aiBusy]);
 
-  const edgesWithAccessibleLabels = useMemo(() => withAccessibleEdgeLabels(nodes, edges), [edges, nodeLabelRevision]);
   const mapListChildren = useMemo(() => {
     if (!mapListView) return new Map<string, string>();
     const labels = new Map(nodes.map((node) => [node.id, node.data.label]));
@@ -601,7 +605,7 @@ export default function App() {
       data: { label, tone: 'blue' },
     };
     setNodes((current) => [...current, next]);
-    setEdges((current) => [...current, { id: `e-${crypto.randomUUID()}`, source: parent.id, target: id, type: 'smoothstep' }]);
+    setEdges((current) => [...current, { id: `e-${crypto.randomUUID()}`, source: parent.id, target: id, type: 'smoothstep', ariaLabel: `Conexión de «${parent.data.label}» a «${label}»` }]);
     setSelectedNodeId(id);
     return id;
   }, [aiBusy, nodes, selectedNodeId]);
@@ -909,7 +913,7 @@ export default function App() {
     }
     try {
       const { project: saved } = await aiApi.apply(currentProject.id, proposal, [proposal.parentNodeId]);
-      const nextNodes = withAccessibleNodeLabels(saved.map.nodes as IdeaNode[]); const nextEdges = saved.map.edges as Edge[];
+      const nextNodes = withAccessibleNodeLabels(saved.map.nodes as IdeaNode[]); const nextEdges = withAccessibleEdgeLabels(nextNodes, saved.map.edges as Edge[]);
       revisionRef.current = saved.revision; savedMapRef.current = JSON.stringify(serializeMap(nextNodes, nextEdges));
       projectRef.current = saved;
       setProject(saved); setNodes(nextNodes); setEdges(nextEdges); setSelectedNodeId(proposal.parentNodeId); setAiProposal(null);
@@ -935,7 +939,7 @@ export default function App() {
     if (!currentProject?.lastAiUndo) { setAiBusy(false); return; }
     try {
       const { project: restored } = await aiApi.undo(currentProject.id, currentProject.revision);
-      const nextNodes = withAccessibleNodeLabels(restored.map.nodes as IdeaNode[]); const nextEdges = restored.map.edges as Edge[];
+      const nextNodes = withAccessibleNodeLabels(restored.map.nodes as IdeaNode[]); const nextEdges = withAccessibleEdgeLabels(nextNodes, restored.map.edges as Edge[]);
       revisionRef.current = restored.revision; savedMapRef.current = JSON.stringify(serializeMap(nextNodes, nextEdges));
       projectRef.current = restored;
       setProject(restored); setNodes(nextNodes); setEdges(nextEdges); setAiProposal(null); setNotice('Se deshizo la última acción de IA.');
@@ -1764,7 +1768,7 @@ export default function App() {
               </ol>
             </>}
             {!loading && !mapListView && <Suspense fallback={<div className="canvas-overlay" role="status">Cargando el mapa…</div>}>
-              <MapCanvas nodes={nodes} edges={edgesWithAccessibleLabels} setNodes={setNodes} setEdges={setEdges}
+              <MapCanvas nodes={nodes} edges={edges} setNodes={setNodes} setEdges={setEdges}
                 setSelectedNodeId={setSelectedNodeId} onLabelChange={updateLabel} aiBusy={aiBusy} />
             </Suspense>}
             </>}

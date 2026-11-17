@@ -1,4 +1,4 @@
-import { createContext, memo, useCallback, useContext, useEffect, useState, type Dispatch, type MouseEvent as ReactMouseEvent, type SetStateAction } from 'react';
+import { createContext, memo, useCallback, useContext, useEffect, useRef, useState, type Dispatch, type MouseEvent as ReactMouseEvent, type SetStateAction } from 'react';
 import '@xyflow/react/dist/style.css';
 import {
   addEdge,
@@ -89,6 +89,8 @@ const ariaLabelConfig = {
 
 function MapCanvas({ nodes, edges, setNodes, setEdges, setSelectedNodeId, onLabelChange, aiBusy }: Props) {
   const [minimumZoom, setMinimumZoom] = useState(() => window.matchMedia('(max-width: 760px)').matches ? 0.4 : 0.25);
+  const nodesRef = useRef(nodes);
+  nodesRef.current = nodes;
   useEffect(() => {
     const mobileViewport = window.matchMedia('(max-width: 760px)');
     const updateMinimumZoom = () => setMinimumZoom(mobileViewport.matches ? 0.4 : 0.25);
@@ -105,7 +107,10 @@ function MapCanvas({ nodes, edges, setNodes, setEdges, setSelectedNodeId, onLabe
   }, [aiBusy, setEdges]);
   const onConnect = useCallback((connection: Connection) => {
     if (aiBusy) return;
-    setEdges((current) => addEdge({ ...connection, type: 'smoothstep' }, current));
+    const labels = new Map(nodesRef.current.map((node) => [node.id, node.data.label]));
+    const sourceLabel = labels.get(connection.source) ?? 'idea desconocida';
+    const targetLabel = labels.get(connection.target) ?? 'idea desconocida';
+    setEdges((current) => addEdge({ ...connection, type: 'smoothstep', ariaLabel: `Conexión de «${sourceLabel}» a «${targetLabel}»` }, current));
   }, [aiBusy, setEdges]);
   const onNodeClick = useCallback((_event: ReactMouseEvent, node: IdeaNode) => setSelectedNodeId(node.id), [setSelectedNodeId]);
 

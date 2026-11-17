@@ -13,7 +13,7 @@
 - En mapas de siembra con calendario y datos pendientes, el chat conserva una sugerencia de tabla contextual; si el modelo omite la tabla al desarrollar esa tarjeta, el servidor solicita una corrección antes de devolver el borrador.
 - El editor de ideas ahora confirma el nombre al salir del campo, evitando actualizar y serializar el mapa completo en cada tecla.
 - El autosave comparte snapshots memoizados de mapas, diapositivas y conversación para evitar serializar repetidamente el mismo estado durante la detección de cambios y el guardado.
-- El canvas evita duplicar los datos de cada nodo para pasar la acción de edición y reutiliza etiquetas accesibles de conexiones cuando siguen vigentes.
+- El canvas mantiene etiquetas accesibles al cargar/crear nodos y conexiones, y al renombrar actualiza solo las aristas de esa idea.
 - En mapas grandes vistos desde móvil, el zoom automático respeta un tamaño mínimo para tocar los botones de ideas; el enlace de atribución también tiene un área táctil mayor.
 - La revisión Lighthouse móvil del mapa sintético de 10.000 ideas volvió a 100/100 en accesibilidad. Lighthouse agotaba el tiempo en la vista textual de 10.000 filas; la lista ahora está paginada para reducir el DOM montado.
 - La vista de lista de mapas grandes ahora muestra 250 ideas por página, con botones anterior/siguiente y selección sincronizada. En un perfil de 10.000 ideas, redujo la lista montada a 250 botones y Lighthouse móvil dio 100/100 Accessibility.

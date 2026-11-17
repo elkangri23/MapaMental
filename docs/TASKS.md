@@ -69,9 +69,9 @@ Implementado en T-010: la vista previa y el contexto del proveedor incluyen un r
 
 - **Seguimiento de T-015 — respuesta DNS privada y TLS/SNI.** `127.0.0.1.nip.io` resolvió a loopback; el control de proveedor devolvió 400 antes de conectar y el listener canario registró cero sockets. El 2026-11-17, un servidor HTTPS de prueba con una CA local confiada completó la consulta de modelos y observó SNI `localhost`. La prueba determinista de rebinding ejercitó las funciones de resolución SSRF y lookup de socket de producción con un DNS inyectado, sin petición de red; sigue pendiente combinarlas en un recorrido HTTP y probar proveedores reales en Windows.
 
-### Seguimiento T-028 — memoización de nombres accesibles de nodos y conexiones
+### Seguimiento T-028 — etiquetas accesibles como invariantes del canvas
 
-Las etiquetas de nodos se normalizan al cargar/restaurar resultados y al crear ideas; el canvas recibe el array de estado directamente, sin reconstruirlo en cada actualización. Las etiquetas de aristas se derivan cuando cambian conexiones o nombres, no por posición/selección. `npm run build` pasó. No se midió una reducción temporal. Falta repetir el perfil de canvas de 10.000 ideas con objetivo y entrada reproducibles. Evidencia: [`VERIFICATION.md`](VERIFICATION.md#memoización-de-etiquetas-accesibles-de-nodos-y-conexiones--t-028).
+Las etiquetas se normalizan al cargar/restaurar resultados IA y al crear ideas/conexiones; el canvas recibe los arrays de estado sin reconstruirlos para cambios de posición/selección. Renombrar una idea actualiza solo las aristas incidentes. `npm run build` pasó. No se midió una reducción temporal. Falta repetir el perfil de canvas de 10.000 ideas con objetivo y entrada reproducibles. Evidencia: [`VERIFICATION.md`](VERIFICATION.md#etiquetas-accesibles-como-invariantes-del-canvas--t-028).
 
 ## Pausa de desarrollo — estabilización
 

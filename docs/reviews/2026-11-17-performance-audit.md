@@ -176,8 +176,8 @@ Se repitió el recorrido con fixture aislado de 10.000 ideas/9.999 conexiones en
 
 La traza registró un `keydown` de 2.407 ms (3 ms de input delay, 1.733 ms de procesamiento y 671 ms de presentación), CLS 0 y 38 ms de reflow sin función atribuida. El resumen no desglosa cuál tecla de la secuencia produjo el máximo. El foco programático impide tomarlo como INP físico o de campo, pero sí alerta de un coste elevado en el ciclo del canvas grande. El fixture se retiró. Próximo: identificar qué parte del render/DOM explica esa interacción, revisar la estrategia de zoom/visibilidad de un canvas grande y repetir por rutas de UI separables.
 
-## Continuación — memoización de etiquetas accesibles de nodos y conexiones — T-028
+## Continuación — etiquetas accesibles como invariantes del canvas — T-028
 
-Las etiquetas de nodos se normalizan en las rutas de apertura/restauración, creación de proyecto, bifurcación, aplicación/deshacer IA y alta de ideas. El canvas recibe directamente el array de estado, sin crear otro array para comprobar `ariaLabel` tras cada movimiento. `edgesWithAccessibleLabels` se invalida cuando cambian las aristas o al confirmar un renombrado de idea; la selección y el movimiento conservan los datos derivados existentes.
+Las etiquetas de nodos se normalizan en apertura/restauración, creación de proyecto, bifurcación, aplicación/deshacer IA y alta de ideas. Las conexiones también se normalizan al entrar al estado y se etiquetan al crearlas. El canvas recibe directamente ambos arrays. Un renombrado actualiza las aristas incidentes; movimiento y selección ya no generan arrays derivados para comprobar `ariaLabel`.
 
 `npm run build` pasó para dominio, servidor y web. No se repitió el perfil de 10.000 ideas; no se afirma una reducción temporal. T-028 sigue pendiente de medir una interacción reproducible, guardar/confirmar y comparar la traza antes y después bajo el mismo fixture.
