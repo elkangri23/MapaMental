@@ -13,6 +13,13 @@
 - `performance.memory.usedJSHeapSize` produjo cinco muestras durante 12 s: 66.234.042–66.238.530 bytes. No se forzó GC; la estabilidad de esta ventana no demuestra el heap retenido después de recolección ni permite comparar contra otra versión.
 - La traza capturó CLS 0. No se registró INP atribuible a la edición. No se afirma una mejora temporal. Se retiró el fixture aislado al cerrar la sesión.
 
+## Exploración de entrada de teclado en canvas grande — T-028 — 2026-11-17
+
+- Con un fixture nuevo de 10.000 ideas/9.999 conexiones, viewport 390×844, CPU 1× y Fast 4G, una traza registró un `keydown` de 434 ms (5 ms de espera de entrada, 192 ms de procesamiento, 238 ms de presentación) y CLS 0.
+- El nodo se enfocó por script antes de enviar F2 con teclado DevTools. El editor no quedó abierto al terminar el recorrido, `type_text` no modificó ningún nodo y la API conservó revisión 1. Por tanto no es interacción física completa ni una medición representativa de edición; la cifra queda como señal exploratoria del procesamiento de teclado sobre el canvas.
+- El árbol de accesibilidad agotó el timeout al intentar obtener un snapshot con el canvas cargado; el DOM consultable tenía 48 nodos visibles en ese intento. El próximo perfil necesita apuntar por coordenadas/UI física al nodo y capturar un ciclo que persista, además de aislar el coste de presentación.
+- Se retiró el fixture y se detuvieron los servicios temporales.
+
 ## Vista de lista paginada en mapas grandes — T-028/T-016 — 2026-11-17
 
 - Fixture aislado de 10.000 ideas. La lista presenta 250 botones por página, 40 páginas en total y anuncia el rango visible. Seleccionar la última idea mostró el rango 9.751–10.000 y la mantuvo seleccionada; las ideas fuera de la página no se duplican en el DOM.
