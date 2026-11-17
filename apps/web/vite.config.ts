@@ -6,10 +6,10 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:3180',
+        target: 'http://[::1]:3180',
         configure(proxy) {
           proxy.on('proxyReq', (proxyRequest, request) => {
-            if (!request.headers.origin) proxyRequest.setHeader('origin', 'http://127.0.0.1:5173');
+            if (!request.headers.origin) proxyRequest.setHeader('origin', 'http://localhost:5173');
           });
         },
       },

@@ -1,5 +1,9 @@
 # Criterios de aceptación
 
+## Revisión de accesibilidad — 2026-11-17
+
+En la app local conectada, Lighthouse snapshot quedó en 100/100 Accessibility para mapa móvil/escritorio y presentación móvil/escritorio. A 320 px se corrigió el solapamiento entre el bloque de ideas vinculadas y el pie de presentación; el contenido ahora desplaza el pie y el botón «Copias» deja de fallar `target-size`. El editor no desborda horizontalmente a 320 o 640 CSS px. El chevrón decorativo se oscureció de 2,91:1 a 4,34:1. También se verificaron nombres en controles y foco visible del skip link. Informe y límites: [`reviews/2026-11-17-wcag-aa-audit.md`](reviews/2026-11-17-wcag-aa-audit.md). Esto no sustituye lector de pantalla ni evaluación completa de criterios A/AA.
+
 ## Perfil personal y sesión (T-027)
 
 - Comprobado con Fastify y almacenamiento temporal. Sin sesión se rechazó la lectura. Un origen ajeno se rechazó al guardar y se comprobó el tipo de contenido, el correo mal formado y la cabecera no-store.

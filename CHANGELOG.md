@@ -1,5 +1,9 @@
 # Cambios
 
+- En móvil, el editor de diapositivas deja que el contenido alargado empuje el pie en vez de solaparlo; el botón de copias tiene más altura y separación táctil.
+- La vista previa y el proxy de desarrollo usan IPv6 loopback, igual que el servicio local, y el servidor de vista previa permanece limitado a loopback.
+- El chevrón decorativo del selector de proyecto tiene más contraste.
+
 - Las rutas de autenticación responden con error genérico ante fallos internos y ya no filtran mensajes de bibliotecas o almacenamiento.
 
 - Las tarjetas que prometen un diagrama o flujo de proceso recuperan el formato `diagram` cuando el modelo lo omite.

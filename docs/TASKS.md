@@ -2,6 +2,8 @@
 
 Esta es la lista única de trabajo. Marca una tarea como terminada solo cuando cumpla su criterio y se hayan actualizado los documentos afectados. **En curso:** T-009, T-010, T-013, T-015 y T-017.
 
+- **Seguimiento de T-016 — reflujo y objetivos táctiles en móvil.** En Chrome, Lighthouse marcó a 320 px el pie del editor de diapositivas: su contenido se solapaba con «Copias» y la zona táctil libre quedaba en 22 px. Se hizo crecer el lienzo con el contenido, se amplió el botón a 28 px y se separaron los elementos. Lighthouse móvil volvió a 100/100 en Accessibility; el pie ya no se solapa. Se alineó también Vite a loopback IPv6 porque el servidor solo escucha allí. Informe: [`reviews/2026-11-17-wcag-aa-audit.md`](reviews/2026-11-17-wcag-aa-audit.md). T-016 sigue parcial: faltan lector de pantalla y recorridos manuales completos.
+
 - **Seguimiento de T-015/T-026 — errores internos en autenticación.** La revisión del 2026-11-17 encontró handlers que devolvían `error.message` de excepciones inesperadas como HTTP 400. Se centralizó el manejo: errores de aplicación 4xx conservan su mensaje; fallos imprevistos se responden como 500 genérico y el log solo guarda ID de petición y nombre del tipo. Build, `npm audit` y `git diff --check` pasaron. Evidencia y límites en [`reviews/2026-11-17-security-audit.md`](reviews/2026-11-17-security-audit.md). T-015/T-026 siguen parciales; no es pentest.
 
 - **Seguimiento de T-004 — enlaces de Markdown.** El informe de deriva actualizado y el escaneo final quedan registrados en VERIFICATION; tras las últimas actualizaciones, cubrió 52 archivos, 168 enlaces locales a archivos y 14 enlaces a secciones, sin destinos rotos. Esto valida rutas/anclas internas, no la integridad general ni la instalación del proyecto.

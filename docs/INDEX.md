@@ -28,6 +28,7 @@ Actualizado: 2026-11-17. El estado se refiere a la documentación, no a que la f
 | [`reviews/2026-11-15-code-audit.md`](reviews/2026-11-15-code-audit.md) | Auditoría estática de implementación, correcciones y pendientes | Correcciones compiladas; recorridos dinámicos pendientes |
 | [`reviews/2026-11-16-auth-mfa-audit.md`](reviews/2026-11-16-auth-mfa-audit.md) | Revisión estática de OIDC, MFA, passkeys y accesibilidad | Correcciones compiladas; recorridos reales y lector de pantalla pendientes |
 | [`reviews/2026-11-17-security-audit.md`](reviews/2026-11-17-security-audit.md) | Revisión de seguridad retomada y manejo seguro de excepciones de autenticación | Corrección compilada; pentest y recorridos dinámicos siguen pendientes |
+| [`reviews/2026-11-17-wcag-aa-audit.md`](reviews/2026-11-17-wcag-aa-audit.md) | Revisión WCAG de interfaz, hallazgos móviles y arreglos | Lighthouse 100 en Accessibility en mapa y presentación; revisión manual/lector de pantalla pendientes |
 | [`reviews/2026-11-15-security-audit.md`](reviews/2026-11-15-security-audit.md) | Auditoría de seguridad, cambios, límites y pendientes | Build y auditoría de dependencias verificados; revisión de código, no pentest |
 
 ## Cómo mantenerlo actualizado

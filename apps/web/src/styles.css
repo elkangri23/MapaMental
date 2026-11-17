@@ -31,7 +31,7 @@ button { color: inherit; }
 .project-name { font-size: 13px; font-weight: 600; color: #50556a; }
 .project-picker { max-width: 190px; border: 1px solid #e8e9ef; border-radius: 8px; background: #fff; color: #50556a; padding: 7px 9px; font-size: 11px; }
 .new-project-button { padding: 8px 10px; }
-.chevron { color: #9297a7; font-size: 16px; margin-left: -6px; }
+.chevron { color: #73798b; font-size: 16px; margin-left: -6px; }
 .topbar__right { display: flex; align-items: center; gap: 17px; }
 .local-status { display: inline-flex; align-items: center; gap: 8px; color: #8c91a2; font-size: 11px; }
 .local-status i { width: 7px; height: 7px; background: #d8a64f; border-radius: 50%; }
@@ -150,7 +150,7 @@ button { color: inherit; }
 .badge-separator { color: #cbcdd7; margin: 0 5px; }
 .canvas-footer { height: 36px; display: flex; justify-content: space-between; align-items: center; color: #a0a4b2; font-size: 10px; padding: 0 3px; }
 .canvas-footer__status { display: flex; align-items: center; gap: 12px; }
-.recovery-toggle { padding: 4px 7px; border: 1px solid #e8e5f5; border-radius: 7px; background: #fff; color: #8179a9; font-size: 9px; cursor: pointer; }
+.recovery-toggle { min-height: 28px; padding: 6px 8px; border: 1px solid #e8e5f5; border-radius: 7px; background: #fff; color: #8179a9; font-size: 9px; cursor: pointer; }
 .recovery-toggle:disabled { opacity: .55; cursor: not-allowed; }
 kbd { border: 1px solid #e5e6ed; border-radius: 4px; padding: 2px 4px; background: #fff; color: #83889a; font: inherit; font-size: 9px; }
 .footer-dot { margin: 0 6px; color: #d2d4dd; }
@@ -367,10 +367,10 @@ button:disabled:focus-visible { outline-color: #5143b5; }
   .canvas-actions { gap: 6px; }
   .quiet-button { padding: 9px 10px; white-space: normal; }
   .canvas-wrap { height: 58vh; min-height: 320px; }
-  .canvas-wrap--slides { height: min(72vh, 720px); min-height: 500px; }
+  .canvas-wrap--slides { height: auto; min-height: 500px; overflow: visible; }
   .slide-editor__canvas { min-height: 430px; max-height: none; }
   .canvas-footer > span:first-child { display: none; }
-  .canvas-footer__status { flex-wrap: wrap; gap: 7px; }
+  .canvas-footer__status { flex-wrap: wrap; gap: 12px; }
   .provider-form { grid-template-columns: 1fr; }
   .provider-form .provider-field:nth-child(3), .provider-form .provider-field:nth-child(5) { grid-column: auto; }
   .provider-actions { flex-wrap: wrap; }

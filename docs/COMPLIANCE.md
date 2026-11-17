@@ -52,6 +52,10 @@ Los criterios de WCAG 2.0 completos también incluyen contenido multimedia, tabl
 
 ## Comprobaciones realizadas en este cambio
 
+### Seguimiento WCAG — 2026-11-17
+
+La revisión actual detectó solapamiento del bloque «Ideas vinculadas» con el pie fijo de presentación a 320 px, un objetivo táctil insuficiente para «Copias» y contraste 2,91:1 del chevrón decorativo. El editor móvil ahora crece con su contenido, el botón tiene 28 px de alto y 12 px de separación en el pie, y el chevrón alcanza 4,34:1. Tras los cambios, Lighthouse snapshot devolvió 100/100 Accessibility en el mapa (móvil/escritorio) y la presentación (móvil/escritorio); antes la presentación móvil daba 97 por `target-size`. Sin scroll horizontal a 320 y 640 CSS px; los nombres de los controles visibles se inspeccionaron en el árbol accesible. Ver el informe de [`2026-11-17`](reviews/2026-11-17-wcag-aa-audit.md). No se usó lector de pantalla, el escaneo de contraste omite gradientes/pseudo-elementos/estados y no se declara conformidad WCAG.
+
 - 2026-11-16: `npm run build` correcto con Node 24.22.2 y `npm audit --omit=dev` reportó cero vulnerabilidades. Chromium en producción temporal aislada; Lighthouse snapshot móvil/escritorio 100/100 Accessibility (35 auditorías disponibles, 0 fallidas) en mapa y editor de diapositiva con bloques.
 - La inspección de texto sobre fondo efectivo encontró contraste insuficiente en etiquetas y ordinal de diapositiva, texto de formulario ficticio, fuente de mapa y marcadores de recorrido. Se corrigieron en CSS. Lighthouse en la diapositiva detectó además dos botones cuyo texto visible «Orden» no coincidía con su nombre accesible; se cambió a «Mover antes/después», tras lo que móvil/escritorio pasaron sin fallos. También se localizaron instrucciones y controles React Flow, se nombró el landmark de chat y se añadieron anuncios de conversación/guardado.
 - Teclado observado: Tab enfoca skip link; Enter enfoca `<main>`; foco entra en proveedores, circula con Tab, Escape cierra y restituye el foco; F2 enfoca el campo de nombre de la idea. La vista de lista permite seleccionar una idea con Enter.

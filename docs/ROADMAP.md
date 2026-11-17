@@ -13,6 +13,8 @@ Los hitos son incrementos internos de implementación v1, no productos comercial
 
 La revisión de seguridad retomada el 2026-11-17 corrigió la respuesta de excepciones internas en rutas de autenticación: los fallos inesperados pasan a 500 genérico y dejan de filtrar mensajes de bibliotecas/almacenamiento. Build y `npm audit` pasaron. T-015 y T-026 permanecen parciales; [informe](reviews/2026-11-17-security-audit.md).
 
+La revisión WCAG del 2026-11-17 corrigió el solapamiento del editor móvil y el objetivo táctil del botón «Copias». Lighthouse da 100/100 Accessibility en mapa y presentación, en móvil y escritorio. T-016 sigue parcial hasta completar lector de pantalla y revisión manual de todos los criterios; [informe](reviews/2026-11-17-wcag-aa-audit.md).
+
 La línea base transversal de seguridad y accesibilidad se sigue en T-015 y T-016 de [`TASKS.md`](TASKS.md). La auditoría de código del 2026-11-15 corrigió la fijación DNS para SSRF, validación de configuración/documentos y errores; el build y el audit de dependencias pasan. Siguen pendientes los recorridos negativos de rutas, validación de proveedores en Windows y evaluación manual WCAG; no declarar conformidad hasta cerrarlos. Informe: [`reviews/2026-11-15-security-audit.md`](reviews/2026-11-15-security-audit.md).
 
 El modelo inicial de amenazas se registró en [`THREAT_MODEL.md`](THREAT_MODEL.md): enumera activos, límites de confianza y riesgos residuales sin afirmar auditoría formal. T-015 sigue en curso hasta contrastar sus escenarios con el recorrido HTTP de rebinding y los errores de almacenamiento pendientes.
