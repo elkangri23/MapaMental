@@ -899,3 +899,9 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - La revisión estática identificó que el servicio podía seguir enlaces locales desde el directorio de un proyecto, su `project.json` y `backups`. Se añadió comprobación con `lstat` para exigir directorios/archivos regulares antes de leer, restaurar y guardar; las copias enlazadas se excluyen o rechazan.
 - Una fixture temporal invocó los métodos del almacén compilado: el junction de la carpeta de proyecto, el symlink de `project.json` y el junction de `backups` se rechazaron con `409 PROJECT_STORAGE_INVALID`. Un symlink de copia se excluyó del listado y al intentar restaurarlo también recibió `409 PROJECT_STORAGE_INVALID`. La fixture se retiró al terminar.
 - `npm run build` compiló dominio, servidor y web; `git diff --check` pasó. El chequeo con `lstat` no elimina la carrera frente a un proceso de la misma cuenta con capacidad de alterar archivos.
+
+
+### Fallo de reemplazo durante la restauración — T-017 — 2026-11-17
+
+- Con un proyecto temporal en revisión 2 y una copia válida de revisión 1, se inyectó `EPERM` al `rename` del documento durante la restauración. El error original se propagó, el `project.json` permaneció idéntico byte a byte y el temporal se retiró.
+- Al restaurar `rename` real, repetir la operación completó la revisión 3 con el contenido de la copia; la fixture se eliminó. Esto valida el error de reemplazo y el reintento, no un cierre abrupto del proceso ni un corte de energía.
