@@ -21,11 +21,11 @@ También se endureció la clasificación de nombres DNS con punto final: `localh
 
 La petición de conexión a `127.0.0.1.nip.io`, resuelto a loopback, se rechazó con 400 antes de abrir socket; un listener canario confirmó cero conexiones. Esto verifica el rechazo de una respuesta DNS privada, no una carrera de DNS rebinding ni TLS/SNI. [Evidencia](VERIFICATION.md#resolución-dns-a-loopback-bloqueada-antes-de-conectar--t-015--2026-11-17).
 
-En T-015, la conexión HTTPS fija explícitamente el SNI al hostname del perfil y exige validación del certificado TLS. El 2026-11-17 una prueba runtime local completó la consulta HTTPS con una CA de fixture y observó SNI `localhost`; sigue pendiente DNS rebinding determinista. [Evidencia](VERIFICATION.md#tlssni-runtime-con-certificado-local--t-015--2026-11-17).
+En T-015, la conexión HTTPS fija explícitamente el SNI al hostname del perfil y exige validación del certificado TLS. El 2026-11-17 una prueba runtime local completó la consulta HTTPS con una CA de fixture y observó SNI `localhost`; la prueba HTTP integrada de rebinding sigue pendiente. [Evidencia](VERIFICATION.md#tlssni-runtime-con-certificado-local--t-015--2026-11-17).
 
 También en T-015 se limitó a tres el número de generaciones IA simultáneas por proceso. El recorrido aislado mantuvo tres solicitudes abiertas en el proveedor simulado; la cuarta recibió HTTP 429 con `Retry-After: 30`, sin una cuarta llamada upstream. Las tres aceptadas terminaron con HTTP 200. [Evidencia](VERIFICATION.md#concurrencia-de-generaciones-ia--t-015--2026-11-17).
 
-En la protección DNS de T-015, la función de lookup del socket se separó y se simuló un cambio de la respuesta validada `93.184.216.34` a `127.0.0.1`; Undici siguió recibiendo la dirección fijada y rechazó un hostname alternativo. Esto confirma el componente de pinning, pero no reproduce aún el recorrido completo con un DNS fixture ni abre una conexión de red. [Evidencia](VERIFICATION.md#simulación-determinista-de-fijación-ante-cambio-dns--t-015--2026-11-17).
+En la protección DNS de T-015, las funciones de resolución SSRF y lookup del socket se ejercitaron juntas con DNS inyectado. Se simuló el cambio de `93.184.216.34` a `127.0.0.1`; el socket conservó la IP fijada, el hostname alternativo se rechazó y una resolución privada nueva fue bloqueada. No se abrió conexión de red; queda pendiente el recorrido HTTP integrado. [Evidencia](VERIFICATION.md#simulación-determinista-de-fijación-ante-cambio-dns--t-015--2026-11-17).
 
 ### Puerta de entrada a M5
 

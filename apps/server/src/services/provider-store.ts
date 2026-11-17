@@ -169,7 +169,7 @@ function isBlockedRemoteHost(hostname: string) {
   return false;
 }
 
-async function resolveSafeProviderTarget(url: URL, signal: AbortSignal) {
+export async function resolveSafeProviderTarget(url: URL, signal: AbortSignal, dnsLookup: typeof lookup = lookup) {
   signal.throwIfAborted();
   const hostname = url.hostname.toLowerCase().replace(/^\[|\]$/g, '');
   const localLiteral = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
@@ -183,7 +183,7 @@ async function resolveSafeProviderTarget(url: URL, signal: AbortSignal) {
     signal.addEventListener('abort', abort, { once: true });
   });
   try {
-    addresses = await Promise.race([lookup(hostname, { all: true, verbatim: true }), abortLookup]);
+    addresses = await Promise.race([dnsLookup(hostname, { all: true, verbatim: true }), abortLookup]);
   } catch {
     signal.throwIfAborted();
     throw Object.assign(new Error('No se pudo resolver el host del proveedor.'), { statusCode: 400 });

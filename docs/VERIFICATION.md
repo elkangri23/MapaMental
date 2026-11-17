@@ -732,13 +732,13 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Se arrancó el servidor de producción con `APPDATA`, `LOCALAPPDATA` y la raíz de proyectos aislados; se canjeó un nonce temporal, se creó un proyecto de fixture y se activó un proveedor compatible de loopback.
 - El proveedor simulado retuvo tres respuestas. Las tres peticiones de chat llegaron al upstream; una cuarta petición simultánea recibió HTTP 429, `Retry-After: 30` y el mensaje de límite, sin una cuarta conexión upstream. Al liberar las respuestas, las tres operaciones admitidas terminaron con HTTP 200.
 - Se verificó así el tope por proceso y la liberación de plazas al completarse. El fixture no usó claves reales, proyectos del usuario ni servicios externos. La primera ejecución de smoke expiró mientras esperaba el arranque de PowerShell/validación de volumen; se amplió el tiempo de espera y la repetición terminó correctamente.
-- El límite protege la concurrencia del proceso local; no sustituye los presupuestos de coste ni es una cuota diaria o por usuario. T-015 sigue parcial por DNS rebinding determinista, errores/permisos de disco y análisis formal de amenazas.
+- El límite protege la concurrencia del proceso local; no sustituye los presupuestos de coste ni es una cuota diaria o por usuario. T-015 sigue parcial por el recorrido HTTP integrado de rebinding, errores/permisos de disco y análisis formal de amenazas.
 
 ### Simulación determinista de fijación ante cambio DNS — T-015 — 2026-11-17
 
-- `createPinnedProviderLookup`, la misma función que se entrega a Undici Agent para abrir el socket, se ejecutó desde el módulo compilado. La fase de validación capturó `93.184.216.34`; luego se cambió la respuesta DNS simulada a `127.0.0.1` antes de invocar el lookup de conexión.
-- Las variantes `all: true` y primera dirección devolvieron únicamente `93.184.216.34`; no se hizo otra consulta DNS (contador: una). Un hostname de socket distinto fue rechazado y no recibió dirección.
-- Fue una simulación en memoria del callback de socket, sin peticiones DNS ni conexiones de red. Demuestra que el dial no toma una segunda respuesta cambiante, pero no valida la integración de resolver del sistema → política SSRF → socket real. Esa prueba de extremo a extremo permanece pendiente, igual que los errores de disco y el análisis formal de amenazas.
+- Desde el módulo compilado se ejercitaron `resolveSafeProviderTarget` y `createPinnedProviderLookup`, las funciones de producción que resuelven y fijan el destino del socket. Un resolver inyectado devolvió `93.184.216.34`, dirección aceptada por la política; después se cambió la respuesta simulada a `127.0.0.1` antes del lookup de conexión.
+- El callback de socket devolvió únicamente `93.184.216.34`, sin una segunda consulta DNS (contador: una). Un hostname alternativo fue rechazado sin dirección, y una nueva ejecución de la política DNS con respuesta loopback fue rechazada con HTTP-equivalente 400.
+- La simulación cubre en memoria resolución → validación SSRF → lookup fijado de Undici, sin petición DNS ni conexión de red. No ejercita la petición HTTP completa ni un socket real; ese recorrido integrado, los errores de disco y el análisis formal de amenazas siguen pendientes.
 
 ### Nombres accesibles de nodos y conexiones del mapa — T-016 — 2026-11-17
 
