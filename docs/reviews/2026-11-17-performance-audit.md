@@ -136,6 +136,10 @@ El foco del botón de idea se estableció programáticamente y F2 se envió medi
 
 **Siguiente paso:** T-028 continúa abierta. Repetir varias veces con entrada física reproducible y separar F2, escritura local, confirmación/autosave, selección, zoom y cambio de vista. Usar trazas con atribución de tareas/layout para aislar el coste, y comparar heap tras GC controlado antes de plantear optimizaciones del canvas.
 
+## Sondeo de repetición no válido — 2026-11-17
+
+Se intentó repetir la acción con foco y pulsación de F2 mediante las herramientas del navegador. Las trazas marcaron 851 ms y 120 ms para `keydown` en dos sesiones, pero la segunda acabó con el foco en `main` y se abrió un diálogo no relacionado con la edición del nodo. La automatización no conservó de forma verificable el objetivo ni el estado inicial; por eso estas cifras no se incorporan a la serie de rendimiento y no se usan para aceptar o descartar una optimización. Se cerró la pestaña, se detuvo el servicio y se eliminaron proyecto, perfil, nonce y traza temporales. La limitación pendiente es conseguir un recorrido repetible con foco comprobado antes y después del input.
+
 ## Continuación — heap, callbacks y persistencia — 2026-11-17
 
 La primera lectura de memoria se interpretó como estable, pero al esperar más apareció la recolección automática de basura y el heap bajó de aproximadamente 162 MB a 25 MB. En la lista también hubo lecturas de 12–28 MB según el momento. Se corrige el informe: los valores previos de 164–182 MB describían memoria transitoria antes de GC, no heap retenido. `performance.memory` no permite comparar variantes sin fijar estado de GC, y no se forzó una recolección. Estos datos no sustentan un presupuesto de RAM ni un cálculo de ahorro frente a la versión anterior.
