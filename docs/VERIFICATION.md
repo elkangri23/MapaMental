@@ -679,3 +679,9 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Se usó `testProviderConnection` con un perfil compatible con OpenAI apuntando a un mock HTTP en loopback. El mock respondió `302` desde `/v1/models` hacia `/redirect-target` y registró las rutas recibidas.
 - El cliente rechazó la redirección y devolvió el error genérico de conexión (502); el mock solo recibió `/v1/models`, nunca `/redirect-target`. La respuesta simulada de destino no se leyó.
 - El perfil, el almacén de configuración y el mock se aislaron en `%TEMP%`; se eliminó esa carpeta al terminar. La evidencia confirma la política `redirect: 'error'` para la consulta de modelos, no cubre DNS público, TLS/SNI ni todos los proveedores. T-015 permanece parcial.
+
+### Matriz acotada de rangos especiales IANA — T-015 — 2026-11-17
+
+- Se contrastó `saveProviderProfile` con los registros IPv4 e IPv6 de IANA, actualizados el 2025-10-09: 25 direcciones representativas de rangos especiales fueron rechazadas y cinco direcciones públicas más `127.0.0.1`/`::1` fueron aceptadas según la excepción intencionada para proveedores locales. No hubo discrepancias.
+- Las muestras incluyen, entre otras, IPv4 privada, compartida, documentación, benchmarking, 6to4 relay y reservada; IPv6 mapped, translation, discard-only, documentación, 6to4, ULA, link-local y SRv6. Las excepciones locales se probaron como loopback configurado, no como destino remoto.
+- La comprobación usó el servicio compilado y `APPDATA` temporal; no abrió conexiones hacia las IP probadas y retiró el directorio al terminar. Contrasta la clasificación estática de URL, pero no sustituye pruebas DNS, DNS rebinding, TLS/SNI ni cobertura completa de prefijos. Fuentes: [registro IPv4](https://www.iana.org/assignments/iana-ipv4-special-registry) y [registro IPv6](https://www.iana.org/assignments/iana-ipv6-special-registry). T-015 permanece parcial.

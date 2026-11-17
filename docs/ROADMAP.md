@@ -15,6 +15,8 @@ La línea base transversal de seguridad y accesibilidad se sigue en T-015 y T-01
 
 En T-015, el 2026-11-17 se verificó con un proveedor compatible simulado que la consulta de modelos rechaza una redirección sin solicitar su destino (`302` → solo `/v1/models`, no `/redirect-target`). La matriz DNS y TLS/SNI sigue pendiente; evidencia en [`VERIFICATION.md`](VERIFICATION.md#redirección-del-endpoint-de-modelos-del-proveedor--t-015--2026-11-17).
 
+La clasificación de URL se contrastó además con 32 direcciones representativas de los registros IANA IPv4/IPv6: 25 rangos especiales bloqueados, cinco direcciones públicas permitidas y loopback permitido solo por la configuración local. Sin discrepancias en las muestras; la prueba no resolvió DNS ni hizo conexiones a las direcciones. T-015 sigue parcial. [Evidencia](VERIFICATION.md#matriz-acotada-de-rangos-especiales-iana--t-015--2026-11-17).
+
 ### Puerta de entrada a M5
 
 M5 es una ampliación solicitada. **T-018 y T-019 están cerradas:** alcance de una persona Windows/loopback y contrato OIDC + passkey WebAuthn `UV`; TOTP opcional de recuperación; RP ID `localhost`; ADR-0012 aceptado. **T-020 está cerrada. T-021 sigue parcial.** TOTP ya tiene implementación parcial: enrolamiento tras reautenticación, secreto/anti-replay en Credential Manager, bloqueo tras fallos, y recuperación limitada a registrar una passkey nueva y revocar las anteriores. Falta validar IdP, apps autenticadoras y autenticadores reales. El modo protegido depende de Internet para OIDC; el modo local sigue disponible. No habrá acceso por red, multiusuario ni sincronización en nube.
