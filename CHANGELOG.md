@@ -1,5 +1,7 @@
 # Cambios
 
+- Las tarjetas IA se orientan por la cobertura y los vacíos explícitos de cada rama; el calendario de siembra ya no hereda supuestos de clima o fechas añadidos por el modelo.
+
 - El almacenamiento local rechaza enlaces simbólicos o reparse points en las rutas de proyectos y copias antes de leerlos o modificarlos.
 
 - Las propuestas de tabla con celdas «Pendiente de confirmar» ya no conservan texto ni viñetas generadas que podrían introducir fechas o recomendaciones sin base en el mapa; la diapositiva explica de forma neutral qué dato hay que completar.

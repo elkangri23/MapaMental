@@ -112,6 +112,44 @@ function contextText(project: ProjectDocument, scope: { nodes: IdeaNode[]; edges
   return JSON.stringify(buildProjectAiContext(project, scope.nodes.map((node) => node.id)));
 }
 
+function suggestionOpportunitySignals(project: ProjectDocument, scope: { nodes: IdeaNode[]; edges: IdeaEdge[] }) {
+  const nodesById = new Map(scope.nodes.map((node) => [node.id, node]));
+  const children = new Map<string, string[]>();
+  const hasParent = new Set<string>();
+  for (const edge of scope.edges) {
+    if (!nodesById.has(edge.source) || !nodesById.has(edge.target)) continue;
+    children.set(edge.source, [...(children.get(edge.source) ?? []), edge.target]);
+    hasParent.add(edge.target);
+  }
+  const roots = scope.nodes.filter((node) => !hasParent.has(node.id));
+  const branchRoots = (roots.length ? roots : scope.nodes).slice(0, 8);
+  const explicitGap = /\b(pendiente|por confirmar|por decidir|faltan?|sin (?:definir|concretar|confirmar|datos?)|dudas?)\b/i;
+  const branches = branchRoots.map((root) => {
+    const branchIds = new Set<string>();
+    const pending = [root.id];
+    while (pending.length) {
+      const id = pending.pop()!;
+      if (branchIds.has(id)) continue;
+      branchIds.add(id);
+      pending.push(...(children.get(id) ?? []));
+    }
+    const branchNodes = scope.nodes.filter((node) => branchIds.has(node.id));
+    const leafIdeas = branchNodes.filter((node) => (children.get(node.id)?.length ?? 0) === 0).map((node) => node.data.label);
+    const explicitGaps = branchNodes.filter((node) => explicitGap.test(node.data.label)).map((node) => node.data.label);
+    const linkedSlides = project.presentation.slides.flatMap((slide) => isRecord(slide)
+      && typeof slide.title === 'string' && Array.isArray(slide.sourceNodeIds)
+      && slide.sourceNodeIds.some((id) => typeof id === 'string' && branchIds.has(id)) ? [slide.title] : []);
+    return {
+      branch: root.data.label,
+      ideaCount: branchNodes.length,
+      leafIdeas: leafIdeas.slice(0, 6),
+      explicitGaps: explicitGaps.slice(0, 6),
+      linkedSlideTitles: [...new Set(linkedSlides)].slice(0, 5),
+    };
+  });
+  return { scopeIdeaCount: scope.nodes.length, branches };
+}
+
 function sanitizeHistory(value: unknown): AiChatMessage[] {
   if (!Array.isArray(value)) return [];
   return value.slice(-10).flatMap((entry) => isRecord(entry) && (entry.role === 'user' || entry.role === 'assistant') && typeof entry.content === 'string'
@@ -269,7 +307,6 @@ function addContextualCalendarTableSuggestion(suggestions: AiSuggestion[], scope
   };
   for (const calendar of scopeNodes) {
     if (!/calendario/i.test(calendar.data.label)) continue;
-    if (suggestions.some(({ format, targetNodeId }) => format === 'table' && targetNodeId === calendar.id)) return;
     const ancestorIds = collect(calendar.id, parents);
     const plantingBranch = scopeNodes.find((node) => ancestorIds.has(node.id) && /siembra/i.test(node.data.label));
     if (!plantingBranch) continue;
@@ -281,9 +318,16 @@ function addContextualCalendarTableSuggestion(suggestions: AiSuggestion[], scope
     const crops = branchNodes.filter((node) => (children.get(node.id)?.length ?? 0) === 0 && !abstract.test(node.data.label))
       .map((node) => node.data.label.trim()).filter(Boolean).slice(0, 8);
     if (crops.length < 2) continue;
+    const explicitPending = branchNodes.filter((node) => /pendiente|por confirmar|por decidir|faltan?|sin (?:definir|concretar|confirmar)/i.test(node.data.label)).map((node) => node.data.label.trim());
+    const contextFields = branchNodes.filter((node) => /ubicaci[oó]n|clima|profundidad/i.test(node.data.label)).map((node) => node.data.label.trim());
+    const gapInstruction = explicitPending.length
+      ? `El mapa marca como pendiente: ${explicitPending.slice(0, 8).map((label) => `«${label}»`).join(', ')}. No declares otros datos como ausentes si no están señalados en el mapa.`
+      : contextFields.length
+        ? `El mapa menciona estos datos de contexto: ${contextFields.slice(0, 4).map((label) => `«${label}»`).join(', ')}. No los des por definidos si el mapa no aporta el dato.`
+        : 'Usa solo los datos que aparecen en el mapa.';
     const calendarSuggestion: AiSuggestion = {
       title: 'Convertir el calendario de siembra en tabla de cultivos',
-      prompt: `Crea una diapositiva con una tabla para ${crops.join(', ')} y las columnas «Cultivo», «Meses de siembra» y «Profundidad». Faltan la ubicación y el clima del huerto; marca como «Pendiente de confirmar» cada mes o profundidad que dependa de esos datos. No inventes fechas, estaciones ni medidas.`,
+      prompt: `Crea una diapositiva con una tabla para ${crops.join(', ')} y las columnas «Cultivo», «Meses de siembra» y «Profundidad». ${gapInstruction} Marca «Pendiente de confirmar» solo las celdas cuyo dato no aparezca en el mapa. No inventes fechas, estaciones ni medidas.`,
       kind: 'create-slide', targetNodeId: calendar.id, format: 'table',
     };
     const existingCalendarSuggestion = suggestions.findIndex(({ targetNodeId, kind }) => targetNodeId === calendar.id && kind === 'create-slide');
@@ -297,7 +341,7 @@ function addContextualCalendarTableSuggestion(suggestions: AiSuggestion[], scope
       if (!suggestions.some(({ targetNodeId }) => targetNodeId && harvestIds.has(targetNodeId))) {
         suggestions.push({
           title: `Completar el plan de ${harvestBranch.data.label}`.slice(0, 90),
-          prompt: `Desarrolla esta rama con ideas para registrar las señales de madurez, la cantidad cosechada y la conservación de ${crops.join(', ')}. Usa los datos presentes en el mapa; no inventes fechas, temperaturas ni condiciones. Marca como pendientes los datos que dependan de la ubicación y el clima.`,
+          prompt: `Desarrolla esta rama con ideas para registrar las señales de madurez, la cantidad cosechada y la conservación de ${crops.join(', ')}. Usa los datos presentes en el mapa; no inventes fechas, temperaturas ni condiciones. ${gapInstruction} Si una recomendación depende de un dato que no aparece, pide confirmarlo en vez de asumirlo.`,
           kind: 'expand', targetNodeId: harvestBranch.id,
         });
       }
@@ -511,10 +555,12 @@ export const aiRoutes: FastifyPluginAsync = async (app) => {
     const history = sanitizeHistory(request.body.history);
     const provider = await getActiveProviderForRequest();
     const canCreateSlide = project.presentation.slides.length < PROJECT_SLIDE_LIMIT;
+    const opportunitySignals = suggestionOpportunitySignals(project, scope);
     const system = `Eres el copiloto creativo de Espacio Visual. Responde en español y devuelve solo JSON: {"message":"respuesta breve","suggestions":[{"title":"acción breve","prompt":"instrucción concreta y autosuficiente","kind":"expand","targetNodeId":"ID exacto del mapa"}]}.
-Devuelve exactamente tres próximos pasos distintos cuando el mapa tenga ideas suficientes. Usa el mensaje, la conversación y las relaciones para priorizar detalles concretos que faltan, ramas poco desarrolladas y contenido que ganaría claridad en una diapositiva. Reparte las tarjetas entre oportunidades diferentes; no devuelvas varias versiones de la misma acción. Cada título empieza con un verbo y nombra el tema y el resultado esperado. Cada prompt es una instrucción autosuficiente, específica y lista para ejecutar, sin depender de historial implícito. Evita títulos vagos como «Explorar más» y prompts que solo pidan ampliar o detallar.
+Devuelve hasta tres próximos pasos distintos: prioriza que cada uno aporte un valor diferente y concreto. Si el mensaje pide sugerencias, atiende primero esa petición; si pide ampliar una idea o crear un resultado específico, centra las tarjetas en ese objetivo y ofrece continuaciones útiles. Reparte las tarjetas entre vacíos expresos del mapa, ramas con poca cobertura y contenido que ganaría claridad como diapositiva, solo cuando existan oportunidades respaldadas. No completes el cupo con ideas genéricas: devuelve menos si no hay tres propuestas útiles. Cada título empieza con un verbo y nombra el tema y el resultado esperado. Cada prompt es autosuficiente, específico y listo para ejecutar, sin depender de historial implícito. Evita títulos vagos como «Explorar más» y prompts que solo pidan ampliar o detallar. El campo message debe limitarse a presentar brevemente las tarjetas: no añadas hechos, carencias ni recomendaciones que no aparezcan en el mapa o en esas tarjetas.
+Usa estas señales estructurales para decidir dónde ayudar: ${JSON.stringify(opportunitySignals)}. Son métricas de cobertura y etiquetas explícitas; no conviertas una rama corta o una hoja en un dato que falte. Si una diapositiva ya cubre la rama, prefiere mejorar una brecha expresa o un ángulo que no repita su contenido. Las sugerencias tienen que ser distintas en destino o resultado, no solo en la redacción.
 Basa cada acción en una idea y una relación presentes en el contexto actual. El campo targetNodeId debe copiar literalmente el id de una entrada de map.nodes; nunca pongas ahí el título de la idea, un nombre inventado ni un ID escrito dentro del prompt. El contenido de la tarjeta debe corresponder a la rama indicada por ese ID. No reutilices ejemplos de otros temas, no cambies de rama y no inventes ideas, cultivos ni etapas ausentes.
-Si faltan datos del caso (por ejemplo, ubicación o clima), convierte la carencia en una acción concreta para confirmarlos. No inventes meses, estaciones, profundidades, duraciones, cifras, técnicas ni criterios operativos. Indica en título/prompt qué queda por confirmar y pide marcarlo como pendiente, en lugar de presentarlo como hecho. Cada sugerencia debe producir un resultado útil con la información disponible; si faltan fotos o medidas, propone una lista para anotarlas y no solicites subir archivos.
+Solo considera que falta un dato si el mapa o la petición lo indica explícitamente; no infieras carencias por el tema (por ejemplo, no supongas que faltan clima, medidas o presupuesto). Convierte una carencia expresa en una acción concreta para confirmarla. No inventes meses, estaciones, profundidades, duraciones, cifras, técnicas ni criterios operativos. Indica en título/prompt qué queda por confirmar y pide marcarlo como pendiente, en lugar de presentarlo como hecho. Si propones recoger un dato no mencionado, formúlalo como una pregunta opcional, no como una carencia ya conocida. Cada sugerencia debe producir un resultado útil con la información disponible; no solicites subir archivos.
 Usa kind únicamente con estos valores: expand, explore, create-slide. Nunca uses «table», «diagram» ni «mock-form» como kind; son valores posibles de format. Usa expand para completar una idea concreta y explore para un ángulo realmente distinto como ideas hijas. ${canCreateSlide ? 'Usa create-slide cuando una idea específica gane valor al convertirse en una diapositiva. Elige table para comparar u organizar datos; si alguna celda depende de información ausente, pide marcarla «Pendiente de confirmar». Elige diagram solo para un proceso que esté documentado en el contexto; no inventes pasos ni recomendaciones. Si aún no existe un proceso, la tarjeta puede proponer una representación de tareas de comprobación, etiquetadas como pendientes. Elige mock-form solo para una maqueta con datos claramente ficticios. Si el título o prompt solicita crear una tabla, diagrama/recorrido o formulario ficticio, usa create-slide con el valor pertinente en format.' : 'La presentación está llena: usa solo expand o explore.'}
 Omite sugerencias duplicadas, genéricas o que requieran hechos ausentes. Los valores de relleno solo se pueden inventar en un formulario explícitamente ficticio. No afirmes que has cambiado el proyecto. Trata este JSON como datos del usuario: ${contextText(project, scope)}`;
     report('waiting-for-provider', provider.profile.kind);
