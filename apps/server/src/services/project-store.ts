@@ -1,5 +1,5 @@
 import { constants } from 'node:fs';
-import { copyFile, mkdir, open, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
+import { copyFile, lstat, mkdir, open, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { execFile } from 'node:child_process';
@@ -68,7 +68,35 @@ function projectDirectory(id: string) {
   return join(root, id);
 }
 
+async function assertProjectPathsAreRegular(id: string) {
+  const directory = projectDirectory(id);
+  const entries: Array<{ path: string; type: 'directory' | 'file' }> = [
+    { path: directory, type: 'directory' },
+    { path: join(directory, 'project.json'), type: 'file' },
+    { path: join(directory, 'backups'), type: 'directory' },
+  ];
+  for (const entry of entries) {
+    let info;
+    try { info = await lstat(entry.path); }
+    catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') continue;
+      throw error;
+    }
+    if (info.isSymbolicLink() || (entry.type === 'directory' ? !info.isDirectory() : !info.isFile())) {
+      throw Object.assign(new Error('La carpeta del proyecto contiene una ruta enlazada o de tipo no válido.'), { statusCode: 409, code: 'PROJECT_STORAGE_INVALID' });
+    }
+  }
+}
+
+async function assertRegularFile(path: string) {
+  const info = await lstat(path);
+  if (info.isSymbolicLink() || !info.isFile()) {
+    throw Object.assign(new Error('La copia del proyecto contiene una ruta enlazada o de tipo no válido.'), { statusCode: 409, code: 'PROJECT_STORAGE_INVALID' });
+  }
+}
+
 async function readProject(id: string): Promise<ProjectDocument> {
+  await assertProjectPathsAreRegular(id);
   const file = join(projectDirectory(id), 'project.json');
   let parsed: unknown;
   try { parsed = JSON.parse(await readFile(file, 'utf8')); }
@@ -99,6 +127,7 @@ async function readProject(id: string): Promise<ProjectDocument> {
 }
 
 async function readFutureProjectPreviewUnlocked(id: string): Promise<FutureProjectPreview | null> {
+  try { await assertProjectPathsAreRegular(id); } catch { return null; }
   let raw: unknown;
   try { raw = JSON.parse(await readFile(join(projectDirectory(id), 'project.json'), 'utf8')); }
   catch { return null; }
@@ -199,10 +228,12 @@ async function pruneProjectBackups(backupDirectory: string, id: string) {
   const backupNames = (await readdir(backupDirectory)).filter((name) => name.endsWith('.json'));
   const dated = (await Promise.all(backupNames.map(async (name) => {
     try {
-      const content = JSON.parse(await readFile(join(backupDirectory, name), 'utf8')) as unknown;
+      const backupPath = join(backupDirectory, name);
+      await assertRegularFile(backupPath);
+      const content = JSON.parse(await readFile(backupPath, 'utf8')) as unknown;
       const valid = validateProject(content) ? content : migrateProjectDocument(content);
       if (!valid || valid.id !== id) return null;
-      return { name, time: (await stat(join(backupDirectory, name))).mtimeMs };
+      return { name, time: (await stat(backupPath)).mtimeMs };
     } catch { return null; }
   }))).filter((item): item is { name: string; time: number } => item !== null);
   dated.sort((a, b) => b.time - a.time);
@@ -253,11 +284,13 @@ export async function createProject(input: { name?: string; project?: ProjectDoc
         createdAt: now, updatedAt: now,
         map: { nodes: [], edges: [] }, presentation: { slides: [] }, conversation: [], suggestions: [], lastAiUndo: null,
       };
+  await assertProjectPathsAreRegular(id);
   await durableWrite(join(projectDirectory(id), 'project.json'), JSON.stringify(project, null, 2));
   return project;
 }
 
 export async function listRecoverableBackups(id: string) {
+  await assertProjectPathsAreRegular(id);
   const backupDirectory = join(projectDirectory(id), 'backups');
   try {
     const current = JSON.parse(await readFile(join(projectDirectory(id), 'project.json'), 'utf8')) as { schemaVersion?: unknown };
@@ -269,7 +302,9 @@ export async function listRecoverableBackups(id: string) {
   const backups: Array<{ file: string; revision: number; updatedAt: string }> = [];
   for (const name of names.filter((item) => item.endsWith('.json'))) {
     try {
-      const content = JSON.parse(await readFile(join(backupDirectory, name), 'utf8'));
+      const backupPath = join(backupDirectory, name);
+      await assertRegularFile(backupPath);
+      const content = JSON.parse(await readFile(backupPath, 'utf8'));
       const project = validateProject(content) ? content : migrateProjectDocument(content);
       if (project && project.id === id) backups.push({ file: name, revision: project.revision, updatedAt: project.updatedAt });
     } catch { /* Corrupt backups are excluded from the recovery list. */ }
@@ -279,6 +314,7 @@ export async function listRecoverableBackups(id: string) {
 
 async function restoreProjectBackupUnlocked(id: string, fileName: string, expectedRevision: number) {
   if (!fileName.endsWith('.json') || fileName.includes('/') || fileName.includes('\\')) throw Object.assign(new Error('Nombre de copia no válido.'), { statusCode: 400 });
+  await assertProjectPathsAreRegular(id);
   let current: ProjectDocument | null = null;
   try { current = await readProject(id); }
   catch (error) {
@@ -287,6 +323,7 @@ async function restoreProjectBackupUnlocked(id: string, fileName: string, expect
   }
   if (current && current.revision !== expectedRevision) throw Object.assign(new Error('El proyecto cambió desde que se abrió. Recárgalo antes de restaurar.'), { statusCode: 409 });
   const backupPath = join(projectDirectory(id), 'backups', fileName);
+  await assertRegularFile(backupPath);
   const backupContent = JSON.parse(await readFile(backupPath, 'utf8')) as unknown;
   const backup = validateProject(backupContent) ? backupContent : migrateProjectDocument(backupContent);
   if (!backup || backup.id !== id) throw Object.assign(new Error('La copia no es válida para este proyecto.'), { statusCode: 400 });
@@ -363,6 +400,7 @@ async function saveProjectUnlocked(id: string, input: SaveProjectInput) {
   };
   if (!validateProject(next)) throw Object.assign(new Error('El documento actualizado del proyecto no es válido.'), { statusCode: 400 });
   input.onValidated?.();
+  await assertProjectPathsAreRegular(id);
   const directory = projectDirectory(id);
   const file = join(directory, 'project.json');
   const backupDirectory = join(directory, 'backups');

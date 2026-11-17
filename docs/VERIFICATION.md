@@ -887,3 +887,9 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - En Chrome, la tarjeta normalizada apareció como «Diapositiva con recorrido». FreeLLMAPI devolvió dos pasos etiquetados como pendientes y otro («Verificar disponibilidad de agua») sin respaldo en el mapa ni indicación de incertidumbre. Se añadió `markUngroundedDiagramSteps`: si una instrucción tiene menos de dos términos concretos presentes en el contexto, se antepone «Pendiente de confirmar:».
 - Con el mapa que no documentaba el proceso, la repetición dejó cuatro pasos marcados «Pendiente de confirmar»; se aplicó la diapositiva y la lectura por API confirmó los marcadores. «Deshacer diapositiva» dejó revisión 5, cero diapositivas y sin undo.
 - En una segunda fixture temporal que sí documentaba cuatro pasos, los cuatro quedaron intactos y sin marca de pendiente; las tres viñetas operativas que el modelo añadió, al no estar respaldadas por el mapa, se marcaron «Pendiente de confirmar». El texto del cuerpo se neutralizó para no afirmar resultados del proceso. Se aplicó la diapositiva y la API confirmó persistencia; el deshacer volvió a dejar cero diapositivas y sin undo. Esta muestra confirma el caso documentado para ese mapa/modelo; quedan mapas y modelos adicionales, incluidos proveedores locales.
+
+
+### Rechazo de rutas enlazadas en almacenamiento de proyectos — T-015/T-017 — 2026-11-17
+
+- La revisión estática identificó que el servicio podía seguir enlaces locales desde el directorio de un proyecto, su `project.json` y `backups`. Se añadió comprobación con `lstat` para exigir directorios/archivos regulares antes de leer, restaurar y guardar; las copias enlazadas se excluyen o rechazan.
+- `npm run build` compiló dominio, servidor y web; `git diff --check` pasó. No se ejecutó una fixture de symlink/junction. El chequeo previo no elimina la carrera frente a un proceso de la misma cuenta con capacidad de alterar archivos.

@@ -63,6 +63,8 @@ Implementado en T-010: la vista previa y el contexto del proveedor incluyen un r
 
 - **Seguimiento de T-015 — nombres DNS con punto final.** El punto final se normaliza al revisar sufijos privados, de modo que `localhost.`, `.local.` y `.internal.` se rechazan al guardar el perfil. El servidor compiló y la matriz temporal también confirmó que un dominio público con punto final y el `http://localhost` explícito siguen permitidos.
 
+- **Seguimiento de T-015 — rutas de proyectos enlazadas.** La revisión estática encontró que el servicio seguía symlinks en la carpeta del proyecto y sus copias. Se añadió `lstat` antes de leer/escribir proyectos y al recorrer/restaurar copias; se rechazan tipos inesperados y reparse points. Build y `git diff --check` pasaron. Falta el recorrido runtime con enlaces y la protección no elimina carreras ante otro proceso de la misma cuenta.
+
 - **Seguimiento de T-015 — respuesta DNS privada y TLS/SNI.** `127.0.0.1.nip.io` resolvió a loopback; el control de proveedor devolvió 400 antes de conectar y el listener canario registró cero sockets. El 2026-11-17, un servidor HTTPS de prueba con una CA local confiada completó la consulta de modelos y observó SNI `localhost`. La prueba determinista de rebinding ejercitó las funciones de resolución SSRF y lookup de socket de producción con un DNS inyectado, sin petición de red; sigue pendiente combinarlas en un recorrido HTTP y probar proveedores reales en Windows.
 
 ## Pausa de desarrollo — estabilización

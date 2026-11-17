@@ -1,5 +1,7 @@
 # Cambios
 
+- El almacenamiento local rechaza enlaces simbólicos o reparse points en las rutas de proyectos y copias antes de leerlos o modificarlos.
+
 - Las propuestas de tabla con celdas «Pendiente de confirmar» ya no conservan texto ni viñetas generadas que podrían introducir fechas o recomendaciones sin base en el mapa; la diapositiva explica de forma neutral qué dato hay que completar.
 - Las sugerencias explícitas de «pasos numerados», «secuencia de pasos» y «proceso de …» ahora se clasifican como diapositivas de recorrido en vez de diapositivas genéricas.
 - Los pasos del diagrama que no comparten al menos dos términos concretos con el contexto del proyecto se etiquetan «Pendiente de confirmar» antes de mostrar el borrador. En recorridos, las viñetas no respaldadas reciben la misma marca y el cuerpo queda neutral para evitar afirmaciones de resultados no documentados.
