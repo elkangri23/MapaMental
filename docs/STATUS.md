@@ -35,7 +35,7 @@
 ## Pendiente
 
 - Completar y revisar el registro documental y los ADR.
-- Probar conectores con Ollama/LM Studio y credenciales reales remotas; completar T-010 con pruebas de calidad de sugerencias sobre un modelo real (los límites de contexto, la concurrencia de API y el recorrido visual en dos pestañas ya se verificaron); contrastar el cálculo de coste de T-012 con un proveedor real.
+- Probar conectores con Ollama/LM Studio y credenciales reales remotas; completar T-010 con pruebas de calidad de sugerencias sobre modelos reales (los límites de contexto, la concurrencia de API y el recorrido visual en dos pestañas ya se verificaron). T-012 quedó aceptada con tokens de FreeLLMAPI real.
 - Completar el instalador Windows; la revisión del archivo PDF de T-011 está cerrada. La evaluación general WCAG/lector de pantalla sigue pendiente en T-016.
 - Completar T-015/T-016 con evaluación manual de rutas, CSP, contraste, teclado, lector de pantalla y zoom; no afirmar conformidad AA hasta entonces.
 
