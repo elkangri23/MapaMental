@@ -61,6 +61,11 @@ La guía operativa está en [AUTH_OPERATIONS.md](AUTH_OPERATIONS.md). Las sesion
 - El 2026-11-17, `npm audit --omit=dev` informó cero vulnerabilidades y `npm run build` pasó con Node 24.
 - Matriz puntual mediante `saveProviderProfile` y almacenamiento temporal: se rechazaron 27 literales IPv4/IPv6 especiales (privados, loopback remoto, link-local, compartidos, reservados, documentación, benchmarking, multicast, IPv4 mapeado y prefijos IPv6 especiales). Se permitieron 9 direcciones globales y los literales loopback aprobados para servicios locales. Cero resultados distintos de lo esperado. La matriz no cubre DNS mixto/rebinding, IDN, TLS/SNI ni hosts con punto final.
 
+## Reconstrucción del paquete portátil (T-013)
+
+- El 2026-11-17 se generó `release/EspacioVisual-0.1.0-windows-x64.zip` con `scripts/package-windows.ps1 -PortableOnly -Offline`, Node 24 y dependencias de producción. El ZIP contiene 4.445 entradas y pesa 43.909.945 bytes. Su SHA-256 es `902F653A013560B0FABCAB34D63385598DC93556F140D74B7F84860B734EF2F3`.
+- Se comprobó que el archivo incluye `runtime/node.exe`, el servidor y web compilados, el módulo nativo de credenciales de Windows y el lanzador local. No se ejecutó desde una extracción temporal en esta iteración. La compilación/recorrido de Inno Setup sigue pendiente por ausencia de `ISCC.exe`.
+
 ## Calidad de las sugerencias con el mapa de siembra (T-010)
 
 Este recorrido está pendiente con un modelo real. Usa un proyecto de prueba llamado «Huerto de balcón». Añade a la idea central las ramas «Prueba A — Siembra» y «Prueba B — Cosecha». Bajo Siembra, añade tomate y lechuga. Deja Cosecha sin ideas hijas. Crea una diapositiva vinculada a Siembra titulada «Calendario de siembra», con los dos cultivos y los meses por concretar.
