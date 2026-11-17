@@ -132,6 +132,11 @@ function explicitlyRequestsVisualJourney(value: string): boolean {
   return /^(?:crea(?:r)?|genera(?:r)?|diseña(?:r)?|prepara(?:r)?|elabora(?:r)?|propón|proponer) (?:un )?recorrido visual(?:\s|[.:,]|$)/u.test(text);
 }
 
+function explicitlyRequestsDiagram(value: string): boolean {
+  const text = value.normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('es');
+  return /\b(diagrama|flujo de trabajo|flujo del proceso|diagrama de proceso|proceso visual)\b/u.test(text);
+}
+
 function explicitlyRequestsMockForm(value: string): boolean {
   const text = value.normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('es');
   return /^(?:crea(?:r)?|genera(?:r)?|diseña(?:r)?|prepara(?:r)?|elabora(?:r)?|propón|proponer) (?:un )?(?:formulario ficticio|formulario de ejemplo)(?:\s|[.:,]|$)/u.test(text);
@@ -203,12 +208,13 @@ function sanitizeSuggestions(value: unknown, scopeNodes: IdeaNode[], mapNodes: I
     if (!title || !prompt || titles.has(key)) continue;
     if (mentionsAnotherBranch(title, prompt, entry.targetNodeId, mapNodes, mapEdges)) continue;
     const visualJourney = explicitlyRequestsVisualJourney(title) || explicitlyRequestsVisualJourney(prompt);
+    const diagram = visualJourney || explicitlyRequestsDiagram(title) || explicitlyRequestsDiagram(prompt);
     const mockForm = explicitlyRequestsMockForm(title) || explicitlyRequestsMockForm(prompt);
-    const kind = visualJourney ? 'create-slide' : entry.kind;
+    const kind = diagram ? 'create-slide' : entry.kind;
     if (kind === 'create-slide' && !canCreateSlide) continue;
     const format = kind === 'create-slide'
-      ? visualJourney || mockForm
-        ? visualJourney ? 'diagram' : 'mock-form'
+      ? diagram || mockForm
+        ? diagram ? 'diagram' : 'mock-form'
         : isSlideSuggestionFormat(entry.format) ? entry.format
           : explicitlyRequestsTable(title) || explicitlyRequestsTable(prompt) ? 'table' : undefined
       : undefined;

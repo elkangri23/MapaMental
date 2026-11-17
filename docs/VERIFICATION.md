@@ -645,3 +645,10 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - En una repetición mediante un upstream compatible simulado, el servidor descartó «Añade meses y profundidad de siembra» dirigida a «Ficha de cosecha». Conservó «Compara siembra y cosecha» porque la tarjeta expresaba una comparación entre ramas, y conservó «Completa el registro de cosecha» por corresponder al destino.
 - Las llamadas se hicieron a la API local con perfiles, sesión y proyecto temporales. El proyecto no se guardó en los datos personales. La respuesta real se solicitó a FreeLLMAPI; el mock solo sirvió para verificar el filtrado.
 - Resultado: mejora confirmada para esta fixture y este modelo. T-010 sigue abierta para probar otros mapas/modelos y recorrer propuestas de diapositivas de principio a fin.
+
+### Clasificación de sugerencias de diagrama — T-010 — 2026-11-17
+
+- Una llamada real con FreeLLMAPI y gpt-oss-20b para la rama Cosecha devolvió «Diseñar diagrama de proceso de cosecha» como diapositiva sin `format`. El clasificador se amplió para reconocer «diagrama», «flujo de trabajo», «flujo del proceso» y «proceso visual» y asignar `create-slide` con formato `diagram`.
+- Se repitió la petición real con gpt-oss-20b. Generó dos tarjetas: expansión de Ficha de cosecha y tabla comparativa entre Siembra y Cosecha con destino en Cosecha. Ambas estaban en el ámbito; la comparación se conservó por ser explícita. Esa repetición no volvió a proponer el diagrama.
+- Una respuesta de proveedor compatible simulada que clasificaba el diagrama como expansión se filtró en la API como una tarjeta `create-slide`, formato `diagram`, con destino Cosecha.
+- `npm run build --workspace @espacio-visual/server` pasó tras el cambio. No se generó ni aplicó el borrador de la diapositiva en esta iteración; queda evaluar los pasos del diagrama en el ciclo de vista previa, aplicación, persistencia y deshacer.

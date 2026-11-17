@@ -1,5 +1,7 @@
 # Cambios
 
+- Las tarjetas que prometen un diagrama o flujo de proceso recuperan el formato `diagram` cuando el modelo lo omite.
+
 - gpt-oss-120b devolvió sugerencias coherentes para el mapa completo y Cosecha; una respuesta simulada confirmó el descarte de una tarjeta sobre Siembra mal dirigida.
 
 - El servidor descarta sugerencias que mezclan términos distintivos de ramas hermanas con el destino, pero conserva comparaciones explícitas entre ramas.
