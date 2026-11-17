@@ -8,7 +8,7 @@ Actualizado: 2026-11-17. El estado se refiere a la documentación, no a que la f
 | [`designs/espacio-visual-personal.md`](designs/espacio-visual-personal.md) | Requisitos, alcance y comportamiento acordado | Revisado con Goldfish; implementación en curso |
 | [`IDEAS_FUTURAS.md`](IDEAS_FUTURAS.md) | Catálogo de extensiones posibles fuera de v1 | Ideas para priorizar; no son compromisos ni tareas activas |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Componentes y flujo de datos previsto/implementado | Trazabilidad IA verificada con mock; diferencias remanentes en el informe EGM del 2026-11-17 |
-| [`INSTALLATION.md`](INSTALLATION.md) | Instalación, inicio, actualización y desinstalación | Actualización y conservación comprobadas; accesos creados, falta validar su ejecución y la retirada desde Configuración |
+| [`INSTALLATION.md`](INSTALLATION.md) | Instalación, inicio, actualización y desinstalación | Instalación estándar, accesos, actualización y conservación comprobados; falta retirada desde Configuración |
 | [`DEVELOPMENT.md`](DEVELOPMENT.md) | Preparación del entorno de desarrollo | En curso |
 | [`PROVIDERS.md`](PROVIDERS.md) | Configuración de modelos y presupuesto | Mock Ollama validado y ciclos de IA evaluados con FreeLLMAPI; Ollama/LM Studio locales reales pendientes |
 | [`STORAGE.md`](STORAGE.md) | Archivo de proyecto, guardado, copias y migraciones | Contrato JSON v3 en ADR-0015; volumen fijo validado al inicio en ADR-0017; migración 2→3 y esquema futuro de solo lectura verificados |

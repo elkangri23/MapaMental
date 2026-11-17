@@ -23,14 +23,14 @@ El lanzador reinicia una instancia activa si cambia el modo. Para volver al modo
 
 ## Instalador Inno Setup
 
-El proyecto del instalador está preparado en `packaging\windows\setup.iss`. Está configurado para instalar por usuario, crear accesos directos en el menú Inicio y ofrecer un acceso directo opcional en el escritorio. Las versiones 0.1.0 y 0.1.1 se compilaron con Inno Setup 6.7.3. El 2026-11-17, una prueba Windows aislada instaló 0.1.0, guardó un proyecto, actualizó en la misma carpeta a 0.1.1, abrió el mapa conservado y desinstaló el programa sin borrar los datos. Una reinstalación temporal de 0.1.1 creó los accesos de Inicio `Espacio Visual` y `Detener Espacio Visual` y el de escritorio opcional. Una inspección confirmó que ambos llaman al lanzador desde la carpeta instalada y que el de parada añade `-Stop`; no se ha probado su ejecución. Tampoco se ha recorrido la retirada desde Configuración de Windows. Detalle en [`VERIFICATION.md`](VERIFICATION.md#actualizacion-del-instalador-windows-y-conservacion-de-proyectos--t-013).
+El proyecto del instalador está preparado en `packaging\windows\setup.iss`. Está configurado para instalar por usuario, crear accesos directos en el menú Inicio y ofrecer un acceso directo opcional en el escritorio. Las versiones 0.1.0 y 0.1.1 se compilaron con Inno Setup 6.7.3. El 2026-11-17, una prueba Windows aislada instaló 0.1.0, guardó un proyecto, actualizó en la misma carpeta a 0.1.1, abrió el mapa conservado y desinstaló el programa sin borrar los datos. Una reinstalación temporal de 0.1.1 creó los accesos de Inicio `Espacio Visual` y `Detener Espacio Visual` y el de escritorio opcional. Con el instalador ejecutado sin privilegios de administrador, el acceso de inicio respondió HTTP 200 y el acceso de parada detuvo el servicio. La ruta de desinstalación desde Configuración sigue pendiente. Detalle en [`VERIFICATION.md`](VERIFICATION.md#actualizacion-del-instalador-windows-y-conservacion-de-proyectos--t-013).
 
 ### Recorrido pendiente del instalador
 
-Usa un perfil estándar de Windows de prueba para cerrar la verificación pendiente de los accesos directos y la desinstalación desde Configuración. La actualización 0.1.0→0.1.1 y la conservación del proyecto ya se probaron con un directorio de instalación temporal.
+La instalación y los accesos se comprobaron en una sesión sin privilegios de administrador, con datos bajo `%TEMP%`. Para cerrar T-013, queda desinstalar desde Configuración y comprobar que se retiran aplicación/accesos y se conserva el proyecto de prueba.
 
-1. Ejecuta el instalador como usuario estándar. Comprueba que instala bajo el perfil de ese usuario, crea los accesos directos de Inicio y respeta la elección del acceso directo de escritorio.
-2. Abre desde Inicio y detén desde el acceso directo correspondiente; inspecciona que el servicio arranca y se cierra correctamente.
+1. Ya verificado: el instalador se ejecutó sin privilegios de administrador y creó los accesos esperados.
+2. Ya verificado: Inicio respondió HTTP 200 y el acceso de parada detuvo el proceso.
 3. Ya verificado con los scripts del paquete: instala 0.1.0, guarda un proyecto, actualiza a 0.1.1 en la misma carpeta y comprueba que el mapa se conserva.
 4. Desinstala desde Configuración de Windows. Comprueba que se retiran la aplicación y sus accesos directos, y que el mapa sigue en la carpeta de proyectos. La desinstalación mediante `unins000.exe` ya dejó los datos intactos.
 
