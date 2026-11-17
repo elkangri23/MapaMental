@@ -918,3 +918,10 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - Las etiquetas de nodos se normalizan cuando se abre/restaura un proyecto, se crea un proyecto vacío, se bifurca ante conflicto y se aplica/deshace una operación IA; las ideas nuevas reciben su `ariaLabel` al crearse. La vista pasa el array `nodes` directamente a React Flow y ya no crea otro array por cada referencia nueva.
 - Las conexiones llegan etiquetadas al estado desde apertura/restauración, proyectos nuevos, bifurcaciones y operaciones IA. Las conexiones nuevas reciben su nombre al crearse. Renombrar una idea actualiza solo las aristas incidentes; los cambios de posición/selección reutilizan el array de aristas existente.
 - `npm run build` compiló dominio, servidor y web. No se ejecutó un perfil de interacción en esta iteración ni se afirma una mejora cuantificada. Sigue pendiente repetir el recorrido de 10.000 ideas con entrada/foco reproducibles y medir edición, presentación y autosave.
+
+### Recorrido Chromium aislado de etiquetas y teclado — T-016/T-028
+
+- Se inició Vite y la API con `APPDATA`, `LOCALAPPDATA` y proyectos bajo `%TEMP%`; Chrome usó un contexto aislado. Tab llevó al enlace para saltar contenido; Enter fijó `#main-content` y el foco llegó al elemento `main`.
+- En el proyecto de muestra temporal se añadió una idea y el árbol accesible anunció la conexión con sus dos extremos. Se enfocó el botón de la idea por script, F2 abrió el campo, se cambió el nombre y Enter lo confirmó. El snapshot accesible mostró el nuevo nombre en el nodo y en la conexión; la UI terminó en «Guardado local».
+- Foco del nodo programático y entrada vía DevTools; no equivale a una prueba manual física ni a lector de pantalla. Solo valida el flujo breve de skip link, edición y nombre accesible, no T-016 completa ni rendimiento de un mapa grande.
+- Se cerraron Chrome y los procesos de desarrollo. El directorio aislado `%TEMP%\\mymap-roadmap-fc454afb7401436a964390b4ad824c6f` contiene datos generados únicamente para esta comprobación. La eliminación recursiva fue rechazada por la política de ejecución; queda pendiente retirar ese directorio temporal.
