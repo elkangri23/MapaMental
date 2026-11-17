@@ -892,4 +892,5 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 ### Rechazo de rutas enlazadas en almacenamiento de proyectos — T-015/T-017 — 2026-11-17
 
 - La revisión estática identificó que el servicio podía seguir enlaces locales desde el directorio de un proyecto, su `project.json` y `backups`. Se añadió comprobación con `lstat` para exigir directorios/archivos regulares antes de leer, restaurar y guardar; las copias enlazadas se excluyen o rechazan.
-- `npm run build` compiló dominio, servidor y web; `git diff --check` pasó. No se ejecutó una fixture de symlink/junction. El chequeo previo no elimina la carrera frente a un proceso de la misma cuenta con capacidad de alterar archivos.
+- Una fixture temporal invocó los métodos del almacén compilado: el junction de la carpeta de proyecto, el symlink de `project.json` y el junction de `backups` se rechazaron con `409 PROJECT_STORAGE_INVALID`. Un symlink de copia se excluyó del listado y al intentar restaurarlo también recibió `409 PROJECT_STORAGE_INVALID`. La fixture se retiró al terminar.
+- `npm run build` compiló dominio, servidor y web; `git diff --check` pasó. El chequeo con `lstat` no elimina la carrera frente a un proceso de la misma cuenta con capacidad de alterar archivos.
