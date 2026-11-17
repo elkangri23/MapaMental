@@ -637,3 +637,11 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 - El filtro se aplica antes de devolver las tarjetas al cliente; no altera el mapa ni el contenido del proyecto. Las comparaciones explícitas quedan permitidas.
 - `npm run build --workspace @espacio-visual/server` y `git diff --check` pasaron después del cambio. No se ha vuelto a consultar FreeLLMAPI ni se ha recorrido Chrome en esta iteración; la evaluación real de calidad continúa pendiente.
 - Limitación: la regla es léxica. No detecta sinónimos ni todos los cruces conceptuales; palabras que aparezcan en una etiqueta de rama hermana pueden provocar un descarte aunque el modelo las use con otro sentido. Evaluar con la fixture de siembra/cosecha y revisar tanto tarjetas aceptadas como descartadas antes de dar T-010 por cerrada.
+
+### Evaluación de sugerencias tras el filtro de ramas — 2026-11-17
+
+- Con FreeLLMAPI y el modelo solicitado gpt-oss-120b, en un proyecto temporal «Huerto de balcón», el mapa completo devolvió tres tarjetas sobre siembra, ficha de cosecha y comparación de cultivos. Los tres destinos pertenecían al mapa y los temas coincidían con las ideas asociadas.
+- Al seleccionar Cosecha y su ficha, el modelo devolvió tres tarjetas sobre completar el registro, crear una diapositiva resumen y explorar condiciones climáticas/ubicación. Los destinos quedaron dentro de la selección y no hubo referencias a tareas de siembra. Esta ronda no generó ni aplicó diapositivas; evalúa únicamente la respuesta de sugerencias.
+- En una repetición mediante un upstream compatible simulado, el servidor descartó «Añade meses y profundidad de siembra» dirigida a «Ficha de cosecha». Conservó «Compara siembra y cosecha» porque la tarjeta expresaba una comparación entre ramas, y conservó «Completa el registro de cosecha» por corresponder al destino.
+- Las llamadas se hicieron a la API local con perfiles, sesión y proyecto temporales. El proyecto no se guardó en los datos personales. La respuesta real se solicitó a FreeLLMAPI; el mock solo sirvió para verificar el filtrado.
+- Resultado: mejora confirmada para esta fixture y este modelo. T-010 sigue abierta para probar otros mapas/modelos y recorrer propuestas de diapositivas de principio a fin.
