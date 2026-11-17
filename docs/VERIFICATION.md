@@ -718,7 +718,14 @@ Estos escenarios definen resultados que deberá cumplir la aplicación. No indic
 ### Política explícita de TLS y SNI — T-015 — 2026-11-17
 
 - El agente HTTP del proveedor envía como SNI el hostname DNS configurado, aunque el socket resuelve contra la lista de IP públicas ya validada. Para perfiles configurados con una IP literal no se envía nombre SNI; la verificación TLS de Node queda explícitamente activada (`rejectUnauthorized: true`). La misma ruta se usa para llamadas LLM y OIDC.
-- `npm run build` con Node 24.22.2 compiló dominio, servidor y web. Esta comprobación es de código/build; no se conectó a un endpoint HTTPS ni se comprobó un certificado/SNI en ejecución. T-015 permanece parcial hasta el recorrido TLS y la simulación determinista de rebinding.
+- `npm run build` con Node 24.22.2 compiló dominio, servidor y web. En el recorrido runtime posterior se usó un certificado local confiado por `NODE_EXTRA_CA_CERTS`; evidencia a continuación. DNS rebinding continúa pendiente. T-015 permanece parcial.
+
+### TLS/SNI runtime con certificado local — T-015 — 2026-11-17
+
+- Se levantó un servidor HTTPS de fixture en loopback con un certificado para `localhost`, firmado por una CA temporal. Node confió en esa CA únicamente mediante `NODE_EXTRA_CA_CERTS`; no se desactivó la validación de certificados.
+- `testProviderConnection` completó la consulta de modelos y devolvió `connected: true` con `sni-fixture`. El servidor registró `servername: localhost`, confirmando que el cliente envió el SNI esperado al usar el hostname configurado.
+- Perfil, configuración, certificados y datos de aplicación se aislaron bajo `%TEMP%`; no se usaron claves, proyectos del usuario ni conexiones a proveedores externos. El perfil de prueba se eliminó tras el recorrido.
+- Esto verifica la cadena confiable, validación de hostname, consulta HTTPS y SNI para la ruta de conexión del proveedor en el runtime actual. No cubre DNS rebinding entre resolución y socket, IP literal/SAN, OIDC, certificado inválido, proveedor real ni el paquete instalado; T-015 permanece parcial.
 
 ### Nombres accesibles de nodos y conexiones del mapa — T-016 — 2026-11-17
 

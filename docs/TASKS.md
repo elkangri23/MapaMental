@@ -50,11 +50,11 @@ Implementado en T-010: la vista previa y el contexto del proveedor incluyen un r
 
 - **Seguimiento de T-015 — redirecciones de proveedor.** Un mock de loopback respondió con 302 al consultar modelos; la petición se rechazó con error genérico y la ruta destino no recibió tráfico. Esto verifica la política contra redirecciones en la prueba de conexión, no completa la matriz DNS/TLS/SNI.
 
-- **Seguimiento de T-015 — prefijos especiales IANA.** Una matriz estática de 32 direcciones representativas rechazó 25 destinos especiales, aceptó cinco direcciones públicas y permitió los dos loopbacks intencionados para proveedores locales; no hubo discrepancias. DNS, rebinding, TLS/SNI y cobertura completa de prefijos siguen pendientes.
+- **Seguimiento de T-015 — prefijos especiales IANA.** Una matriz estática de 32 direcciones representativas rechazó 25 destinos especiales, aceptó cinco direcciones públicas y permitió los dos loopbacks intencionados para proveedores locales; no hubo discrepancias. TLS/SNI también se verificó en ejecución con un certificado local. DNS rebinding y cobertura completa de prefijos siguen pendientes.
 
 - **Seguimiento de T-015 — nombres DNS con punto final.** El punto final se normaliza al revisar sufijos privados, de modo que `localhost.`, `.local.` y `.internal.` se rechazan al guardar el perfil. El servidor compiló y la matriz temporal también confirmó que un dominio público con punto final y el `http://localhost` explícito siguen permitidos.
 
-- **Seguimiento de T-015 — respuesta DNS privada.** `127.0.0.1.nip.io` resolvió a loopback; el control de proveedor devolvió 400 antes de conectar y el listener canario registró cero sockets. La conexión HTTPS fija ahora explícitamente el SNI al hostname configurado y exige validar el certificado; faltan recorridos con certificado de prueba, DNS rebinding entre resolución/conexión y proveedores en Windows.
+- **Seguimiento de T-015 — respuesta DNS privada y TLS/SNI.** `127.0.0.1.nip.io` resolvió a loopback; el control de proveedor devolvió 400 antes de conectar y el listener canario registró cero sockets. El 2026-11-17, un servidor HTTPS de prueba con una CA local confiada completó la consulta de modelos y observó SNI `localhost`. Siguen pendientes DNS rebinding entre resolución/conexión y proveedores reales en Windows.
 
 ## Pausa de desarrollo — estabilización
 

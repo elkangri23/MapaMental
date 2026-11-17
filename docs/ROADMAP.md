@@ -21,7 +21,7 @@ También se endureció la clasificación de nombres DNS con punto final: `localh
 
 La petición de conexión a `127.0.0.1.nip.io`, resuelto a loopback, se rechazó con 400 antes de abrir socket; un listener canario confirmó cero conexiones. Esto verifica el rechazo de una respuesta DNS privada, no una carrera de DNS rebinding ni TLS/SNI. [Evidencia](VERIFICATION.md#resolución-dns-a-loopback-bloqueada-antes-de-conectar--t-015--2026-11-17).
 
-En T-015, la conexión HTTPS ahora fija explícitamente el SNI al hostname del perfil y exige validación del certificado TLS. `npm run build` pasó con Node 24.22.2; el comportamiento TLS todavía requiere un recorrido con certificado de prueba y no cierra DNS rebinding. [Evidencia](VERIFICATION.md#política-explícita-de-tls-y-sni--t-015--2026-11-17).
+En T-015, la conexión HTTPS fija explícitamente el SNI al hostname del perfil y exige validación del certificado TLS. El 2026-11-17 una prueba runtime local completó la consulta HTTPS con una CA de fixture y observó SNI `localhost`; sigue pendiente DNS rebinding determinista. [Evidencia](VERIFICATION.md#tlssni-runtime-con-certificado-local--t-015--2026-11-17).
 
 ### Puerta de entrada a M5
 
