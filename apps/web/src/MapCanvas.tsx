@@ -48,10 +48,12 @@ function IdeaNodeView({ id, data, selected }: NodeProps<IdeaNode>) {
         <input className="idea-node__input nodrag" autoFocus aria-label="Nombre de la idea" maxLength={500} value={draft}
           onChange={(event) => {
             setDraft(event.target.value);
-            const label = event.target.value.trim();
-            if (label) onLabelChange(id, label);
           }}
-          onBlur={() => setEditing(false)}
+          onBlur={() => {
+            const label = draft.trim();
+            if (label && label !== data.label) onLabelChange(id, label);
+            setEditing(false);
+          }}
           onKeyDown={(event) => { if (event.key === 'Enter' || event.key === 'Escape') event.currentTarget.blur(); }} />
       ) : (
         <button className="idea-node__label nodrag" onDoubleClick={startEditing} onKeyDown={(event) => {

@@ -153,3 +153,7 @@ El disparo de edición se hizo con evento DOM programático, de modo que no es u
 ## Continuación — sondeo de teclado no concluyente — 2026-11-17
 
 En otra sesión aislada, con móvil 390×844, CPU 1× y Fast 4G, la traza recogió un `keydown` de 434 ms (5 ms de input delay, 192 ms de procesamiento y 238 ms de presentación). El nodo se había enfocado por script; F2 se envió con teclado DevTools, pero el editor no llegó a abrirse y el guardado permaneció en revisión 1. No se atribuye el coste a la edición ni se usa como INP de usuario. El snapshot del árbol accesible agotó el timeout con el canvas de 10.000 ideas cargado; consulta DOM mostró 48 nodos montados en esa muestra. Queda pendiente repetir mediante clic físico/coordenadas y finalizar un ciclo persistido. El fixture y los servicios se retiraron.
+
+## Continuación — confirmar edición al salir del campo — 2026-11-17
+
+La ruta anterior llamaba a `updateLabel` en cada `input`, haciendo que App volviera a serializar los 10.000 nodos y conexiones por cada carácter. El editor ahora conserva el borrador en estado local y aplica un único cambio al perder el foco. Esto evita recorridos repetidos del mapa durante la escritura; al confirmar sigue siendo necesario actualizar el grafo y autosave procesa el snapshot final. `npm run build` pasó. No se obtuvo verificación visual/teclado de esta variante por la limitación del control de Chrome, así que falta confirmar el ciclo de edición, Escape/Enter, conexiones accesibles y persistencia antes de cerrar la tarea.

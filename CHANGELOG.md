@@ -1,5 +1,6 @@
 # Cambios
 
+- El editor de ideas ahora confirma el nombre al salir del campo, evitando actualizar y serializar el mapa completo en cada tecla.
 - El autosave comparte snapshots memoizados de mapas, diapositivas y conversación para evitar serializar repetidamente el mismo estado durante la detección de cambios y el guardado.
 - El canvas evita duplicar los datos de cada nodo para pasar la acción de edición y reutiliza etiquetas accesibles de conexiones cuando siguen vigentes.
 - En mapas grandes vistos desde móvil, el zoom automático respeta un tamaño mínimo para tocar los botones de ideas; el enlace de atribución también tiene un área táctil mayor.
