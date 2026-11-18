@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-**Actualizado:** 2026-11-17
+**Actualizado:** 2026-11-18
 **Hito actual:** M3 — Presentaciones completado; M4 — Paquete Windows en curso. T-004 documental completada.
 
 ## Estado
@@ -18,7 +18,7 @@
 - **T-016:** Chrome confirmó nombres en español para conexiones/nodos, recorrido con Tab, Lighthouse 100/100 Accessibility en mapa, presentación y lista paginada de 10.000 ideas, controles con nombre y reflujo sin solapamiento a 320 px. El zoom mínimo móvil mantiene botones de mapa de 24 px y la lista conserva el foco al paginar. Siguen pendientes lector de pantalla real y revisión completa de teclado, contraste y estados; ver [`informe WCAG`](reviews/2026-11-17-wcag-aa-audit.md).
 - **T-017:** se corrigieron colisiones de copias al reintentar guardados/restauraciones y ahora se intenta retirar el destino parcial si falla una copia o su verificación. La API informa ENOSPC como HTTP 507, con mensaje útil sin exponer detalles del archivo. Una inyección de ENOSPC y otra de EACCES durante la limpieza dejó intacto el proyecto, propagó el error original y permitió un reintento válido. En restauración, un fallo EPERM del reemplazo dejó el documento intacto, limpió el temporal y permitió recuperar la copia. Siguen pendientes disco lleno físico, ACL reales y terminación abrupta del proceso.
 - **T-028 — Rendimiento:** en móvil Fast 3G/CPU 4×, gzip redujo el JSON del proyecto de 1,86 MB a 134 KB; una corrida LCP 6.910→4.817 ms no demuestra causalidad. La lista paginada monta 250 botones (871 elementos DOM) y Lighthouse da 100/100. El autosave comparte snapshots memoizados. En fixture pequeño, F2/Enter/Escape, guardado y etiquetas accesibles quedaron verificados. En canvas de 10.000 se confirmó borrador local y autosave. La muestra válida de producción registró `keydown` F2 de 703 ms (3 ms de input delay, 584 ms de procesamiento, 115 ms de presentación), frente a 2.407 ms en desarrollo; son capturas únicas, con foco programático y tecla de DevTools, sin comparación causal ni datos de campo. Un sondeo posterior dio 851/120 ms, pero perdió el foco y abrió otro diálogo: se descarta como inválido. El heap ~66,2 MB de una ventana no es comparable entre builds. Próximo: estabilizar una interacción con foco comprobado, separar edición/autosave, identificar trabajo/layout y comparar heap post-GC. Ver [informe](reviews/2026-11-17-performance-audit.md).
-- **M5:** OIDC, WebAuthn/passkeys y recuperación TOTP están implementados parcialmente; faltan recorridos con IdP, aplicación TOTP y autenticadores reales.
+- **M5:** la gestión de credenciales ahora revalida la sesión y la reautenticación al escribir; errores del almacén TOTP fallan de forma cerrada; la UI de passkeys usa formularios accesibles en página. `npm run build` y `git diff --check` pasan. T-021 y T-023–T-026 siguen parciales hasta recorrer IdP, app TOTP y autenticadores reales, pruebas negativas de extremo a extremo y revisión manual con lector de pantalla. Ver [`seguimiento de autenticación`](reviews/2026-11-18-auth-mfa-follow-up.md).
 
 ## Próximo trabajo
 

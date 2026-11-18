@@ -52,6 +52,10 @@ No se incluye colaboración en tiempo real, formularios funcionales, prototipos 
 
 ## Progreso vigente
 
+### Endurecimiento de OIDC, passkeys y recuperación TOTP — T-023/T-025/T-026 — 2026-11-18
+
+La gestión de credenciales revalida sesión protegida, identidad y UV reciente dentro de las mutaciones serializadas; errores de acceso o corrupción del Credential Manager ya no se interpretan como TOTP desactivado, y la baja no oculta fallos de borrado. Los cuadros del navegador para añadir/renombrar/revocar passkeys y desactivar TOTP se reemplazaron por formularios de la app con etiquetas, foco y cancelación. Build de producción y `git diff --check` pasaron. Estas correcciones cierran deuda de código y de interfaz, pero no la aceptación M5: faltan IdP, autenticadores y app TOTP reales, casos negativos completos y revisión manual con lector de pantalla. [Evidencia](VERIFICATION.md#endurecimiento-de-gestión-de-passkeys-y-recuperación-totp--t-023t-025t-026--2026-11-18) e [informe](reviews/2026-11-18-auth-mfa-follow-up.md).
+
 ### Revisión UI de tabla de siembra y corrección de contenido no respaldado — T-010 — 2026-11-17
 
 El recorrido que faltaba ya se completó en Chrome con un proyecto de huerto temporal y FreeLLMAPI/gpt-oss-20b: se seleccionó «Prueba A — Siembra», se generaron sugerencias, se abrió la tarjeta contextual del calendario, se revisó su tabla editable, se aplicó la diapositiva y se deshizo. La lectura posterior por API confirmó que la diapositiva persistió y que deshacer devolvió el proyecto a cero diapositivas. La primera salida puso las celdas desconocidas como pendientes pero añadió fechas/recomendaciones no respaldadas. Se corrigió el servidor para que, si una tabla contiene celdas pendientes, reemplace el texto con una explicación neutral y retire las viñetas. La segunda pasada en Chrome mostró ese contenido neutral, aplicó y deshizo correctamente. T-010 sigue parcial hasta ampliar evaluación semántica, comprobar proveedores locales reales y cubrir más mapas/modelos. [Evidencia](VERIFICATION.md#revisión-en-chrome-de-la-tarjeta-y-tabla-de-siembra--t-010--2026-11-17).

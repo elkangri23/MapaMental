@@ -109,12 +109,12 @@ export async function finishPasskeyReauthentication(sessionId: string, response:
   return { verified: true };
 }
 
-export async function renamePasskey(id: string, name: string) {
-  return renameStoredPasskey(id, name);
+export async function renamePasskey(id: string, name: string, access: { cookie: string | undefined; identityId: string | null }) {
+  return renameStoredPasskey(id, name, access);
 }
 
-export async function revokePasskey(id: string) {
-  return removeStoredPasskey(id);
+export async function revokePasskey(id: string, access: { cookie: string | undefined; identityId: string | null }) {
+  return removeStoredPasskey(id, access);
 }
 
 export async function beginPasskeyAuthentication(stepToken: string) {

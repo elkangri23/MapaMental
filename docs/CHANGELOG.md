@@ -2,6 +2,12 @@
 
 ## Sin publicar
 
+### Autenticación y recuperación
+
+- El renombrado y la revocación de passkeys revalidan sesión, identidad y UV reciente justo antes de modificar el almacén.
+- Los errores del Administrador de credenciales de Windows ya no se interpretan como ausencia o baja de TOTP.
+- La gestión de passkeys y la confirmación de baja TOTP usan formularios y avisos en página en lugar de `prompt`/`confirm` del navegador.
+
 ### Seguridad y persistencia
 
 - Las copias de proyectos limpian archivos destino parciales cuando falla la escritura o la verificación; un destino preexistente por `EEXIST` se conserva.

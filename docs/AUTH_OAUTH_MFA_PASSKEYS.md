@@ -1,6 +1,6 @@
 # Informe de autenticación: OAuth/OIDC, MFA y passkeys
 
-**Estado:** ADR-0012 aceptado; T-018/T-019/T-020/T-022 cerradas; T-021/T-023/T-024/T-025 parciales. OIDC, WebAuthn y recuperación TOTP tienen implementación parcial; no se han recorrido con IdP, app autenticadora ni autenticadores reales. No considerar M5 operativo todavía.
+**Estado (2026-11-18):** ADR-0012 aceptado; T-018/T-019/T-020/T-022 cerradas; T-021/T-023/T-024/T-025 parciales. La lectura y baja de TOTP fallan de forma cerrada ante errores del llavero; la gestión de passkeys revalida sesión/UV al escribir y usa formularios en página. OIDC, WebAuthn y recuperación TOTP no se han recorrido con IdP, app autenticadora ni autenticadores reales. No considerar M5 operativo todavía. Seguimiento: [`informe del 2026-11-18`](reviews/2026-11-18-auth-mfa-follow-up.md).
 
 ## Resumen ejecutivo
 

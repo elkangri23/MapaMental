@@ -1,5 +1,5 @@
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
-import { clearOidcSecondFactorCookie, clearRecoveryCookie, clearSessionCookie, consumeLaunchNonce, consumeOidcSecondFactor, createOidcSecondFactorStep, createProtectedSession, createRecoverySession, exchangeOidcSecondFactorStep, expectedUiOrigin, getDevelopmentNonce, getOidcSecondFactorIdentity, getOidcSecondFactorToken, getRecoveryIdentity, getRecoverySessionId, getValidSessionId, hasRecentUserVerification, isDevelopmentBootstrapEnabled, isExpectedHost, isExpectedOrigin, isSessionIdValid, isValidSession, requiredSessionMode, revokeAllProtectedSessions, revokeSession, setOidcSecondFactorCookie, setRecoveryCookie, setSessionCookie } from '../services/session.js';
+import { clearOidcSecondFactorCookie, clearRecoveryCookie, clearSessionCookie, consumeLaunchNonce, consumeOidcSecondFactor, createOidcSecondFactorStep, createProtectedSession, createRecoverySession, exchangeOidcSecondFactorStep, expectedUiOrigin, getDevelopmentNonce, getOidcSecondFactorIdentity, getOidcSecondFactorToken, getRecoveryIdentity, getRecoverySessionId, getSessionIdentity, getValidSessionId, hasRecentUserVerification, isDevelopmentBootstrapEnabled, isExpectedHost, isExpectedOrigin, isSessionIdValid, isValidSession, requiredSessionMode, revokeAllProtectedSessions, revokeSession, setOidcSecondFactorCookie, setRecoveryCookie, setSessionCookie } from '../services/session.js';
 import { bindAuthIdentity, getAuthConfiguration, saveAuthConfiguration } from '../services/auth-store.js';
 import { beginOidcAuthorization, completeOidcAuthorization, consumeOidcTransaction } from '../services/oidc.js';
 import { beginPasskeyAuthentication, beginPasskeyReauthentication, beginPasskeyRegistration, finishPasskeyAuthentication, finishPasskeyReauthentication, finishPasskeyRegistration, renamePasskey, revokePasskey } from '../services/passkeys.js';
@@ -291,7 +291,10 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
       return reply.code(400).send({ message: 'Indica un ID y un nombre de passkey válidos.' });
     }
     try {
-      const passkeys = await renamePasskey(request.body.id, request.body.name);
+      const passkeys = await renamePasskey(request.body.id, request.body.name, {
+        cookie: request.headers.cookie,
+        identityId: getSessionIdentity(request.headers.cookie, 'protected'),
+      });
       await audit(request, 'passkey.rename');
       reply.header('cache-control', 'no-store');
       return { passkeys: passkeys.map(({ id, name, createdAt, lastUsedAt, deviceType, backedUp }) => ({ id, name, createdAt, lastUsedAt, deviceType, backedUp })) };
@@ -313,7 +316,10 @@ export const sessionRoutes: FastifyPluginAsync = async (app) => {
       return reply.code(400).send({ message: 'Indica el ID de una passkey válida.' });
     }
     try {
-      const passkeys = await revokePasskey(request.body.id);
+      const passkeys = await revokePasskey(request.body.id, {
+        cookie: request.headers.cookie,
+        identityId: getSessionIdentity(request.headers.cookie, 'protected'),
+      });
       revokeAllProtectedSessions();
       await audit(request, 'passkey.revoke');
       reply.header('set-cookie', [clearSessionCookie('protected'), clearOidcSecondFactorCookie()]);

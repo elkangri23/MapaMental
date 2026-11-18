@@ -25,6 +25,8 @@
 5. Cada acceso protegido requiere primero el IdP y después la passkey con verificación de usuario. En Ajustes puedes registrar otras passkeys; los cambios de credenciales requieren una reautenticación reciente.
 6. Para añadir recuperación opcional, abre **Configurar app autenticadora** desde Ajustes, confirma la passkey y añade la clave manual mostrada a una app TOTP compatible. Introduce el código actual para confirmar. Guarda el secreto de forma segura; la aplicación solo lo vuelve a mostrar durante el enrolamiento.
 
+La gestión de passkeys pide el nombre y confirma renombrado/revocación dentro de la interfaz de Ajustes. La revocación cierra todas las sesiones protegidas. La baja de TOTP requiere reautenticación y confirmación en pantalla. Un fallo del Administrador de credenciales de Windows se muestra como error de operación; no significa que TOTP haya quedado desactivado.
+
 No continúes al modo protegido hasta haber comprobado que puedes usar al menos una passkey registrada. Conserva más de un método si te resulta posible.
 
 ## Recuperar tras perder las passkeys

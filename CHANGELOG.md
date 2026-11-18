@@ -1,5 +1,7 @@
 # Cambios
 
+- El modo protegido vuelve a validar sesión, identidad y reautenticación reciente al guardar cambios de passkeys; fallos del Credential Manager ya no se muestran como si TOTP estuviera desactivado. La gestión de passkeys y TOTP usa formularios de la app en vez de diálogos del navegador.
+
 - Las expansiones IA reciben el contenido de toda la rama seleccionada y filtran etiquetas repetidas aunque estén en niveles inferiores.
 - Se verificó una actualización aislada del instalador Windows de 0.1.0 a 0.1.1 conservando proyectos; los accesos de Inicio arrancan/detienen el servicio y `/api/health` informa la versión del manifiesto.
 - El canvas mantiene etiquetas accesibles en nodos y conexiones desde su carga/creación y reutiliza ambos arrays al mover o seleccionar nodos.

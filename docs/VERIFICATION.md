@@ -1,5 +1,14 @@
 # Criterios de aceptación
 
+## Endurecimiento de gestión de passkeys y recuperación TOTP — T-023/T-025/T-026 — 2026-11-18
+
+- Las operaciones serializadas de renombrado y revocación vuelven a comprobar que la cookie sigue siendo una sesión protegida, que corresponde a la identidad esperada y que la reautenticación WebAuthn sigue dentro de su ventana de cinco minutos antes de escribir.
+- La lectura TOTP solo trata un resultado nulo del Credential Manager como credencial ausente. Errores de acceso al llavero o contenido inválido se propagan y las rutas los responden mediante el manejador genérico; no se anuncian como «recuperación desactivada».
+- La baja TOTP ya no ignora errores de borrado del Credential Manager.
+- Añadir, renombrar y revocar passkeys, y confirmar la baja de TOTP, usan controles HTML en la aplicación con campo etiquetado, cancelación y explicación de efectos; no llaman a cuadros `prompt`/`confirm` del navegador.
+- `npm run build`: correcto para dominio, servidor y web. `git diff --check`: correcto.
+- No se ejecutaron pruebas automatizadas ni un flujo de autenticación en navegador. Siguen pendientes IdP, aplicaciones/autenticadores reales, lector de pantalla y casos negativos de extremo a extremo; ver [`informe de seguimiento`](reviews/2026-11-18-auth-mfa-follow-up.md).
+
 ## Serialización compartida en autosave — T-028 — 2026-11-17
 
 - Inspección del flujo: el snapshot serializado del mapa ahora se memoiza por las referencias de nodos/conexiones y se reutiliza en detección de cambios, preparación de guardado y comprobación de ediciones nuevas. Diapositivas y conversación también exponen snapshots memoizados. El efecto de autosave observa los snapshots persistibles y no vuelve a programarse solo por referencias transitorias si el contenido no cambió.

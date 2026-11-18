@@ -17,15 +17,21 @@ function serialize<T>(action: () => T | Promise<T>): Promise<T> {
 }
 
 function read(): RecordData | null {
-  try {
-    const text = entry().getPassword();
-    if (!text || text.length > 4096) return null;
-    const value = JSON.parse(text) as RecordData;
-    if (typeof value.secret !== 'string' || !/^[A-Z2-7]{32}$/.test(value.secret) || typeof value.enabled !== 'boolean'
-      || !Number.isSafeInteger(value.lastStep) || value.lastStep < -1 || !Number.isSafeInteger(value.failures) || value.failures < 0 || value.failures >= maxFailures
-      || !Number.isSafeInteger(value.lockedUntil) || value.lockedUntil < 0) return null;
-    return value;
-  } catch { return null; }
+  const text = entry().getPassword();
+  if (!text) return null;
+  if (text.length > 4096) throw new Error('El estado local de recuperación TOTP no supera la validación.');
+  let value: unknown;
+  try { value = JSON.parse(text); }
+  catch { throw new Error('El estado local de recuperación TOTP está dañado.'); }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('El estado local de recuperación TOTP no supera la validación.');
+  const record = value as Partial<RecordData>;
+  if (typeof record.secret !== 'string' || !/^[A-Z2-7]{32}$/.test(record.secret) || typeof record.enabled !== 'boolean'
+    || !Number.isSafeInteger(record.lastStep) || (record.lastStep as number) < -1
+    || !Number.isSafeInteger(record.failures) || (record.failures as number) < 0 || (record.failures as number) >= maxFailures
+    || !Number.isSafeInteger(record.lockedUntil) || (record.lockedUntil as number) < 0) {
+    throw new Error('El estado local de recuperación TOTP no supera la validación.');
+  }
+  return record as RecordData;
 }
 
 function write(value: RecordData) { entry().setPassword(JSON.stringify(value)); }
@@ -118,5 +124,11 @@ export async function confirmTotpEnrollment(sessionId: string, code: string) {
 export async function verifyTotpRecovery(code: string) { await validateAndConsume(code); }
 
 export async function disableTotp() {
-  return serialize(() => { try { entry().deletePassword(); } catch { /* Already absent. */ } pending.clear(); return { enabled: false }; });
+  return serialize(() => {
+    // The keyring API returns false only when the credential is absent and throws
+    // when an existing credential cannot be removed. Do not report success on I/O errors.
+    entry().deletePassword();
+    pending.clear();
+    return { enabled: false };
+  });
 }

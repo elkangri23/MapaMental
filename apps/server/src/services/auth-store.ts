@@ -168,8 +168,12 @@ export async function updateStoredPasskey(id: string, counter: number, lastUsedA
   });
 }
 
-export async function renameStoredPasskey(id: string, name: string) {
+export async function renameStoredPasskey(id: string, name: string, access: { cookie: string | undefined; identityId: string | null }) {
   return serializeMutation(async () => {
+    if (!access.identityId || !isValidSession(access.cookie, 'protected')
+      || getSessionIdentity(access.cookie, 'protected') !== access.identityId || !hasRecentUserVerification(access.cookie)) {
+      throw Object.assign(new Error('La sesión protegida o la reautenticación ya no es válida.'), { statusCode: 428 });
+    }
     const current = await getAuthConfiguration();
     if (!current || !name.trim() || name.length > 64) throw Object.assign(new Error('El nombre de passkey no es válido.'), { statusCode: 400 });
     const index = current.passkeys.findIndex((item) => item.id === id);
@@ -184,8 +188,12 @@ export async function renameStoredPasskey(id: string, name: string) {
   });
 }
 
-export async function removeStoredPasskey(id: string) {
+export async function removeStoredPasskey(id: string, access: { cookie: string | undefined; identityId: string | null }) {
   return serializeMutation(async () => {
+    if (!access.identityId || !isValidSession(access.cookie, 'protected')
+      || getSessionIdentity(access.cookie, 'protected') !== access.identityId || !hasRecentUserVerification(access.cookie)) {
+      throw Object.assign(new Error('La sesión protegida o la reautenticación ya no es válida.'), { statusCode: 428 });
+    }
     const current = await getAuthConfiguration();
     if (!current) throw Object.assign(new Error('No existe una configuración OIDC.'), { statusCode: 409 });
     if (current.passkeys.length <= 1) throw Object.assign(new Error('No puedes revocar la última passkey hasta configurar y probar un método de recuperación.'), { statusCode: 409 });

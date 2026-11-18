@@ -1,5 +1,7 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { authApi, type OidcConfigurationView } from '../api/auth.js';
+
+type PasskeyAction = { type: 'add' } | { type: 'rename' | 'revoke'; id: string; name: string } | { type: 'disable-totp' };
 
 interface Props {
   configuration: OidcConfigurationView;
@@ -12,6 +14,63 @@ export default function PasskeySettingsPanel({ configuration, onConfigurationCha
   const [busy, setBusy] = useState(false);
   const [totpSetup, setTotpSetup] = useState<{ secret: string; otpauthUrl: string } | null>(null);
   const [totpCode, setTotpCode] = useState('');
+  const [action, setAction] = useState<PasskeyAction | null>(null);
+  const [actionValue, setActionValue] = useState('');
+  const actionInputRef = useRef<HTMLInputElement>(null);
+  const actionConfirmRef = useRef<HTMLButtonElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!action) return;
+    if (action.type === 'revoke' || action.type === 'disable-totp') actionConfirmRef.current?.focus();
+    else actionInputRef.current?.focus();
+  }, [action]);
+
+  const beginAction = (next: PasskeyAction, trigger: HTMLElement, value = '') => {
+    returnFocusRef.current = trigger;
+    setActionValue(value);
+    setAction(next);
+  };
+
+  const closeAction = () => {
+    setAction(null);
+    setActionValue('');
+    requestAnimationFrame(() => returnFocusRef.current?.focus());
+  };
+
+  const submitAction = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!action || busy) return;
+    setBusy(true);
+    try {
+      if (action.type === 'add') {
+        const nextName = actionValue.trim();
+        if (!nextName) return;
+        onMessage('Verifica tu passkey actual y registra la nueva credencial…');
+        onConfigurationChange(await authApi.addPasskey(nextName));
+        onMessage('Passkey añadida.');
+      } else if (action.type === 'rename') {
+        const nextName = actionValue.trim();
+        if (!nextName || nextName === action.name) return;
+        onMessage('Verifica tu passkey para cambiar el nombre…');
+        const result = await authApi.renamePasskey(action.id, nextName);
+        onConfigurationChange({ ...configuration, passkeys: result.passkeys, passkeyCount: result.passkeys.length });
+        onMessage('Nombre de passkey actualizado.');
+      } else if (action.type === 'revoke') {
+        onMessage('Verifica tu passkey para revocar la credencial…');
+        const result = await authApi.revokePasskey(action.id);
+        onConfigurationChange({ ...configuration, passkeys: result.passkeys, passkeyCount: result.passkeys.length });
+        onMessage('Passkey revocada. Se han cerrado las sesiones protegidas; vuelve a iniciar sesión.');
+      } else {
+        onMessage('Verifica tu passkey para desactivar TOTP…');
+        onConfigurationChange(await authApi.disableTotp());
+        onMessage('Recuperación TOTP desactivada.');
+      }
+      closeAction();
+    } catch (error) {
+      onMessage(error instanceof Error ? error.message : 'No se pudo completar la operación de passkey.');
+    } finally { setBusy(false); }
+  };
 
   const registerInitial = async () => {
     setBusy(true); onMessage('Sigue las instrucciones del autenticador para registrar tu passkey…');
@@ -21,38 +80,6 @@ export default function PasskeySettingsPanel({ configuration, onConfigurationCha
       onConfigurationChange({ ...current, passkeyCount: result.passkeyCount });
       onMessage('Passkey registrada. El inicio protegido podrá completarse con esta credencial.');
     } catch (error) { onMessage(error instanceof Error ? error.message : 'No se pudo registrar la passkey.'); }
-    finally { setBusy(false); }
-  };
-
-  const addPasskey = async () => {
-    const nextName = window.prompt('Nombre para la nueva passkey', `Passkey ${((configuration.passkeyCount ?? 0) + 1).toLocaleString('es-ES')}`);
-    if (!nextName?.trim()) return;
-    setBusy(true); onMessage('Verifica tu passkey actual y registra la nueva credencial…');
-    try { onConfigurationChange(await authApi.addPasskey(nextName.trim())); onMessage('Passkey añadida.'); }
-    catch (error) { onMessage(error instanceof Error ? error.message : 'No se pudo añadir la passkey.'); }
-    finally { setBusy(false); }
-  };
-
-  const renamePasskey = async (id: string, currentName: string) => {
-    const nextName = window.prompt('Nuevo nombre para la passkey', currentName);
-    if (!nextName?.trim() || nextName.trim() === currentName) return;
-    setBusy(true); onMessage('Verifica tu passkey para cambiar el nombre…');
-    try {
-      const result = await authApi.renamePasskey(id, nextName.trim());
-      onConfigurationChange({ ...configuration, passkeys: result.passkeys, passkeyCount: result.passkeys.length });
-      onMessage('Nombre de passkey actualizado.');
-    } catch (error) { onMessage(error instanceof Error ? error.message : 'No se pudo renombrar la passkey.'); }
-    finally { setBusy(false); }
-  };
-
-  const revokePasskey = async (id: string, passkeyName: string) => {
-    if (!window.confirm(`¿Revocar la passkey «${passkeyName}»? Esta acción cerrará todas las sesiones protegidas.`)) return;
-    setBusy(true); onMessage('Verifica tu passkey para revocar la credencial…');
-    try {
-      const result = await authApi.revokePasskey(id);
-      onConfigurationChange({ ...configuration, passkeys: result.passkeys, passkeyCount: result.passkeys.length });
-      onMessage('Passkey revocada.');
-    } catch (error) { onMessage(error instanceof Error ? error.message : 'No se pudo revocar la passkey.'); }
     finally { setBusy(false); }
   };
 
@@ -79,14 +106,6 @@ export default function PasskeySettingsPanel({ configuration, onConfigurationCha
     finally { setBusy(false); }
   };
 
-  const disableTotp = async () => {
-    if (!window.confirm('¿Desactivar TOTP? Asegúrate de tener acceso a tus passkeys.')) return;
-    setBusy(true); onMessage('Verifica tu passkey para desactivar TOTP…');
-    try { onConfigurationChange(await authApi.disableTotp()); onMessage('Recuperación TOTP desactivada.'); }
-    catch (error) { onMessage(error instanceof Error ? error.message : 'No se pudo desactivar TOTP.'); }
-    finally { setBusy(false); }
-  };
-
   if (configuration.identityLinked && !(configuration.passkeyCount ?? 0) && configuration.mode === 'local') {
     return <div className="provider-passkey-setup">
       <label className="provider-field"><span>Nombre de la passkey</span><input value={name} maxLength={64} onChange={(event) => setName(event.target.value)} disabled={busy} /></label>
@@ -100,9 +119,16 @@ export default function PasskeySettingsPanel({ configuration, onConfigurationCha
     {(configuration.passkeys ?? []).map((key) => <div className="provider-passkey-row" key={key.id}>
       <span><strong>{key.name}</strong><small>{key.deviceType === 'multiDevice' ? 'Sincronizable' : 'Dispositivo único'} · {key.lastUsedAt ? `Usada ${new Date(key.lastUsedAt).toLocaleString()}` : `Registrada ${new Date(key.createdAt).toLocaleDateString()}`}</small></span>
       {configuration.mode === 'protected' && <div>
-        <button type="button" className="quiet-button" disabled={busy} onClick={() => void renamePasskey(key.id, key.name)}>Renombrar</button>
-        <button type="button" className="quiet-button" disabled={busy || (configuration.passkeyCount ?? 0) <= 1} onClick={() => void revokePasskey(key.id, key.name)}>Revocar</button>
+        <button type="button" className="quiet-button" disabled={busy || !!action} onClick={(event) => beginAction({ type: 'rename', id: key.id, name: key.name }, event.currentTarget, key.name)}>Renombrar</button>
+        <button type="button" className="quiet-button" disabled={busy || !!action || (configuration.passkeyCount ?? 0) <= 1} onClick={(event) => beginAction({ type: 'revoke', id: key.id, name: key.name }, event.currentTarget)}>Revocar</button>
       </div>}
+      {action && 'id' in action && action.id === key.id && <form className="provider-passkey-action" onSubmit={(event) => void submitAction(event)} aria-label={action.type === 'rename' ? `Renombrar ${key.name}` : `Confirmar revocación de ${key.name}`}>
+        {action.type === 'rename'
+          ? <label className="provider-field"><span>Nuevo nombre para {key.name}</span><input ref={actionInputRef} value={actionValue} maxLength={64} onChange={(event) => setActionValue(event.target.value)} required disabled={busy} /></label>
+          : <p role="status">Se revocará «{key.name}» y se cerrarán todas las sesiones protegidas. Tendrás que volver a iniciar sesión.</p>}
+        <div className="provider-passkey-row"><button ref={action.type === 'revoke' ? actionConfirmRef : undefined} type="submit" className="quiet-button" disabled={busy || (action.type === 'rename' && (!actionValue.trim() || actionValue.trim() === action.name))}>{action.type === 'rename' ? 'Guardar nombre' : 'Confirmar revocación'}</button>
+          <button type="button" className="quiet-button" disabled={busy} onClick={closeAction}>Cancelar</button></div>
+      </form>}
     </div>)}
     {configuration.mode === 'protected' && <section className="provider-passkey-setup" aria-label="Recuperación TOTP">
       <strong>Recuperación con código temporal</strong>
@@ -119,9 +145,13 @@ export default function PasskeySettingsPanel({ configuration, onConfigurationCha
           <button type="button" className="quiet-button" disabled={busy} onClick={() => { setTotpSetup(null); setTotpCode(''); }}>Cancelar</button></div>
       </form>}
       {!totpSetup && (configuration.totpEnabled
-        ? <button type="button" className="quiet-button" disabled={busy} onClick={() => void disableTotp()}>Desactivar recuperación TOTP</button>
+        ? <><button type="button" className="quiet-button" disabled={busy || !!action} onClick={(event) => beginAction({ type: 'disable-totp' }, event.currentTarget)}>Desactivar recuperación TOTP</button>
+          {action?.type === 'disable-totp' && <form className="provider-passkey-action" onSubmit={(event) => void submitAction(event)} aria-label="Confirmar desactivación de TOTP"><p role="status">Al desactivar TOTP perderás este método de recuperación. Asegúrate de conservar acceso a tus passkeys.</p>
+            <div className="provider-passkey-row"><button ref={actionConfirmRef} type="submit" className="quiet-button" disabled={busy}>Confirmar desactivación</button><button type="button" className="quiet-button" disabled={busy} onClick={closeAction}>Cancelar</button></div></form>}</>
         : <button type="button" className="quiet-button" disabled={busy} onClick={() => void setupTotp()}>Configurar app autenticadora</button>)}
     </section>}
-    {configuration.mode === 'protected' ? <button type="button" className="quiet-button" disabled={busy} onClick={() => void addPasskey()}>{busy ? 'Verificando…' : 'Añadir otra passkey'}</button> : <p>Para gestionar las credenciales, inicia en modo protegido.</p>}
+    {configuration.mode === 'protected' ? <><button type="button" className="quiet-button" disabled={busy || !!action} onClick={(event) => beginAction({ type: 'add' }, event.currentTarget, `Passkey ${((configuration.passkeyCount ?? 0) + 1).toLocaleString('es-ES')}`)}>{busy ? 'Verificando…' : 'Añadir otra passkey'}</button>
+      {action?.type === 'add' && <form className="provider-passkey-action" onSubmit={(event) => void submitAction(event)} aria-label="Añadir una passkey"><label className="provider-field"><span>Nombre para la nueva passkey</span><input ref={actionInputRef} value={actionValue} maxLength={64} onChange={(event) => setActionValue(event.target.value)} required disabled={busy} /></label>
+        <div className="provider-passkey-row"><button type="submit" className="quiet-button" disabled={busy || !actionValue.trim()}>{busy ? 'Esperando passkey…' : 'Continuar con passkey'}</button><button type="button" className="quiet-button" disabled={busy} onClick={closeAction}>Cancelar</button></div></form>}</> : <p>Para gestionar las credenciales, inicia en modo protegido.</p>}
   </div>;
 }

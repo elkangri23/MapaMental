@@ -47,6 +47,8 @@ button { color: inherit; }
 .protected-login-notice strong { display: block; font-size: 14px; }
 .protected-login-notice p { margin: 5px 0 0; color: #5f5a6d; font-size: 12px; line-height: 1.5; }
 .provider-passkey-setup { display: grid; gap: 8px; padding: 12px; border: 1px solid #e4e0ec; border-radius: 10px; background: #faf9fc; }
+.provider-passkey-action { display: grid; gap: 8px; flex-basis: 100%; width: 100%; padding: 10px; border: 1px solid #e4e0ec; border-radius: 8px; background: #faf9fc; }
+.provider-passkey-action p { margin: 0; color: #5e536f; font-size: 12px; line-height: 1.5; }
 .totp-setup-uri { display: block; overflow-wrap: anywhere; padding: 8px; border-radius: 6px; background: #f1eff5; }
 .future-project-notice strong { display: block; color: #37344a; font-size: 14px; }
 .future-project-notice p { margin: 6px 0 0; color: #5f5c70; font-size: 12px; line-height: 1.5; }
