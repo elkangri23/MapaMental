@@ -4,7 +4,8 @@ Actualizado: 2026-11-18. El estado se refiere a la documentación, no a que la f
 
 | Documento | Fuente de verdad para | Estado |
 |---|---|---|
-| [`../README.md`](../README.md) | Descripción, instalación, primeros pasos, mapas, IA y diapositivas | Reescrito como guía de inicio; verificación con el paquete sigue pendiente en T-014 |
+| [Español](../README.md) · [Français](../README.fr.md) · [English](../README.en.md) | Presentación visual, instalación y configuración | Tres ediciones con las mismas capturas del huerto escolar |
+| [Manual en español](guia/es.md) · [Guide en français](guia/fr.md) · [English guide](guia/en.md) | Mapa, chat, presentaciones, mantenimiento y preguntas frecuentes | Fuente del botón de ayuda en los tres idiomas |
 | [`designs/espacio-visual-personal.md`](designs/espacio-visual-personal.md) | Requisitos, alcance y comportamiento acordado | Revisado con Goldfish; implementación en curso |
 | [`IDEAS_FUTURAS.md`](IDEAS_FUTURAS.md) | Catálogo de extensiones posibles fuera de v1 | Ideas para priorizar; no son compromisos ni tareas activas |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Componentes y flujo de datos previsto/implementado | Trazabilidad IA verificada con mock; diferencias remanentes en el informe EGM del 2026-11-17 |

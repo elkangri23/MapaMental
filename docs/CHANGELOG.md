@@ -4,6 +4,8 @@
 
 ### Ayuda y guía de usuario
 
+- El README incluye capturas reales del huerto escolar y versiones en francés e inglés. El botón de ayuda ofrece el mismo manual de usuario que el repositorio en los tres idiomas.
+
 - Se añadió una ayuda integrada de inicio con instrucciones para mapas, IA, diapositivas, proveedores, privacidad y preguntas frecuentes.
 - Se reescribió el README con instalación Windows, desarrollo desde código, LM Studio, Ollama, FreeLLMAPI y límites actuales.
 - Se aclaró que las sugerencias se mejoran mediante contexto, prompts y filtros; no hay entrenamiento/fine-tuning y la aceptación local de LM Studio/Ollama sigue pendiente.

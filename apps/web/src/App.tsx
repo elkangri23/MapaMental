@@ -2041,7 +2041,7 @@ export default function App() {
           </footer>
         </form>
       </dialog>
-      <Suspense fallback={null}><HelpDialog open={helpOpen} onClose={() => setHelpOpen(false)} /></Suspense>
+      {helpOpen && <Suspense fallback={null}><HelpDialog onClose={() => setHelpOpen(false)} /></Suspense>}
       </main>
     </>
   );

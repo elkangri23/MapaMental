@@ -1,126 +1,81 @@
 # MapaMental · Espacio Visual
 
-**Espacio Visual** es una aplicación personal para Windows que convierte ideas en mapas mentales y presentaciones editables. Puedes trabajar sin IA, conectar un modelo local con Ollama o LM Studio, o usar un proveedor remoto compatible.
+**Español** · [Français](README.fr.md) · [English](README.en.md)
 
-> **Estado:** versión 0.1.x en desarrollo. Mapas, guardado local, chat, sugerencias, borradores de diapositiva y exportación están implementados. La calidad de las sugerencias se ha afinado mediante instrucciones, contexto por rama y filtros; **no se ha entrenado un modelo propio**. Las evaluaciones reales se hicieron a través de FreeLLMAPI. El adaptador de LM Studio existe, pero aún falta completar la aceptación con un servidor y modelos locales reales. Consulta [Estado del proyecto](docs/STATUS.md) y [Tareas pendientes](docs/TASKS.md).
+Espacio Visual es una aplicación para Windows que convierte ideas en mapas mentales y presentaciones editables. Selecciona una rama y el asistente te propone qué desarrollar a continuación. Puedes convertir una sugerencia en nuevas ideas, una tabla o una diapositiva. Tú decides qué entra en el proyecto.
 
-## Empieza en cinco minutos
+![Mapa del huerto escolar con tres ramas y el chat contextual a la derecha](docs/imagenes/mapa-del-huerto.png)
 
-1. Instala la aplicación con el paquete de Windows o arráncala desde el repositorio, como se explica abajo.
-2. La primera vez se abre un mapa de muestra con una idea central y cuatro ramas. Puedes editarlo o pulsar **＋ Proyecto** para empezar una idea nueva.
-3. Escribe una idea central. Pulsa **＋ Añadir idea** para crear una rama bajo la idea seleccionada.
-4. Si quieres ayuda de IA, abre **⚙ Proveedores de IA**, configura y activa un perfil y vuelve al mapa.
-5. Pulsa **Generar sugerencias** en el panel del chat. Elige una tarjeta para desarrollar su propuesta, revisa el borrador y aplícalo solo cuando estés conforme.
-6. Pulsa **Crear presentación** para convertir el mapa en diapositivas. El guardado es automático; espera a **Guardado local** antes de cerrar.
+[Instalación](#instalación) · [Primer mapa](#del-mapa-a-la-presentación) · [Configurar la IA](#conectar-un-modelo) · [Manual y preguntas frecuentes](docs/guia/es.md)
 
-El botón **?** dentro de la aplicación abre la guía completa con pasos para mapas, IA, diapositivas, proveedores y preguntas frecuentes.
+## Del mapa a la presentación
 
-## Instalación en Windows
+**1. Organiza la idea.** Pulsa **＋ Proyecto** y crea «Nuestro huerto escolar». En el lienzo vacío, pulsa **＋ Añadir idea** para crear la idea central y dale nombre con doble clic. Selecciónala y usa **＋ Añadir idea** para abrir tres ramas: calendario de siembra, riego por turnos y registro de cosecha. Haz doble clic en una tarjeta para renombrarla. Puedes trabajar sin IA.
 
-La primera entrega está dirigida a Windows 10/11 x64. Si recibiste un instalador `EspacioVisual-*-Setup-x64.exe`, ejecútalo para instalar por usuario y abre Espacio Visual desde el menú Inicio. Para detener el servicio usa el acceso de parada que acompaña al paquete.
+**2. Encuentra el siguiente paso.** Con un proveedor activo, pulsa **Generar sugerencias** en el panel *Piensa conmigo*. En este mapa, FreeLLMAPI propuso confirmar las fechas del calendario y crear una diapositiva para el registro de cosecha. Cada tarjeta identifica la rama de destino. Pulsa una para pedir un borrador, revisa qué cambiará y decide si aplicarlo. La última operación de IA se puede deshacer mientras siga vigente su revisión.
 
-Si recibiste el ZIP portátil:
+![Dos sugerencias reales para el huerto: confirmar fechas de siembra y crear una diapositiva de registro de cosecha](docs/imagenes/sugerencias-del-huerto.png)
 
-1. Extrae **todo** el ZIP en una carpeta local donde tengas permiso de escritura.
-2. Ejecuta `scripts\start-windows.cmd`.
-3. Espera a que se abra la aplicación en el navegador.
-4. Guarda y detén la aplicación con `scripts\stop-windows.cmd` antes de actualizar o retirar esa carpeta.
+**3. Prepara algo que puedas compartir.** Pulsa **Crear presentación** para agrupar las ideas del mapa localmente o pedir un borrador a la IA. En el editor puedes ordenar diapositivas, cambiar el texto y añadir tablas, recorridos o formularios con datos ficticios. **Imprimir / Guardar PDF** exporta la presentación completa. **Exportar PNG** guarda la diapositiva actual.
 
-El paquete incluye Node 24. Para actualizar, guarda tus cambios y ejecuta el instalador nuevo o extrae la versión nueva del ZIP. Los proyectos y ajustes están fuera de la carpeta de programa y se conservan; aun así, se recomienda verificar que aparece **Guardado local** antes de actualizar. Rutas de datos, solución de problemas y retirada se explican en [Instalación](docs/INSTALLATION.md).
+![Editor de la diapositiva «Del semillero al huerto» con ideas clave, recorrido visual y opciones de exportación](docs/imagenes/presentacion-del-huerto.png)
 
-## Ejecutar desde el código fuente
+## Instalación
 
-Requisitos: Windows 10/11 x64, Node.js 24 y npm. Desde PowerShell, en la raíz del repositorio:
+Elige la opción que corresponda a lo que tengas. La interfaz se abre en el navegador y el servicio se ejecuta en tu equipo.
+
+| Si tienes… | Cómo empezar en Windows 10/11 x64 |
+| --- | --- |
+| Un instalador `EspacioVisual-*-Setup-x64.exe` | Ejecuta el instalador para tu usuario y abre **Espacio Visual** desde Inicio. |
+| Un paquete ZIP portátil | Extrae todo el contenido en una carpeta local y ejecuta `scripts\start-windows.cmd`. El paquete incluye Node.js. |
+| Una copia del repositorio | Instala Node.js 24 con npm y sigue los pasos de abajo. El ZIP de código de GitHub corresponde a esta opción. |
+
+### Desde el código fuente
+
+Ejecuta en PowerShell, con Git instalado:
 
 ```powershell
-npm install
+git clone https://github.com/elkangri23/MapaMental.git
+cd MapaMental
+npm ci
 npm run dev
 ```
 
-El comando inicia el servicio y la interfaz de desarrollo en direcciones loopback. Para una compilación de producción local:
+Si ya tienes el repositorio, empieza con `npm ci` en su carpeta raíz. Abre `http://localhost:5173` cuando Vite indique que está listo. Para usar la compilación de producción local, detén el modo de desarrollo con **Ctrl+C** y ejecuta:
 
 ```powershell
 npm run build
 .\scripts\start-local.ps1
 ```
 
-Consulta [Desarrollo](docs/DEVELOPMENT.md) para preparar paquetes. No expongas el servidor en una red: la aplicación está diseñada para uso local.
+### Guardar, actualizar y recuperar
 
-## Configurar un modelo de IA
+Espera a **Guardado local** antes de cerrar. El paquete portátil se detiene con `scripts\stop-windows.cmd`; desde el código usa `.\scripts\start-local.ps1 -Stop` para detener el lanzador de producción. Para actualizar, ejecuta el instalador nuevo o extrae el ZIP nuevo en otra carpeta. Los proyectos se guardan por separado, en `Documents\EspacioVisual\Proyectos` dentro de tu carpeta de usuario. Abre **Copias** para restaurar una revisión anterior.
 
-Abre **⚙ Proveedores de IA**. Elige un tipo, indica el modelo, pulsa **Probar conexión** y luego **Guardar**. La prueba consulta el catálogo de modelos; que ese paso funcione no garantiza que el modelo acepte una generación de chat. La clave de un servicio remoto se guarda en el almacén de credenciales de Windows, no en el proyecto.
+## Conectar un modelo
 
-### LM Studio
+Abre **⚙ Proveedores de IA**, crea un perfil, introduce el modelo y pulsa **Probar conexión**. Elige el identificador que publique el servicio y pulsa **Guardar**. Para comprobar una generación, vuelve al mapa y pide sugerencias.
 
-1. Abre LM Studio, carga un modelo y activa su servidor local compatible con OpenAI.
-2. En Espacio Visual, elige **LM Studio**. La URL predeterminada es `http://127.0.0.1:1234`.
-3. Prueba la conexión y elige el ID de modelo que publique LM Studio. Si no aparece en la lista, escribe el ID manualmente.
+| Proveedor | Configuración |
+| --- | --- |
+| **FreeLLMAPI** | Inicia el gateway, elige **Compatible con OpenAI** y usa `http://127.0.0.1:31415/v1`. En una copia del repositorio, crea `.env` a partir de `.env.example` si aún no existe y rellena `FREELLMAPI_API_KEY` en tu equipo. |
+| **Ollama** | Descarga un modelo e inicia el servicio local en `http://127.0.0.1:11434`. |
+| **LM Studio** | Carga un modelo y activa el servidor local en `http://127.0.0.1:1234`. |
+| **OpenAI y Anthropic** | Elige el proveedor correspondiente e introduce tu clave en Ajustes. |
+| **Otro servicio compatible con OpenAI** | Introduce su URL base, el identificador del modelo y la credencial que requiera. Para servicios remotos, usa HTTPS. |
 
-La integración con la API compatible está implementada. En este proyecto todavía falta completar la validación de chat, sugerencias y propuestas con LM Studio y un modelo local real. Si la lista de modelos responde, pero la generación falla, revisa que el servidor siga activo, que el modelo esté cargado y que el ID coincida.
+**Privacidad.** El mapa y las copias se guardan en tu equipo. Antes de enviar una petición, abre **Ver contexto** para revisar lo que recibirá el modelo. FreeLLMAPI puede reenviar datos a un proveedor remoto aunque su dirección sea local. Guarda la clave de desarrollo en tu `.env` privado. Las claves introducidas en Ajustes se conservan en el almacén de credenciales de Windows.
 
-### Ollama
+## Ayuda y estado del proyecto
 
-Inicia Ollama y descarga/carga un modelo, por ejemplo desde su propia aplicación o CLI. En Espacio Visual, elige **Ollama**; la URL predeterminada es `http://127.0.0.1:11434`. Prueba la conexión y selecciona o escribe el nombre exacto del modelo.
+El botón **?** de la aplicación abre el mismo manual disponible aquí, también sin conexión. El selector cambia el idioma de la ayuda. Los controles del editor están en español.
 
-### FreeLLMAPI
+| Idioma | Presentación e instalación | Manual de uso y preguntas frecuentes |
+| --- | --- | --- |
+| Español | [Inicio](README.md) | [Guía de Espacio Visual](docs/guia/es.md) |
+| Français | [Présentation et installation](README.fr.md) | [Guide d’utilisation](docs/guia/fr.md) |
+| English | [Overview and installation](README.en.md) | [User guide](docs/guia/en.md) |
 
-FreeLLMAPI se configura como un perfil **Compatible con OpenAI**; no es un protocolo distinto. Para el gateway local descrito por el proyecto, la URL base es `http://127.0.0.1:31415/v1`. En un checkout de desarrollo, la clave puede colocarse en `.env` a partir de `.env.example`:
+**Versión 0.1.x en desarrollo.** Los mapas, las sugerencias, el editor de presentaciones y la exportación PDF/PNG están implementados. Las sugerencias se han evaluado con modelos reales mediante FreeLLMAPI. La aceptación completa con Ollama y LM Studio locales, la revisión manual de accesibilidad y parte del recorrido del instalador siguen abiertas. El modo protegido con OIDC, passkeys y recuperación TOTP es experimental.
 
-```dotenv
-FREELLMAPI_API_KEY=
-```
-
-Rellena el valor solo en tu copia local. `.env` está excluido de Git: no publiques ni pegues la clave en issues, documentación o chat. Aunque el gateway esté en `127.0.0.1`, FreeLLMAPI puede reenviar la petición a proveedores remotos.
-
-### Otros proveedores
-
-- **OpenAI:** API oficial y clave API.
-- **Anthropic:** API nativa y clave API.
-- **Compatible con OpenAI:** servidores propios que implementen el protocolo de chat compatible; indica su URL base y modelo.
-
-Las URL remotas requieren HTTPS. Para presupuestos, los perfiles remotos permiten fijar un límite mensual y tarifas por modelo; deja vacío el límite si no quieres definir uno. El cálculo es una estimación, no una garantía de facturación. Más detalles en [Proveedores y costes](docs/PROVIDERS.md).
-
-## Crear un mapa
-
-- La idea central es el tema o pregunta que quieres explorar.
-- Selecciona una idea antes de añadir otra: así la nueva se organiza como hija de esa rama.
-- Edita una idea con doble clic, o selecciónala y pulsa **Intro** o **F2**. Pulsa **Intro** para confirmar o **Escape** para cancelar.
-- Arrastra los tiradores de una idea a otra para dibujar una conexión. Las conexiones indican relaciones adicionales y no cambian la jerarquía.
-- Arrastra ideas para reorganizarlas, pulsa **Ordenar** para distribuirlas o cambia a **Vista de lista** para recorrerlas con teclado.
-- Para quitar una rama, selecciónala y usa la papelera. Se eliminan sus descendientes; las conexiones que ya no corresponden también desaparecen.
-
-El guardado es automático. **Copias** permite restaurar revisiones recuperables y guarda el contenido actual antes de restaurar.
-
-## Usar chat y sugerencias
-
-Selecciona una rama para acotar el trabajo. Puedes pedir sugerencias generales con **Generar sugerencias**, escribir una pregunta en el chat o pulsar una tarjeta para convertirla en una propuesta concreta. Las tarjetas pueden sugerir ampliar el mapa o crear diapositivas con tablas, recorridos o formularios de ejemplo.
-
-Antes de enviar, abre **Contexto enviado** para revisar el proveedor, el ámbito y los fragmentos de diapositivas incluidos. Con un proveedor remoto se envía ese contexto fuera del equipo. La IA devuelve un borrador: puedes revisarlo, modificar las partes editables, aplicarlo o descartarlo. La última operación se puede deshacer.
-
-Las instrucciones se han ajustado para priorizar acciones distintas y relevantes para la rama, utilizar vacíos explícitos del mapa y reducir datos inventados o duplicados. La validación exacta de etiquetas no detecta todas las paráfrasis semánticas; los modelos también difieren en calidad. Revisa siempre el contenido generado, sobre todo fechas, cifras, datos externos y recomendaciones.
-
-## Crear y exportar una presentación
-
-Pulsa **Crear presentación** y elige **Agrupar ideas del mapa** para una conversión local o **Generar con IA** para crear un borrador. La conversión local permite de 1 a 100 diapositivas. La generación IA permite de 1 a 12; si dejas la cantidad vacía, el modelo propone entre 3 y 7. La propuesta se muestra antes de reemplazar la presentación actual.
-
-En el editor puedes cambiar título, subtítulo, texto e ideas clave; añadir, mover y eliminar diapositivas; y añadir tablas, recorridos visuales o formularios ficticios. Puedes mejorar la diapositiva actual con IA, imprimir/guardar toda la presentación como PDF o exportar la diapositiva actual a PNG.
-
-Los formularios son estáticos y llevan datos ficticios: no recogen ni envían información. Los diagramas son representaciones visuales, no prototipos ejecutables.
-
-## Privacidad y límites conocidos
-
-- Los proyectos y copias se guardan en el equipo. No hay sincronización en nube ni colaboración multiusuario.
-- La aplicación solo envía datos a IA cuando el usuario solicita chat, sugerencias o generación. Revisa el contexto si usas un proveedor remoto.
-- Los modelos no se entrenan desde la aplicación y los resultados pueden incluir errores.
-- OIDC, passkeys y recuperación TOTP son un modo protegido experimental; consulta la [guía de autenticación](docs/AUTH_OPERATIONS.md) antes de activarlo.
-- Aún faltan aceptación real de LM Studio/Ollama locales, revisión manual completa WCAG y algunos recorridos del instalador. El detalle está en [Estado](docs/STATUS.md).
-
-## Documentación
-
-- [Instalación, actualización y retirada](docs/INSTALLATION.md)
-- [Desarrollo desde el código fuente](docs/DEVELOPMENT.md)
-- [Proveedores de IA, FreeLLMAPI y presupuestos](docs/PROVIDERS.md)
-- [Proyectos, guardado y copias](docs/STORAGE.md)
-- [Seguridad y privacidad](docs/SECURITY.md)
-- [Tareas y roadmap](docs/TASKS.md) · [Estado actual](docs/STATUS.md)
-- [Índice de documentación](docs/INDEX.md)
+Para trabajar en el proyecto, consulta el [índice técnico](docs/INDEX.md), el [estado actual](docs/STATUS.md) y la [lista de tareas](docs/TASKS.md).

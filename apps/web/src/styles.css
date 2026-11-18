@@ -210,6 +210,8 @@ kbd { border: 1px solid #e5e6ed; border-radius: 4px; padding: 2px 4px; backgroun
 .help-content li + li { margin-top: 5px; }
 .help-content kbd { padding: 1px 5px; border: 1px solid #dedce8; border-radius: 4px; background: #f8f7fb; font-size: 11px; }
 .help-content code { overflow-wrap: anywhere; padding: 1px 4px; border-radius: 4px; background: #f3f1f8; }
+.help-language { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+.help-language select { font: inherit; padding: 5px; }
 .help-content details { padding: 9px 0; border-bottom: 1px solid #f0eff5; }
 .help-content summary { color: #51469a; font-weight: 600; cursor: pointer; }
 .deck-dialog { width: min(440px, calc(100vw - 32px)); }

@@ -56,7 +56,7 @@ Implementado en T-010: la vista previa y el contexto del proveedor incluyen un r
 
 ## Cierre documental
 
-- [ ] **T-014 — Actualizar guías de instalación y uso contra el paquete real. Parcial:** README reescrito como guía de instalación y Getting Started; la aplicación incluye ayuda con mapa, IA, diapositivas, proveedores y FAQ; `PROVIDERS.md` ahora distingue evaluación remota FreeLLMAPI de aceptación local Ollama/LM Studio. Pendiente: recorrer la guía con el paquete final y terminar la comprobación de desinstalación desde Configuración. El recorrido de aceptación está en [Instalación](INSTALLATION.md#recorrido-pendiente-del-instalador).
+- [ ] **T-014 — Actualizar guías de instalación y uso contra el paquete real. Parcial:** README ilustrado y manual de uso disponibles en español, francés e inglés. El botón de ayuda carga los mismos manuales sin conexión y permite cambiar de idioma. Las capturas muestran un proyecto ficticio y sugerencias reales de FreeLLMAPI; `PROVIDERS.md` ahora distingue evaluación remota FreeLLMAPI de aceptación local Ollama/LM Studio. Pendiente: recorrer la guía con el paquete final y terminar la comprobación de desinstalación desde Configuración. El recorrido de aceptación está en [Instalación](INSTALLATION.md#recorrido-pendiente-del-instalador).
 
 ## Seguridad y accesibilidad transversal
 

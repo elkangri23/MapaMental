@@ -1,5 +1,7 @@
 # Cambios
 
+- El README y el manual están disponibles en español, francés e inglés. El recorrido del huerto escolar ilustra el mapa, dos sugerencias reales y el editor de diapositivas. La ayuda integrada permite elegir el idioma.
+
 - El botón `?` abre una guía de inicio y ayuda con mapas, sugerencias IA, diapositivas, proveedores, privacidad y FAQ; el README ahora explica instalación y primeros pasos.
 - El editor de nombres de ideas descarta el borrador y devuelve el foco al pulsar Escape.
 - La documentación separa el ajuste de prompts/filtros de un entrenamiento de modelos y aclara el estado de aceptación real de LM Studio y Ollama.

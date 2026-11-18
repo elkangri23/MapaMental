@@ -1,5 +1,13 @@
 # Criterios de aceptación
 
+## Manual ilustrado en español, francés e inglés (T-014)
+
+En la compilación de producción local se abrió la ayuda desde el lienzo en Chrome. Se seleccionaron español, francés e inglés. En cada caso cambiaron el título y el idioma del diálogo y aparecieron las seis preguntas frecuentes. El índice desplazó la ayuda hasta esa sección. Los tres manuales se incluyen en la compilación y se cargan al abrir la ayuda.
+
+Se comprobaron los destinos de 63 enlaces, anclas e imágenes en las tres ediciones del README y del manual. Las capturas proceden de una instancia con un proyecto de huerto escolar ficticio. El panel de sugerencias mostró dos tarjetas devueltas al usar FreeLLMAPI con `gpt-oss-120b`. El recorrido con el instalador final continúa en T-014.
+
+La auditoría de dependencias de producción con `npm audit --omit=dev` terminó sin avisos. La auditoría completa señaló [GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf) en la cadena de desarrollo de Vite. Las versiones afectadas ya figuraban en el archivo de bloqueo anterior a este cambio.
+
 ## Guía de inicio y ayuda integrada — T-014/T-016 — 2026-11-18
 
 - README reescrito con instalación por paquete, inicio desde el repositorio, primeros pasos, configuración de proveedores, creación/edición de mapas, IA, diapositivas, exportación y límites de privacidad.
