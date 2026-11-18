@@ -1,16 +1,16 @@
 # Índice de documentación
 
-Actualizado: 2026-11-17. El estado se refiere a la documentación, no a que la función exista en el producto.
+Actualizado: 2026-11-18. El estado se refiere a la documentación, no a que la función exista en el producto.
 
 | Documento | Fuente de verdad para | Estado |
 |---|---|---|
-| [`../README.md`](../README.md) | Qué es el proyecto y entrada rápida | Resumen global estructural y límites de contexto IA precisados; PDF de T-011 guardado y revisado |
+| [`../README.md`](../README.md) | Descripción, instalación, primeros pasos, mapas, IA y diapositivas | Reescrito como guía de inicio; verificación con el paquete sigue pendiente en T-014 |
 | [`designs/espacio-visual-personal.md`](designs/espacio-visual-personal.md) | Requisitos, alcance y comportamiento acordado | Revisado con Goldfish; implementación en curso |
 | [`IDEAS_FUTURAS.md`](IDEAS_FUTURAS.md) | Catálogo de extensiones posibles fuera de v1 | Ideas para priorizar; no son compromisos ni tareas activas |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Componentes y flujo de datos previsto/implementado | Trazabilidad IA verificada con mock; diferencias remanentes en el informe EGM del 2026-11-17 |
 | [`INSTALLATION.md`](INSTALLATION.md) | Instalación, inicio, actualización y desinstalación | Instalación, accesos, actualización y conservación comprobados; ruta de Configuración pendiente por fallo del control de UI |
 | [`DEVELOPMENT.md`](DEVELOPMENT.md) | Preparación del entorno de desarrollo | En curso |
-| [`PROVIDERS.md`](PROVIDERS.md) | Configuración de modelos y presupuesto | Mock Ollama validado y ciclos de IA evaluados con FreeLLMAPI; Ollama/LM Studio locales reales pendientes |
+| [`PROVIDERS.md`](PROVIDERS.md) | Configuración de modelos, FreeLLMAPI, LM Studio, calidad y presupuesto | FreeLLMAPI se evaluó con modelos reales; integración LM Studio compilada, aceptación local pendiente |
 | [`STORAGE.md`](STORAGE.md) | Archivo de proyecto, guardado, copias y migraciones | Contrato JSON v3 en ADR-0015; volumen fijo validado al inicio en ADR-0017; migración 2→3 y esquema futuro de solo lectura verificados |
 | [`SECURITY.md`](SECURITY.md) | Límites locales, credenciales, datos remotos y registros | Checks SSRF, TLS/SNI local y concurrencia IA limitada; siguen pendientes DNS rebinding y otros controles |
 | [`THREAT_MODEL.md`](THREAT_MODEL.md) | Activos, límites de confianza, adversarios, amenazas y riesgos residuales | Modelo inicial; pendiente contraste dinámico con los controles abiertos |
@@ -20,7 +20,7 @@ Actualizado: 2026-11-17. El estado se refiere a la documentación, no a que la f
 | [`VERIFICATION.md`](VERIFICATION.md) | Criterios de aceptación y escenarios de revisión | Contexto de diapositivas recorrido con proveedor simulado; PDF final guardado y estructura etiquetada inspeccionada |
 | [`2026-11-16_DRIFT_REPORT.md`](2026-11-16_DRIFT_REPORT.md) | Informe histórico de diferencias de diseño/código | Conserva el estado revisado el 2026-11-16 |
 | [`2026-11-17_DRIFT_REPORT.md`](2026-11-17_DRIFT_REPORT.md) | Diferencias actuales entre documentos de diseño y código | Revisión cerrada en T-004; discrepancias corregidas |
-| [`STATUS.md`](STATUS.md) | Resumen de estado, bloqueos y próximo trabajo | T-004 cerrada; tareas activas actualizadas el 2026-11-17 |
+| [`STATUS.md`](STATUS.md) | Resumen de estado, bloqueos y próximo trabajo | T-004 cerrada; README/ayuda en curso; tareas actualizadas el 2026-11-18 |
 | [`ROADMAP.md`](ROADMAP.md) | Hitos y condiciones de salida | T-011 completada; resumen global de contexto IA implementado; validaciones externas/locales siguen pendientes |
 | [`TASKS.md`](TASKS.md) | Estado detallado de trabajo | Fuente única de progreso; T-010 incorpora resumen global estructural |
 | [`CHANGELOG.md`](CHANGELOG.md) | Cambios visibles agrupados por versión | Registro de cambios desde esta auditoría |

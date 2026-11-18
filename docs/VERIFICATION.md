@@ -1,5 +1,14 @@
 # Criterios de aceptación
 
+## Guía de inicio y ayuda integrada — T-014/T-016 — 2026-11-18
+
+- README reescrito con instalación por paquete, inicio desde el repositorio, primeros pasos, configuración de proveedores, creación/edición de mapas, IA, diapositivas, exportación y límites de privacidad.
+- El botón `?` se conecta a un diálogo nativo con secciones navegables de Primeros pasos, mapa, IA, diapositivas, proveedores y FAQ. El diálogo usa `showModal`, botón de cierre, navegación por anclas y se cierra con Escape.
+- La ayuda diferencia LM Studio, FreeLLMAPI como gateway compatible con OpenAI y los proveedores remotos. Aclara que se afinan prompts/contexto/filtros, no pesos de modelos, y que el adaptador LM Studio aún no tiene aceptación contra un servidor local real.
+- Al preparar las instrucciones se corrigió el comportamiento de Escape durante la edición de una idea para descartar el borrador y devolver foco al control. Esta corrección se compiló; no se hizo recorrido manual de UI/teclado.
+- `npm run build`: pasó para dominio, servidor y cliente. `git diff --check`: pasó.
+- T-014 sigue parcial hasta recorrer las instrucciones con el paquete final; T-016 sigue pendiente de lector de pantalla y revisión manual completa.
+
 ## Endurecimiento de gestión de passkeys y recuperación TOTP — T-023/T-025/T-026 — 2026-11-18
 
 - Las operaciones serializadas de renombrado y revocación vuelven a comprobar que la cookie sigue siendo una sesión protegida, que corresponde a la identidad esperada y que la reautenticación WebAuthn sigue dentro de su ventana de cinco minutos antes de escribir.

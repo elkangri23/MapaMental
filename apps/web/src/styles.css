@@ -196,6 +196,22 @@ kbd { border: 1px solid #e5e6ed; border-radius: 4px; padding: 2px 4px; backgroun
 .recovery-list button { text-align: left; padding: 6px 8px; border: 1px solid #efe4ca; border-radius: 6px; color: #806c48; font-size: 9px; background: #fffdf8; cursor: pointer; }
 .recovery-overlay { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px; background: rgba(37,35,55,.24); backdrop-filter: blur(3px); }
 .recovery-dialog { width: min(440px, 100%); max-height: min(560px, 85vh); overflow: auto; padding: 20px; border: 1px solid #ebe9f4; border-radius: 16px; background: #fff; box-shadow: 0 22px 70px rgba(39,35,77,.18); }
+.help-dialog { width: min(820px, calc(100vw - 32px)); max-height: min(88vh, 920px); padding: 22px; }
+.help-dialog::backdrop { background: rgba(37,35,55,.38); backdrop-filter: blur(3px); }
+.help-dialog .recovery-dialog__head { position: sticky; top: -22px; z-index: 1; margin: -22px -22px 12px; padding: 18px 22px 14px; background: #fff; }
+.help-nav { display: flex; flex-wrap: wrap; gap: 7px; padding: 6px 0 14px; border-bottom: 1px solid #eeedf4; }
+.help-nav a { padding: 6px 9px; border-radius: 7px; color: #5548a5; background: #f5f3ff; font-size: 12px; text-decoration: none; }
+.help-nav a:focus-visible, .help-nav a:hover { text-decoration: underline; outline: 2px solid #8171db; outline-offset: 2px; }
+.help-content { color: #505164; font-size: 13px; line-height: 1.6; }
+.help-content section { padding: 12px 0; border-bottom: 1px solid #f0eff5; scroll-margin-top: 70px; }
+.help-content h2 { margin: 0 0 8px; color: #414255; font-family: Georgia, serif; font-size: 19px; font-weight: 500; }
+.help-content p { margin: 8px 0 0; }
+.help-content ul, .help-content ol { margin: 8px 0 0; padding-left: 22px; }
+.help-content li + li { margin-top: 5px; }
+.help-content kbd { padding: 1px 5px; border: 1px solid #dedce8; border-radius: 4px; background: #f8f7fb; font-size: 11px; }
+.help-content code { overflow-wrap: anywhere; padding: 1px 4px; border-radius: 4px; background: #f3f1f8; }
+.help-content details { padding: 9px 0; border-bottom: 1px solid #f0eff5; }
+.help-content summary { color: #51469a; font-weight: 600; cursor: pointer; }
 .deck-dialog { width: min(440px, calc(100vw - 32px)); }
 .deck-dialog::backdrop { background: rgba(32, 28, 51, .36); }
 .deck-dialog .provider-field { margin-top: 14px; }
@@ -364,6 +380,9 @@ button:disabled:focus-visible { outline-color: #5143b5; }
   .composer-wrap { position: sticky; bottom: 0; background: #fff; z-index: 3; }
 }
 @media (max-width: 520px) {
+  .help-dialog { width: calc(100vw - 16px); max-height: 94vh; padding: 15px; }
+  .help-dialog .recovery-dialog__head { top: -15px; margin: -15px -15px 10px; padding: 14px 15px 12px; }
+  .help-nav a { font-size: 11px; }
   .topbar { align-items: flex-start; }
   .brand-divider, .project-name, .chevron { display: none; }
   .topbar__right { width: 100%; justify-content: space-between; }

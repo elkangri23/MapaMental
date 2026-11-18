@@ -1,5 +1,7 @@
 # Proveedores de modelos
 
+La aplicación incluye perfiles para OpenAI, Anthropic, Ollama, LM Studio y servidores que implementen el protocolo compatible con OpenAI. La compatibilidad de protocolo no implica que todos los modelos den la misma calidad.
+
 ## FreeLLMAPI y clave en .env
 
 En la carpeta principal de MapaMental, crea un archivo `.env` a partir de `.env.example` y rellena `FREELLMAPI_API_KEY`. En **Proveedores de IA**, crea o selecciona un perfil **Compatible con OpenAI** con URL base `http://127.0.0.1:31415/v1`. Deja vacío el campo de clave y usa **Probar conexión** para cargar los modelos.
@@ -7,19 +9,19 @@ En la carpeta principal de MapaMental, crea un archivo `.env` a partir de `.env.
 La clave del archivo tiene prioridad para esa URL exacta. El servicio vuelve a leerla en cada conexión o generación, así que puedes reemplazarla sin reiniciar. Git excluye `.env` y solo versiona la plantilla vacía. FreeLLMAPI puede enviar peticiones a proveedores remotos aunque la URL de entrada sea local.
 
 
-**Estado: configuración y prueba de conexión implementadas; chat, sugerencias contextuales y propuesta de expansión del mapa están implementados parcialmente en T-010.**
+**Estado (2026-11-18):** configuración y adaptadores implementados. Chat, sugerencias y propuestas se han evaluado con modelos reales a través de FreeLLMAPI; Ollama y LM Studio locales siguen pendientes de aceptación integral en este equipo. La prueba de conexión consulta el catálogo de modelos y no garantiza que el modelo complete una generación.
 
-## Proveedores previstos
+## Tipos de proveedor disponibles
 
 | Proveedor | Conexión | Credenciales |
 |---|---|---|
-| OpenAI | Adaptador de API compatible | Almacén seguro de Windows |
-| Anthropic | Adaptador nativo | Almacén seguro de Windows |
-| Ollama | API compatible disponible en el servidor local | Ninguna por defecto |
-| LM Studio | API compatible en el servidor local | Ninguna por defecto |
-| Personalizado | Protocolo compatible con OpenAI, URL base, modelo y credencial opcional | Almacén seguro de Windows |
+| OpenAI | API compatible | Almacén seguro de Windows |
+| Anthropic | API nativa | Almacén seguro de Windows |
+| Ollama | API local; predeterminado `http://127.0.0.1:11434` | Ninguna por defecto |
+| LM Studio | API compatible con OpenAI; predeterminado `http://127.0.0.1:1234` | Ninguna por defecto |
+| Compatible con OpenAI | URL base y modelo indicados por el usuario | Almacén seguro de Windows o `.env` para el gateway FreeLLMAPI documentado |
 
-Cada perfil tendrá nombre, protocolo, URL base cuando corresponda, modelo, estado local/remoto y credencial referenciada fuera del proyecto. La selección de modelos podrá descubrirse si el servidor lo permite o introducirse manualmente. La pantalla incluirá comprobación de conexión y errores accionables.
+Cada perfil tiene nombre, tipo, URL base, modelo, selección activa y credencial referenciada fuera del proyecto. Los modelos se pueden descubrir si el servidor lo permite o introducir manualmente.
 
 ## Implementación actual
 
@@ -30,7 +32,15 @@ Cada perfil tendrá nombre, protocolo, URL base cuando corresponda, modelo, esta
 - URL remotas requieren HTTPS; HTTP solo se acepta para `localhost`, `127.0.0.1` o `::1`. No se permiten credenciales en URL, query o fragmento. La petición no sigue redirecciones, resuelve DNS y fija el socket a las direcciones públicas comprobadas. Los perfiles persistidos se revalidan al leer; la respuesta se limita a 1 MiB.
 - El perfil activo alimenta chat, sugerencias y generación de propuesta. En diapositivas, la propuesta incluye solo el borrador activo y las ideas fuente vinculadas; la interfaz indica el número de ideas incluidas y excluye las demás ramas. Hay atajos para ampliar, añadir recorrido o formulario ficticio. La propuesta se revisa antes de aplicar y la última aplicación se puede deshacer de forma persistente. El modelo no modifica directamente el proyecto. La integración comunica etapas de progreso por SSE y persiste el historial por proyecto. Chrome verificó que cancelar cierra el HTTP con un proveedor lento simulado. El proveedor real puede mantener cómputo interno.
 
-Recorrido manual: Chromium guardó un perfil OpenAI con una credencial de marcador y verificó que el archivo JSON no contenía esa cadena; luego eliminó el perfil, lo que elimina también la clave del almacén. Un perfil Ollama simulado verificó chat, sugerencias y cambios de mapa. Otro mock Ollama en `http://localhost` verificó propuesta de diapositiva, revisión, aplicación, persistencia tras recarga y deshacer; esto valida cableado y formato, no conexión a Ollama real ni calidad de modelo.
+Recorridos: la UI y el servidor se probaron con Ollama simulado para chat, sugerencias, propuestas y ciclo aplicar/persistir/deshacer; una prueba de credenciales verificó que una clave ficticia no aparece en `providers.json`. Con FreeLLMAPI real se evaluaron gpt-oss-20b y gpt-oss-120b para sugerencias por rama, tablas de calendario, recorridos, formularios ficticios, persistencia y deshacer; también se observaron respuestas incompletas y desviaciones con algunos modelos. Estas evaluaciones sirvieron para ajustar prompts, contexto y filtros, pero no constituyen una garantía general de calidad ni un fine-tuning.
+
+### Calidad de sugerencias: qué se afinó y qué no
+
+- El contexto incluye el ámbito seleccionado, ancestros, relaciones pertinentes y fragmentos limitados de diapositivas vinculadas; la vista previa permite revisar qué se enviará.
+- Las instrucciones priorizan acciones diferentes, la rama seleccionada y brechas expresamente indicadas en el mapa. El servidor descarta destinos inválidos, etiquetas exactas duplicadas en descendientes y algunos cruces temáticos con ramas hermanas.
+- Se recuperan formatos explícitos (tabla, diagrama/recorrido o formulario ficticio) que algunos modelos omiten. Los datos no respaldados pueden marcarse como pendientes de confirmar.
+- No se entrenaron ni ajustaron pesos de modelos. El filtro exacto no detecta todas las paráfrasis semánticas; la respuesta depende del modelo, su configuración y el contenido del proyecto.
+- LM Studio usa el adaptador compatible con OpenAI y consulta `/v1/models`. El adaptador está compilado y los recorridos simulados comprueban el cableado; falta aceptar chat, sugerencias y propuestas contra un servidor/modelo LM Studio real. La aceptación real de Ollama local también sigue pendiente.
 
 ## Presupuesto
 
@@ -41,4 +51,4 @@ Al llegar al presupuesto conocido se bloquean nuevas peticiones. La petición qu
 La cifra es una estimación basada en los tokens reportados y las tarifas indicadas. La factura del proveedor puede incluir impuestos, precios distintos por caché u otros cargos. El servicio admite una generación remota simultánea por perfil. Las peticiones a `localhost`, `127.0.0.1` y `::1` quedan fuera del presupuesto.
 
 
-La comprobación DNS fijada al socket se incorporó en la auditoría del 2026-11-15; falta un recorrido de conexión con proveedor real/local en Windows. Consulta [`SECURITY.md`](SECURITY.md) y [`reviews/2026-11-15-security-audit.md`](reviews/2026-11-15-security-audit.md).
+La comprobación DNS fijada al socket se incorporó en la auditoría del 2026-11-15. FreeLLMAPI real ya se ha usado para evaluación semántica; la aceptación con Ollama/LM Studio locales reales en Windows sigue pendiente. Consulta [`SECURITY.md`](SECURITY.md) y [`reviews/2026-11-15-security-audit.md`](reviews/2026-11-15-security-audit.md).

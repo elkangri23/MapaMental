@@ -4,6 +4,8 @@ Esta es la lista única de trabajo. Marca una tarea como terminada solo cuando c
 
 - **Seguimiento de T-016 — reflujo y objetivos táctiles en móvil.** En Chrome, Lighthouse marcó a 320 px el pie del editor de diapositivas: su contenido se solapaba con «Copias» y la zona táctil libre quedaba en 22 px. Se hizo crecer el lienzo con el contenido, se amplió el botón a 28 px y se separaron los elementos. Lighthouse móvil volvió a 100/100 en Accessibility; el pie ya no se solapa. Se alineó también Vite a loopback IPv6 porque el servidor solo escucha allí. Informe: [`reviews/2026-11-17-wcag-aa-audit.md`](reviews/2026-11-17-wcag-aa-audit.md). T-016 sigue parcial: faltan lector de pantalla y recorridos manuales completos.
 
+- **Seguimiento de T-016 — cancelar edición de una idea.** La ayuda de inicio destapó que `Escape` sacaba el foco pero confirmaba el texto en lugar de descartarlo. El editor ahora conserva el nombre anterior y devuelve el foco al control de la idea al cancelar. Build compilado; no se repitió un recorrido manual de teclado ni de lector de pantalla.
+
 - **Seguimiento de T-016/T-028 — recorrido breve de teclado y etiquetas.** Chrome aislado confirmó Tab→skip link, Enter→`#main-content` con foco en `main`; F2/Enter cambió una idea y el árbol accesible anunció su nuevo nombre en nodo y conexión. El autosave llegó a «Guardado local». El foco del nodo se estableció por script y se usó DevTools para la entrada; no se cuenta como prueba física ni lector de pantalla. Ver [`VERIFICATION.md`](VERIFICATION.md#recorrido-chromium-aislado-de-etiquetas-y-teclado--t-016t-028). El perfil temporal se cerró, pero no se pudo retirar: la política de ejecución bloqueó la eliminación recursiva de `%TEMP%\\mymap-roadmap-fc454afb7401436a964390b4ad824c6f`.
 
 - **Seguimiento de T-015/T-026 — errores internos en autenticación.** La revisión del 2026-11-17 encontró handlers que devolvían `error.message` de excepciones inesperadas como HTTP 400. Se centralizó el manejo: errores de aplicación 4xx conservan su mensaje; fallos imprevistos se responden como 500 genérico y el log solo guarda ID de petición y nombre del tipo. Build, `npm audit` y `git diff --check` pasaron. Evidencia y límites en [`reviews/2026-11-17-security-audit.md`](reviews/2026-11-17-security-audit.md). T-015/T-026 siguen parciales; no es pentest.
@@ -54,7 +56,7 @@ Implementado en T-010: la vista previa y el contexto del proveedor incluyen un r
 
 ## Cierre documental
 
-- [ ] **T-014 — Actualizar guías de instalación y uso contra el paquete real.** Criterio: instalación, inicio, actualización, datos y desinstalación recorridos en el paquete final; quitar estados de “previsto” solo tras comprobarlos. El recorrido de aceptación está en [Instalación](INSTALLATION.md#recorrido-pendiente-del-instalador).
+- [ ] **T-014 — Actualizar guías de instalación y uso contra el paquete real. Parcial:** README reescrito como guía de instalación y Getting Started; la aplicación incluye ayuda con mapa, IA, diapositivas, proveedores y FAQ; `PROVIDERS.md` ahora distingue evaluación remota FreeLLMAPI de aceptación local Ollama/LM Studio. Pendiente: recorrer la guía con el paquete final y terminar la comprobación de desinstalación desde Configuración. El recorrido de aceptación está en [Instalación](INSTALLATION.md#recorrido-pendiente-del-instalador).
 
 ## Seguridad y accesibilidad transversal
 

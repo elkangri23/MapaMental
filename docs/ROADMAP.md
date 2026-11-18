@@ -52,6 +52,10 @@ No se incluye colaboración en tiempo real, formularios funcionales, prototipos 
 
 ## Progreso vigente
 
+### Guía de inicio y ayuda integrada — T-014 — 2026-11-18
+
+El README ahora cubre instalación, primeros pasos, configuración de Ollama/LM Studio/FreeLLMAPI, creación de mapas, uso de sugerencias y diapositivas, exportación y privacidad. El botón `?` abre una guía accesible con instrucciones de uso y FAQ. La documentación aclara que las sugerencias se mejoraron con prompts, contexto y filtros, no con entrenamiento; FreeLLMAPI sí se evaluó con modelos reales, mientras la aceptación de LM Studio/Ollama locales sigue pendiente. Al preparar el contenido se corrigió también la cancelación con Escape en la edición de ideas. `npm run build` y `git diff --check` pasaron. T-014 permanece parcial hasta recorrer la guía con el paquete final y la desinstalación visual.
+
 ### Endurecimiento de OIDC, passkeys y recuperación TOTP — T-023/T-025/T-026 — 2026-11-18
 
 La gestión de credenciales revalida sesión protegida, identidad y UV reciente dentro de las mutaciones serializadas; errores de acceso o corrupción del Credential Manager ya no se interpretan como TOTP desactivado, y la baja no oculta fallos de borrado. Los cuadros del navegador para añadir/renombrar/revocar passkeys y desactivar TOTP se reemplazaron por formularios de la app con etiquetas, foco y cancelación. Build de producción y `git diff --check` pasaron. Estas correcciones cierran deuda de código y de interfaz, pero no la aceptación M5: faltan IdP, autenticadores y app TOTP reales, casos negativos completos y revisión manual con lector de pantalla. [Evidencia](VERIFICATION.md#endurecimiento-de-gestión-de-passkeys-y-recuperación-totp--t-023t-025t-026--2026-11-18) e [informe](reviews/2026-11-18-auth-mfa-follow-up.md).

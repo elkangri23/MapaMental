@@ -9,6 +9,7 @@ import { ProjectRequestError, projectsApi } from './api/projects.js';
 import { providersApi } from './api/providers.js';
 import { authApi, OidcStepExpiredError, type OidcConfigurationView } from './api/auth.js';
 const PasskeySettingsPanel = lazy(() => import('./components/PasskeySettingsPanel.js'));
+const HelpDialog = lazy(() => import('./components/HelpDialog.js'));
 const MapCanvas = lazy(() => import('./MapCanvas.js'));
 import { aiApi, type GenerationOptions } from './api/ai.js';
 import { SlideTableBlock } from './SlideTableBlock.js';
@@ -163,6 +164,7 @@ export default function App() {
   const [selectedNodeId, setSelectedNodeId] = useState('root');
   const [health, setHealth] = useState<'checking' | 'online' | 'offline'>('checking');
   const [notice, setNotice] = useState('');
+  const [helpOpen, setHelpOpen] = useState(false);
   const [providerDialogOpen, setProviderDialogOpen] = useState(false);
   const [providerConfiguration, setProviderConfiguration] = useState<ProviderConfiguration>({ activeId: null, profiles: [] });
   const [providerForm, setProviderForm] = useState<ProviderForm>({ name: 'Ollama local', kind: 'ollama', baseUrl: 'http://127.0.0.1:11434', model: '', apiKey: '' });
@@ -1664,7 +1666,7 @@ export default function App() {
           <button className={`rail-button${workspaceView === 'map' ? ' rail-button--active' : ''}`} aria-label="Mapa mental" aria-current={workspaceView === 'map' ? 'page' : undefined} title="Mapa mental" onClick={() => setWorkspaceView('map')}><span>✳</span></button>
           <button className={`rail-button${workspaceView === 'slides' ? ' rail-button--active' : ''}`} aria-label="Presentación" aria-current={workspaceView === 'slides' ? 'page' : undefined} title="Presentación" onClick={() => setWorkspaceView('slides')}><span>▤</span></button>
           <div className="rail-spacer" />
-          <button className="rail-button rail-button--help" aria-label="Ayuda y documentación, pendiente" title="Ayuda y documentación (pendiente)" disabled><span>?</span></button>
+          <button className="rail-button rail-button--help" aria-label="Abrir ayuda y guía de inicio" title="Ayuda y guía de inicio" onClick={() => setHelpOpen(true)}><span>?</span></button>
         </aside>
 
         <section className="canvas-column" aria-label={workspaceView === 'map' ? 'Mapa mental' : 'Editor de presentación'}>
@@ -2039,6 +2041,7 @@ export default function App() {
           </footer>
         </form>
       </dialog>
+      <Suspense fallback={null}><HelpDialog open={helpOpen} onClose={() => setHelpOpen(false)} /></Suspense>
       </main>
     </>
   );

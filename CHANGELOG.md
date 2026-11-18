@@ -1,5 +1,9 @@
 # Cambios
 
+- El botón `?` abre una guía de inicio y ayuda con mapas, sugerencias IA, diapositivas, proveedores, privacidad y FAQ; el README ahora explica instalación y primeros pasos.
+- El editor de nombres de ideas descarta el borrador y devuelve el foco al pulsar Escape.
+- La documentación separa el ajuste de prompts/filtros de un entrenamiento de modelos y aclara el estado de aceptación real de LM Studio y Ollama.
+
 - El modo protegido vuelve a validar sesión, identidad y reautenticación reciente al guardar cambios de passkeys; fallos del Credential Manager ya no se muestran como si TOTP estuviera desactivado. La gestión de passkeys y TOTP usa formularios de la app en vez de diálogos del navegador.
 
 - Las expansiones IA reciben el contenido de toda la rama seleccionada y filtran etiquetas repetidas aunque estén en niveles inferiores.

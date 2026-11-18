@@ -2,6 +2,13 @@
 
 ## Sin publicar
 
+### Ayuda y guía de usuario
+
+- Se añadió una ayuda integrada de inicio con instrucciones para mapas, IA, diapositivas, proveedores, privacidad y preguntas frecuentes.
+- Se reescribió el README con instalación Windows, desarrollo desde código, LM Studio, Ollama, FreeLLMAPI y límites actuales.
+- Se aclaró que las sugerencias se mejoran mediante contexto, prompts y filtros; no hay entrenamiento/fine-tuning y la aceptación local de LM Studio/Ollama sigue pendiente.
+- Escape cancela la edición del nombre de una idea y restaura el foco.
+
 ### Autenticación y recuperación
 
 - El renombrado y la revocación de passkeys revalidan sesión, identidad y UV reciente justo antes de modificar el almacén.

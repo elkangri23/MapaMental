@@ -38,8 +38,10 @@ function IdeaNodeView({ id, data, selected }: NodeProps<IdeaNode>) {
   const onLabelChange = useContext(LabelChangeContext);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
+  const cancelEditRef = useRef(false);
+  const labelButtonRef = useRef<HTMLButtonElement>(null);
   const tone = data.tone ?? 'lavender';
-  const startEditing = () => { setDraft(data.label); setEditing(true); };
+  const startEditing = () => { cancelEditRef.current = false; setDraft(data.label); setEditing(true); };
   return (
     <div className={`idea-node idea-node--${tone}${selected ? ' is-selected' : ''}`}>
       <Handle type="target" position={Position.Left} />
@@ -50,13 +52,27 @@ function IdeaNodeView({ id, data, selected }: NodeProps<IdeaNode>) {
             setDraft(event.target.value);
           }}
           onBlur={() => {
+            if (cancelEditRef.current) {
+              cancelEditRef.current = false;
+              setEditing(false);
+              return;
+            }
             const label = draft.trim();
             if (label && label !== data.label) onLabelChange(id, label);
             setEditing(false);
           }}
-          onKeyDown={(event) => { if (event.key === 'Enter' || event.key === 'Escape') event.currentTarget.blur(); }} />
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') { event.preventDefault(); event.currentTarget.blur(); }
+            else if (event.key === 'Escape') {
+              event.preventDefault();
+              cancelEditRef.current = true;
+              setDraft(data.label);
+              setEditing(false);
+              requestAnimationFrame(() => labelButtonRef.current?.focus());
+            }
+          }} />
       ) : (
-        <button className="idea-node__label nodrag" onDoubleClick={startEditing} onKeyDown={(event) => {
+        <button ref={labelButtonRef} className="idea-node__label nodrag" onDoubleClick={startEditing} onKeyDown={(event) => {
           if (event.key !== 'Enter' && event.key !== 'F2') return;
           event.preventDefault();
           event.stopPropagation();
