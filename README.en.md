@@ -66,6 +66,12 @@ Open **⚙ Proveedores de IA**, create a profile, enter the model and choose **P
 
 **Privacy.** Maps and backups are saved on your computer. Before sending a request, open **Ver contexto** to review what the model will receive. FreeLLMAPI can forward data to a remote provider even when the gateway address is local. Keep the development key in your private `.env` file. Keys entered in settings are stored in Windows Credential Manager.
 
+## License
+
+MapaMental is distributed under the **GNU AGPLv3 only**. You may use, modify and redistribute it, and offer hosted services, including for commercial purposes. If you distribute a modified version or run it as a network service, the AGPL requires you to offer the corresponding source code under the same license. Preserve the `elkangri23` author attribution.
+
+The license covers the original project code, documentation and images. Dependencies retain their respective licenses. Read [LICENSE](LICENSE) and [COPYRIGHT](COPYRIGHT).
+
 ## Help and project status
 
 The **?** button opens the same manual available here, including when offline. The language selector changes the guide language. Editor controls are in Spanish.

@@ -2,6 +2,10 @@
 
 ## Sin publicar
 
+### Licencia
+
+- Se incorpora GNU AGPLv3 únicamente para el contenido original, con atribución a elkangri23. El README y las guías en español, francés e inglés explican el uso comercial, el alojamiento y la obligación de ofrecer el código fuente de versiones modificadas.
+
 ### Ayuda y guía de usuario
 
 - El README incluye capturas reales del huerto escolar y versiones en francés e inglés. El botón de ayuda ofrece el mismo manual de usuario que el repositorio en los tres idiomas.

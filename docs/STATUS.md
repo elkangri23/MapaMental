@@ -3,6 +3,8 @@
 **Actualizado:** 2026-11-18
 **Hito actual:** M3 — Presentaciones completado; M4 — Paquete Windows en curso. T-004 documental completada.
 
+**Licencia del repositorio:** contenido original del proyecto bajo GNU AGPLv3 únicamente, atribuido a `elkangri23`. Las dependencias conservan sus licencias propias.
+
 ## Estado
 
 - **Completadas:** fundamentos y diseño inicial (T-001–T-008, incluida T-004 documental), presentación y exportación PDF/PNG (T-011), presupuesto remoto (T-012), alcance/política inicial de identidad (T-018–T-020, T-022) y perfil personal (T-027).

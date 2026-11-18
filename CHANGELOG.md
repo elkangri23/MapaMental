@@ -457,6 +457,10 @@ Los cambios de producto visibles para el usuario se registran aquí. El trabajo 
 
 ## Sin publicar
 
+### Licencia
+
+- Se publica el código, los manuales y las imágenes originales bajo GNU AGPLv3 únicamente. Se permiten usos comerciales y alojamiento, con oferta del código fuente para las versiones modificadas distribuidas o ejecutadas como servicio. Atribución: `elkangri23`. Las dependencias conservan sus licencias.
+
 - Inicialización del repositorio Git y estructura documental.
 - Creación de una shell React/React Flow con edición local de nodos de ejemplo y panel contextual de chat.
 - Creación de un servicio Fastify con endpoint de estado `/api/health`.

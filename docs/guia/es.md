@@ -2,6 +2,8 @@
 
 **Español** · [Français](fr.md) · [English](en.md) · [Volver al repositorio](../../README.md)
 
+> Este software, incluida esta guía y las imágenes originales del repositorio, se ofrece bajo GNU AGPLv3 únicamente. Se permite el uso comercial y el alojamiento. Las versiones modificadas distribuidas o ejecutadas como servicio de red deben ofrecer su código fuente bajo la misma licencia. Conserva la atribución a `elkangri23`. Consulta [LICENSE](../../LICENSE) y [COPYRIGHT](../../COPYRIGHT). Las dependencias mantienen sus licencias propias.
+
 ## Primeros pasos
 
 La primera vez verás un mapa de muestra. Puedes editarlo o pulsar **＋ Proyecto** y empezar con tu propia idea. Para seguir este ejemplo, llama al proyecto «Nuestro huerto escolar» y, en el lienzo vacío, pulsa **＋ Añadir idea**. Haz doble clic en «Nueva idea», escribe «Huerto escolar» y confirma con **Intro**.

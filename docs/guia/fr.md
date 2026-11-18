@@ -2,6 +2,8 @@
 
 [Español](es.md) · **Français** · [English](en.md) · [Retour au dépôt](../../README.fr.md)
 
+> Ce logiciel, y compris ce guide et les images originales du dépôt, est distribué sous GNU AGPLv3 uniquement. L’utilisation commerciale et l’hébergement sont autorisés. Les versions modifiées distribuées ou exécutées comme service réseau doivent proposer leur code source sous la même licence. Conservez la mention `elkangri23`. Consultez [LICENSE](../../LICENSE) et [COPYRIGHT](../../COPYRIGHT). Les dépendances gardent leurs propres licences.
+
 ## Premiers pas
 
 À la première ouverture, Espacio Visual affiche une carte d’exemple. Modifiez-la ou choisissez **＋ Proyecto** (nouveau projet) pour partir de votre propre idée. Pour suivre cet exemple, nommez le projet « Notre potager scolaire » puis, sur la carte vide, choisissez **＋ Añadir idea**. Double-cliquez sur « Nueva idea », saisissez « Potager scolaire » et validez avec **Entrée**. Les noms des boutons reproduisent ceux de l’interface en espagnol.

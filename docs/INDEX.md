@@ -4,7 +4,8 @@ Actualizado: 2026-11-18. El estado se refiere a la documentación, no a que la f
 
 | Documento | Fuente de verdad para | Estado |
 |---|---|---|
-| [Español](../README.md) · [Français](../README.fr.md) · [English](../README.en.md) | Presentación visual, instalación y configuración | Tres ediciones con las mismas capturas del huerto escolar |
+| [Español](../README.md) · [Français](../README.fr.md) · [English](../README.en.md) | Presentación, instalación y resumen de licencia | README principal en español y ediciones en inglés y francés |
+| [`LICENSE`](../LICENSE) · [`COPYRIGHT`](../COPYRIGHT) | Licencia del software y atribución de autor | GNU AGPLv3 únicamente para contenido original; dependencias con licencia propia |
 | [Manual en español](guia/es.md) · [Guide en français](guia/fr.md) · [English guide](guia/en.md) | Mapa, chat, presentaciones, mantenimiento y preguntas frecuentes | Fuente del botón de ayuda en los tres idiomas |
 | [`designs/espacio-visual-personal.md`](designs/espacio-visual-personal.md) | Requisitos, alcance y comportamiento acordado | Revisado con Goldfish; implementación en curso |
 | [`IDEAS_FUTURAS.md`](IDEAS_FUTURAS.md) | Catálogo de extensiones posibles fuera de v1 | Ideas para priorizar; no son compromisos ni tareas activas |

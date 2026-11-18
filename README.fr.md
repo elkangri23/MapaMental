@@ -66,6 +66,12 @@ Ouvrez **⚙ Proveedores de IA**, créez un profil, renseignez le modèle et cli
 
 **Confidentialité.** La carte et les sauvegardes restent sur votre ordinateur. Avant une demande, ouvrez **Ver contexto** pour examiner ce qui sera transmis. FreeLLMAPI peut relayer les données à un fournisseur distant même si son adresse est locale. Conservez votre clé de développement dans votre fichier `.env` privé. Les clés saisies dans les paramètres sont conservées dans le Gestionnaire d’informations d’identification de Windows.
 
+## Licence
+
+MapaMental est distribué sous la **GNU AGPLv3 uniquement**. Vous pouvez l’utiliser, le modifier, le redistribuer et proposer un service hébergé, y compris à des fins commerciales. Si vous distribuez une version modifiée ou l’exécutez comme service réseau, l’AGPL exige de proposer le code source correspondant sous la même licence. Conservez la mention de l’auteur `elkangri23`.
+
+La licence couvre le code, la documentation et les images originales du projet. Les dépendances conservent leurs licences respectives. Consultez [LICENSE](LICENSE) et [COPYRIGHT](COPYRIGHT).
+
 ## Aide et avancement du projet
 
 Le bouton **?** ouvre le même guide que celui du dépôt, même hors connexion. Vous pouvez y choisir la langue de l’aide. Les commandes de l’éditeur sont en espagnol.

@@ -66,6 +66,12 @@ Abre **⚙ Proveedores de IA**, crea un perfil, introduce el modelo y pulsa **Pr
 
 **Privacidad.** El mapa y las copias se guardan en tu equipo. Antes de enviar una petición, abre **Ver contexto** para revisar lo que recibirá el modelo. FreeLLMAPI puede reenviar datos a un proveedor remoto aunque su dirección sea local. Guarda la clave de desarrollo en tu `.env` privado. Las claves introducidas en Ajustes se conservan en el almacén de credenciales de Windows.
 
+## Licencia
+
+MapaMental se distribuye bajo **GNU AGPLv3 únicamente**. Puedes usarlo, modificarlo, redistribuirlo y ofrecer servicios alojados, incluso con fines comerciales. Si distribuyes una versión modificada o ejecutas esa versión como servicio de red, la AGPL exige ofrecer su código fuente correspondiente bajo la misma licencia. Conserva el aviso de autoría de `elkangri23`.
+
+La licencia cubre el código, la documentación y las imágenes originales del proyecto. Las dependencias conservan sus respectivas licencias. Consulta el texto completo en [LICENSE](LICENSE) y los avisos en [COPYRIGHT](COPYRIGHT).
+
 ## Ayuda y estado del proyecto
 
 El botón **?** de la aplicación abre el mismo manual disponible aquí, también sin conexión. El selector cambia el idioma de la ayuda. Los controles del editor están en español.

@@ -2,6 +2,8 @@
 
 [Español](es.md) · [Français](fr.md) · **English** · [Back to the repository](../../README.en.md)
 
+> This software, including this guide and original repository images, is licensed under GNU AGPLv3 only. Commercial use and hosting are allowed. Modified versions distributed or run as a network service must offer their source code under the same license. Preserve attribution to `elkangri23`. See [LICENSE](../../LICENSE) and [COPYRIGHT](../../COPYRIGHT). Dependencies retain their own licenses.
+
 ## Getting started
 
 When you first open Espacio Visual, you’ll see a sample map. Edit it or choose **＋ Proyecto** (new project) to start your own. To follow this example, name the project “Our school garden” and choose **＋ Añadir idea** on the empty canvas. Double-click “Nueva idea”, type “School garden” and press **Enter**. Button names in this guide match the Spanish interface.
