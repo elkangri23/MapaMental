@@ -1,5 +1,9 @@
 # Cambios
 
+## Versión 0.1.4
+
+- Al abrir una idea vinculada desde una diapositiva, el mapa centra la tarjeta y la destaca brevemente con una animación suave que no deja una selección visual permanente. Se respeta la preferencia de movimiento reducido.
+
 ## Versión 0.1.3
 
 - Las ideas manuales y las propuestas de IA buscan espacio libre según el largo de sus etiquetas para evitar solapamientos.

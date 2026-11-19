@@ -46,8 +46,9 @@ The application uses branch content, instructions and filters to reduce repetiti
 1. Choose **Crear presentación**. **Agrupar ideas del mapa** groups your ideas locally into 1–100 slides. **Generar con IA** requests 1–12 slides. Leave the count blank for a draft of 3–7 slides.
 2. Review the AI draft and its linked ideas before you create a presentation or replace an existing one.
 3. Edit titles, subtitles, body text and key points. Use **Anterior** and **Siguiente** to navigate, and **Mover antes** or **Mover después** to reorder slides. You can add and delete slides in the editor.
-4. Add a crop table, a “Sow → Observe → Transplant” sequence or a sample form with fictional data. **Mejorar con IA** requests a draft for the current slide.
-5. **Imprimir / Guardar PDF** opens the browser print dialog for the entire deck. Choose the PDF destination to save it. **Exportar PNG** saves the current slide as an image.
+4. Choose an idea under **Ideas vinculadas** to return to it on the map. The map centers the card and highlights it briefly so you can find it.
+5. Add a crop table, a “Sow → Observe → Transplant” sequence or a sample form with fictional data. **Mejorar con IA** requests a draft for the current slide.
+6. **Imprimir / Guardar PDF** opens the browser print dialog for the entire deck. Choose the PDF destination to save it. **Exportar PNG** saves the current slide as an image.
 
 ## Storage, profile and privacy
 

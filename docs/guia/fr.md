@@ -46,8 +46,9 @@ L’application s’appuie sur le contenu de la branche, des consignes et des fi
 1. Cliquez sur **Crear presentación**. **Agrupar ideas del mapa** regroupe les idées localement en 1 à 100 diapositives. **Generar con IA** permet d’en demander de 1 à 12. Laissez le nombre vide pour obtenir un brouillon de 3 à 7 diapositives.
 2. Vérifiez le brouillon de l’IA et les idées associées avant de créer une présentation ou de remplacer la précédente.
 3. Modifiez les titres, sous-titres, textes et points clés. Parcourez la présentation avec **Anterior** et **Siguiente**. Réorganisez-la avec **Mover antes** et **Mover después**. L’éditeur permet aussi d’ajouter et de supprimer des diapositives.
-4. Ajoutez un tableau des cultures, un parcours « Semer → Observer → Repiquer » ou un formulaire illustré de données fictives. **Mejorar con IA** prépare un brouillon pour la diapositive actuelle.
-5. **Imprimir / Guardar PDF** ouvre la fenêtre d’impression du navigateur pour toute la présentation. Choisissez la destination PDF pour l’enregistrer. **Exportar PNG** enregistre la diapositive actuelle sous forme d’image.
+4. Cliquez sur une idée dans **Ideas vinculadas** pour la retrouver sur la carte. La vue se centre sur la carte et la met brièvement en évidence.
+5. Ajoutez un tableau des cultures, un parcours « Semer → Observer → Repiquer » ou un formulaire illustré de données fictives. **Mejorar con IA** prépare un brouillon pour la diapositive actuelle.
+6. **Imprimir / Guardar PDF** ouvre la fenêtre d’impression du navigateur pour toute la présentation. Choisissez la destination PDF pour l’enregistrer. **Exportar PNG** enregistre la diapositive actuelle sous forme d’image.
 
 ## Enregistrement, profil et confidentialité
 

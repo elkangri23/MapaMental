@@ -25,6 +25,7 @@ import type { IdeaNodeData } from '@espacio-visual/domain';
 type IdeaNode = Node<IdeaNodeData, 'idea'>;
 type LabelChange = (id: string, label: string) => void;
 const LabelChangeContext = createContext<LabelChange>(() => undefined);
+const HighlightedIdeaContext = createContext('');
 type Props = {
   nodes: IdeaNode[];
   edges: Edge[];
@@ -34,10 +35,13 @@ type Props = {
   onLabelChange: LabelChange;
   aiBusy: boolean;
   fitViewRequest: number;
+  focusRequest: { nodeId: string; requestId: number } | null;
+  onFocusHandled: (requestId: number) => void;
 };
 
 function IdeaNodeView({ id, data, selected }: NodeProps<IdeaNode>) {
   const onLabelChange = useContext(LabelChangeContext);
+  const highlightedIdeaId = useContext(HighlightedIdeaContext);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const cancelEditRef = useRef(false);
@@ -45,7 +49,7 @@ function IdeaNodeView({ id, data, selected }: NodeProps<IdeaNode>) {
   const tone = data.tone ?? 'lavender';
   const startEditing = () => { cancelEditRef.current = false; setDraft(data.label); setEditing(true); };
   return (
-    <div className={`idea-node idea-node--${tone}${selected ? ' is-selected' : ''}`}>
+    <div className={`idea-node idea-node--${tone}${selected ? ' is-selected' : ''}${id === highlightedIdeaId ? ' is-arriving' : ''}`}>
       <Handle type="target" position={Position.Left} />
       <div className="idea-node__eyebrow">{id === 'root' ? 'IDEA CENTRAL' : 'IDEA'}</div>
       {editing ? (
@@ -106,6 +110,32 @@ function FitMapOnRequest({ request }: { request: number }) {
   }, [fitView, request]);
   return null;
 }
+
+function FocusLinkedIdeaOnRequest({
+  request,
+  onHandled,
+  onHighlight,
+}: {
+  request: Props['focusRequest'];
+  onHandled: Props['onFocusHandled'];
+  onHighlight: (nodeId: string) => void;
+}) {
+  const { fitView } = useReactFlow();
+  useEffect(() => {
+    if (!request) return;
+    onHighlight(request.nodeId);
+    const duration = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450;
+    let secondFrame = 0;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => {
+        void fitView({ nodes: [{ id: request.nodeId }], padding: 0.65, maxZoom: 1.1, duration });
+        onHandled(request.requestId);
+      });
+    });
+    return () => { cancelAnimationFrame(firstFrame); cancelAnimationFrame(secondFrame); };
+  }, [fitView, onHandled, onHighlight, request]);
+  return null;
+}
 const ariaLabelConfig = {
   'node.a11yDescription.default': 'Pulsa Intro o espacio para seleccionar una idea. Pulsa Suprimir para eliminarla o Escape para cancelar.',
   'node.a11yDescription.keyboardDisabled': 'Pulsa Intro o espacio para seleccionar una idea. Después usa las flechas para moverla, Suprimir para eliminarla o Escape para cancelar.',
@@ -120,15 +150,29 @@ const ariaLabelConfig = {
   'handle.ariaLabel': 'Punto de conexión',
 };
 
-function MapCanvas({ nodes, edges, setNodes, setEdges, setSelectedNodeId, onLabelChange, aiBusy, fitViewRequest }: Props) {
+function MapCanvas({ nodes, edges, setNodes, setEdges, setSelectedNodeId, onLabelChange, aiBusy, fitViewRequest, focusRequest, onFocusHandled }: Props) {
   const [minimumZoom, setMinimumZoom] = useState(() => window.matchMedia('(max-width: 760px)').matches ? 0.4 : 0.25);
+  const [highlightedIdeaId, setHighlightedIdeaId] = useState('');
   const nodesRef = useRef(nodes);
+  const highlightTimer = useRef<number | undefined>(undefined);
+  const highlightFrame = useRef<number | undefined>(undefined);
   nodesRef.current = nodes;
+  const highlightLinkedIdea = useCallback((nodeId: string) => {
+    window.clearTimeout(highlightTimer.current);
+    if (highlightFrame.current !== undefined) cancelAnimationFrame(highlightFrame.current);
+    setHighlightedIdeaId('');
+    highlightFrame.current = requestAnimationFrame(() => setHighlightedIdeaId(nodeId));
+    highlightTimer.current = window.setTimeout(() => setHighlightedIdeaId(''), 1_450);
+  }, []);
   useEffect(() => {
     const mobileViewport = window.matchMedia('(max-width: 760px)');
     const updateMinimumZoom = () => setMinimumZoom(mobileViewport.matches ? 0.4 : 0.25);
     mobileViewport.addEventListener('change', updateMinimumZoom);
     return () => mobileViewport.removeEventListener('change', updateMinimumZoom);
+  }, []);
+  useEffect(() => () => {
+    window.clearTimeout(highlightTimer.current);
+    if (highlightFrame.current !== undefined) cancelAnimationFrame(highlightFrame.current);
   }, []);
   const onNodesChange: OnNodesChange<IdeaNode> = useCallback((changes) => {
     if (aiBusy) return;
@@ -150,15 +194,18 @@ function MapCanvas({ nodes, edges, setNodes, setEdges, setSelectedNodeId, onLabe
   return (
     <ReactFlowProvider>
       <LabelChangeContext.Provider value={onLabelChange}>
+       <HighlightedIdeaContext.Provider value={highlightedIdeaId}>
         <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} ariaLabelConfig={ariaLabelConfig}
           onlyRenderVisibleElements={nodes.length >= 100} nodesDraggable={!aiBusy} nodesConnectable={!aiBusy}
           elementsSelectable={!aiBusy} deleteKeyCode={null} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
           onConnect={onConnect} onNodeClick={onNodeClick} fitView fitViewOptions={fitViewOptions} minZoom={minimumZoom} maxZoom={1.6}>
           <FitMapOnRequest request={fitViewRequest} />
+          <FocusLinkedIdeaOnRequest request={focusRequest} onHandled={onFocusHandled} onHighlight={highlightLinkedIdea} />
           <Background variant={BackgroundVariant.Dots} gap={23} size={1} color="#dfe3ee" />
           <Controls position="bottom-left" showInteractive={false} />
           {nodes.length <= minimapMaxNodes && <MiniMap position="bottom-right" pannable zoomable nodeStrokeWidth={2} />}
         </ReactFlow>
+       </HighlightedIdeaContext.Provider>
       </LabelChangeContext.Provider>
     </ReactFlowProvider>
   );

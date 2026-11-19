@@ -161,6 +161,8 @@ export default function App() {
   const [recoveryOpen, setRecoveryOpen] = useState(false);
   const [mapListView, setMapListView] = useState(false);
   const [mapFitRequest, setMapFitRequest] = useState(0);
+  const [mapFocusRequest, setMapFocusRequest] = useState<{ nodeId: string; requestId: number } | null>(null);
+  const mapFocusSequence = useRef(0);
   const [mapListPage, setMapListPage] = useState(0);
   const [selectedNodeId, setSelectedNodeId] = useState('root');
   const [health, setHealth] = useState<'checking' | 'online' | 'offline'>('checking');
@@ -1506,12 +1508,22 @@ export default function App() {
   const deckUnlinkedIdeaIds = deckProposal?.scope.filter((id) => !deckLinkedIdeaIds.has(id)) ?? [];
   const sourceIdeaLabels = deckProposal || workspaceView === 'slides' ? new Map(nodes.map(({ id, data }) => [id, data.label])) : null;
 
+  const goToLinkedIdea = useCallback((nodeId: string) => {
+    setSelectedNodeId(nodeId);
+    mapFocusSequence.current += 1;
+    setMapFocusRequest({ nodeId, requestId: mapFocusSequence.current });
+    setWorkspaceView('map');
+  }, []);
+  const finishMapFocusRequest = useCallback((requestId: number) => {
+    setMapFocusRequest((current) => current?.requestId === requestId ? null : current);
+  }, []);
+
   const renderSourceIdea = (id: string) => {
     const label = sourceIdeaLabels?.get(id);
     return <li key={id}>{label === undefined ? 'Idea eliminada' : (
       <button type="button" className="quiet-button" disabled={aiBusy || loading}
-        aria-label={`Seleccionar en el mapa: ${label}`} aria-current={selectedNodeId === id ? 'true' : undefined}
-        onClick={() => { setSelectedNodeId(id); setWorkspaceView('map'); }}>
+        aria-label={`Ir a la idea en el mapa: ${label}`} aria-current={selectedNodeId === id ? 'true' : undefined}
+        onClick={() => goToLinkedIdea(id)}>
         {label}
       </button>
     )}</li>;
@@ -1771,7 +1783,8 @@ export default function App() {
             </>}
             {!loading && !mapListView && <Suspense fallback={<div className="canvas-overlay" role="status">Cargando el mapa…</div>}>
               <MapCanvas nodes={nodes} edges={edges} setNodes={setNodes} setEdges={setEdges}
-                setSelectedNodeId={setSelectedNodeId} onLabelChange={updateLabel} aiBusy={aiBusy} fitViewRequest={mapFitRequest} />
+                setSelectedNodeId={setSelectedNodeId} onLabelChange={updateLabel} aiBusy={aiBusy} fitViewRequest={mapFitRequest}
+                focusRequest={mapFocusRequest} onFocusHandled={finishMapFocusRequest} />
             </Suspense>}
             </>}
           </div>

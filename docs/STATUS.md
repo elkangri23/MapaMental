@@ -27,7 +27,7 @@
 
 ## Próximo trabajo
 
-**T-029 parcial:** la colocación manual y las propuestas IA evitan superponerse con tarjetas existentes; Ordenar y ajustar separa tarjetas por alto estimado y encuadra el mapa. Falta hacer explícita la acción de crear una subidea.
+**T-029 parcial:** la colocación manual y las propuestas IA evitan superponerse con tarjetas existentes; Ordenar y ajustar separa tarjetas por alto estimado y encuadra el mapa. Desde una diapositiva, abrir una idea vinculada centra el mapa y destaca la tarjeta brevemente. Falta hacer explícita la acción de crear una subidea.
 
 **Funciones anotadas para el siguiente diseño:** T-029, aclarar la creación manual de subideas y desarrollar ramas con propuestas IA jerárquicas; T-030, presentar diapositivas a pantalla completa con teclado. Ambas están pendientes de diseño e implementación, y se concretarán cuando termine la revisión funcional en curso.
 

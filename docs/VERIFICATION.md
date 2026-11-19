@@ -1,5 +1,9 @@
 # Criterios de aceptación
 
+## Navegación a idea vinculada desde una diapositiva — T-029 — 2026-11-19
+
+El botón de una idea vinculada vuelve al mapa, ajusta la vista a la tarjeta correspondiente y aplica un realce animado temporal. Tras 1,25 segundos termina la animación y la marca se retira; repetir la navegación vuelve a activar el efecto. Con `prefers-reduced-motion: reduce`, el mapa salta al destino y la tarjeta recibe un contorno estático temporal. La compilación completa pasó. No se registra recorrido visual manual en navegador.
+
 ## Distribución del mapa sin solapamientos — T-029 — 2026-11-19
 
 La colocación de subideas manuales y propuestas IA tiene en cuenta la altura estimada de las etiquetas y busca un espacio libre junto a la rama. Ordenar y ajustar distribuye los nodos por columna evitando cruces de tarjetas y encuadra el mapa mediante React Flow después de actualizar posiciones. Las etiquetas pueden partir palabras largas para mantenerse dentro de la tarjeta. La compilación completa pasó. No se registra recorrido manual ni evaluación de colisiones con una muestra real de mapas.

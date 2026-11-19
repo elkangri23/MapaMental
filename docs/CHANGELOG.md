@@ -2,6 +2,7 @@
 
 ## Sin publicar
 
+- Al abrir una idea vinculada desde una diapositiva, el mapa la centra y resalta brevemente; el efecto no deja una marca permanente y respeta movimiento reducido.
 - Se ajusta la colocación de ideas para evitar solapamientos y el botón Ordenar y ajustar encuadra el mapa completo.
 
 ### Próximas funciones
