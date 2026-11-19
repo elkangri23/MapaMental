@@ -27,7 +27,7 @@
 
 ## Próximo trabajo
 
-**Funciones anotadas para el siguiente diseño:** T-029, desarrollar y profundizar ramas del mapa mediante propuestas IA jerárquicas; T-030, presentar diapositivas a pantalla completa con teclado. Ambas están pendientes de diseño e implementación, y se concretarán cuando termine la revisión funcional en curso.
+**Funciones anotadas para el siguiente diseño:** T-029, aclarar la creación manual de subideas y desarrollar ramas con propuestas IA jerárquicas; T-030, presentar diapositivas a pantalla completa con teclado. Ambas están pendientes de diseño e implementación, y se concretarán cuando termine la revisión funcional en curso.
 
 Para T-028, medir INP con entrada física y latencia del autosave en perfil reproducible, comparar heap post-GC entre builds y localizar el reflow en una traza atribuible; mantener accesible la alternativa textual. En seguridad, integrar un DNS fixture en una petición HTTP hasta el socket, contrastar el modelo de amenazas y cubrir otros errores de almacenamiento. T-013 solo tiene pendiente el recorrido visual desde Configuración; el uninstaller directo ya conservó los datos. Las aceptaciones reales de proveedores, lector de pantalla y modo protegido dependen de servicios o dispositivos disponibles.
 
