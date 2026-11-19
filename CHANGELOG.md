@@ -1,5 +1,19 @@
 # Cambios
 
+## Versión 0.1.2
+
+- El instalador, su asistente y los accesos directos de Espacio Visual usan el icono del proyecto.
+- El paquete de Windows incluye el icono y los avisos de licencia y autoría.
+
+## Versión 0.1.1
+
+## Versión 0.1.2
+
+- El instalador, el asistente de instalación y los accesos directos de Espacio Visual muestran el icono oficial del proyecto.
+- Los paquetes de Windows incluyen el icono y los avisos AGPLv3 y de autoría.
+
+## Versión 0.1.1
+
 - El README y el manual están disponibles en español, francés e inglés. El recorrido del huerto escolar ilustra el mapa, dos sugerencias reales y el editor de diapositivas. La ayuda integrada permite elegir el idioma.
 
 - El botón `?` abre una guía de inicio y ayuda con mapas, sugerencias IA, diapositivas, proveedores, privacidad y FAQ; el README ahora explica instalación y primeros pasos.

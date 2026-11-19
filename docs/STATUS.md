@@ -7,6 +7,8 @@
 
 ## Estado
 
+- **Icono de Windows (T-013):** se añadió el icono de Espacio Visual al instalador, desinstalador y accesos directos. El empaquetado se actualizará como 0.1.2. Pendiente recorrer el nuevo instalador.
+
 - **Completadas:** fundamentos y diseño inicial (T-001–T-008, incluida T-004 documental), presentación y exportación PDF/PNG (T-011), presupuesto remoto (T-012), alcance/política inicial de identidad (T-018–T-020, T-022) y perfil personal (T-027).
 - **En curso:** T-009–T-010 (proveedores y calidad de IA), T-013–T-014 (instalador y guía de uso), T-015 (seguridad), T-016 (accesibilidad), T-017 (estabilidad de almacenamiento), T-028 (rendimiento) y las verificaciones reales de T-021/T-023–T-026.
 - **Último avance T-010:** las sugerencias ahora reciben señales por rama (cobertura, hojas, diapositivas y vacíos expresos), priorizan acciones de valor distinto y no rellenan tres tarjetas con ideas genéricas. Una respuesta real de FreeLLMAPI/gpt-oss-20b produjo propuestas para ubicación pendiente, registro de cosecha y tabla de calendario; el fallback sustituyó la tabla del modelo y retiró una carencia de clima no indicada en el mapa. Build completo correcto. T-010 sigue parcial por variedad de mapas/modelos y proveedores locales. [Evidencia](VERIFICATION.md#priorización-y-aterrizaje-de-sugerencias-ia-t-010-2026-11-17).

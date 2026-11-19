@@ -21,6 +21,8 @@ OutputBaseFilename=EspacioVisual-{#AppVersion}-Setup-x64
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
+SetupIconFile={#BundleDir}\packaging\windows\espacio-visual.ico
+UninstallDisplayIcon={app}\packaging\windows\espacio-visual.ico
 CloseApplications=yes
 RestartApplications=no
 
@@ -34,6 +36,6 @@ Name: "desktopicon"; Description: "Crear un acceso directo en el escritorio"; Fl
 Source: "{#BundleDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\Espacio Visual"; Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy RemoteSigned -File ""{app}\scripts\start-local.ps1"""; WorkingDir: "{app}"
-Name: "{group}\Detener Espacio Visual"; Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy RemoteSigned -File ""{app}\scripts\start-local.ps1"" -Stop"; WorkingDir: "{app}"
-Name: "{userdesktop}\Espacio Visual"; Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy RemoteSigned -File ""{app}\scripts\start-local.ps1"""; WorkingDir: "{app}"; Tasks: desktopicon
+Name: "{group}\Espacio Visual"; Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy RemoteSigned -File ""{app}\scripts\start-local.ps1"""; WorkingDir: "{app}"; IconFilename: "{app}\packaging\windows\espacio-visual.ico"
+Name: "{group}\Detener Espacio Visual"; Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy RemoteSigned -File ""{app}\scripts\start-local.ps1"" -Stop"; WorkingDir: "{app}"; IconFilename: "{app}\packaging\windows\espacio-visual.ico"
+Name: "{userdesktop}\Espacio Visual"; Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy RemoteSigned -File ""{app}\scripts\start-local.ps1"""; WorkingDir: "{app}"; IconFilename: "{app}\packaging\windows\espacio-visual.ico"; Tasks: desktopicon

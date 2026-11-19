@@ -23,6 +23,8 @@ El lanzador reinicia una instancia activa si cambia el modo. Para volver al modo
 
 ## Instalador Inno Setup
 
+El instalador 0.1.2 incluye el icono de Espacio Visual en el asistente, el desinstalador y sus accesos directos. El ZIP portátil también incluye el archivo del icono y los avisos de licencia.
+
 El proyecto del instalador está preparado en `packaging\windows\setup.iss`. Está configurado para instalar por usuario, crear accesos directos en el menú Inicio y ofrecer un acceso directo opcional en el escritorio. Las versiones 0.1.0 y 0.1.1 se compilaron con Inno Setup 6.7.3. El 2026-11-17, una prueba aislada instaló 0.1.0, guardó un proyecto, actualizó en la misma carpeta a 0.1.1, abrió el mapa conservado y desinstaló el programa sin borrar los datos. La instalación 0.1.1 actualizada creó accesos; sin privilegios de administrador, el acceso de inicio respondió HTTP 200 y el de parada detuvo el servicio. El uninstaller retiró la aplicación/accesos y dejó el marcador del proyecto. No se completó la ruta visual de Configuración porque la herramienta de control devolvió `GetCursorPos failed: Acceso denegado`. Detalle en [`VERIFICATION.md`](VERIFICATION.md#actualizacion-del-instalador-windows-y-conservacion-de-proyectos--t-013).
 
 ### Recorrido pendiente del instalador

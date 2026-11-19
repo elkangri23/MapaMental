@@ -1,5 +1,9 @@
 # Criterios de aceptación
 
+## Icono del instalador Windows — T-013 — 2026-11-19
+
+Se compiló el instalador Inno Setup y el ZIP portátil 0.1.2. El icono de 16 a 256 px está asignado al asistente, al desinstalador y a los accesos directos de Inicio y escritorio. Se extrajo el icono asociado del ejecutable Setup y se pudo abrir como imagen. El ZIP incluye el icono de Windows, el favicon de la interfaz web y los avisos LICENSE y COPYRIGHT. La compilación incluyó el sitio con favicon.ico. Queda pendiente recorrer visualmente una instalación y confirmar el icono en Inicio y Configuración.
+
 ## Manual ilustrado en español, francés e inglés (T-014)
 
 En la compilación de producción local se abrió la ayuda desde el lienzo en Chrome. Se seleccionaron español, francés e inglés. En cada caso cambiaron el título y el idioma del diálogo y aparecieron las seis preguntas frecuentes. El índice desplazó la ayuda hasta esa sección. Los tres manuales se incluyen en la compilación y se cargan al abrir la ayuda.

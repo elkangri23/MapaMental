@@ -47,7 +47,8 @@ try {
   New-Item -ItemType Directory -Path $stage | Out-Null
   foreach ($entry in @('package.json', 'package-lock.json', 'apps\server\package.json', 'apps\server\dist',
       'apps\web\package.json', 'apps\web\dist', 'packages\domain\package.json', 'packages\domain\dist',
-      'scripts\start-local.ps1', 'scripts\start-windows.cmd', 'scripts\stop-windows.cmd', 'docs\INSTALLATION.md')) {
+      'scripts\start-local.ps1', 'scripts\start-windows.cmd', 'scripts\stop-windows.cmd', 'docs\INSTALLATION.md',
+      'LICENSE', 'COPYRIGHT', 'packaging\windows\espacio-visual.ico')) {
     Copy-PackageEntry $entry
   }
 
