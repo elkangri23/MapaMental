@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-**Actualizado:** 2026-11-18
+**Actualizado:** 2026-11-19
 **Hito actual:** M3 — Presentaciones completado; M4 — Paquete Windows en curso. T-004 documental completada.
 
 **Licencia del repositorio:** contenido original del proyecto bajo GNU AGPLv3 únicamente, atribuido a `elkangri23`. Las dependencias conservan sus licencias propias.
@@ -10,6 +10,7 @@
 - **Icono de Windows (T-013):** se añadió el icono de Espacio Visual al instalador, desinstalador y accesos directos. El empaquetado se actualizará como 0.1.2. Pendiente recorrer el nuevo instalador.
 
 - **Completadas:** fundamentos y diseño inicial (T-001–T-008, incluida T-004 documental), presentación y exportación PDF/PNG (T-011), presupuesto remoto (T-012), alcance/política inicial de identidad (T-018–T-020, T-022) y perfil personal (T-027).
+- **Ajuste T-011:** la conversión del mapa ahora completa título, subtítulo y desarrollo además de las viñetas. La generación con IA pide que esos campos tengan contenido propio; el servidor recupera subtítulo y texto cuando el modelo los deja vacíos. Build completo correcto. Falta reevaluar la calidad de una presentación con proveedor real.
 - **En curso:** T-009–T-010 (proveedores y calidad de IA), T-013–T-014 (instalador y guía de uso), T-015 (seguridad), T-016 (accesibilidad), T-017 (estabilidad de almacenamiento), T-028 (rendimiento) y las verificaciones reales de T-021/T-023–T-026.
 - **Último avance T-010:** las sugerencias ahora reciben señales por rama (cobertura, hojas, diapositivas y vacíos expresos), priorizan acciones de valor distinto y no rellenan tres tarjetas con ideas genéricas. Una respuesta real de FreeLLMAPI/gpt-oss-20b produjo propuestas para ubicación pendiente, registro de cosecha y tabla de calendario; el fallback sustituyó la tabla del modelo y retiró una carencia de clima no indicada en el mapa. Build completo correcto. T-010 sigue parcial por variedad de mapas/modelos y proveedores locales. [Evidencia](VERIFICATION.md#priorización-y-aterrizaje-de-sugerencias-ia-t-010-2026-11-17).
 - **Nuevo ajuste T-010:** la generación y la API de aplicación comprueban duplicados contra todos los descendientes del nodo dentro del ámbito seleccionado. Una prueba E2E con Ollama simulado confirmó que se descarta la etiqueta de un nieto repetida y se conserva una idea nueva; la API la rechaza también al aplicar. `npm run build` pasó. Falta un proveedor real y detección de paráfrasis semánticas.

@@ -43,7 +43,7 @@ The application uses branch content, instructions and filters to reduce repetiti
 
 ## Creating and exporting slides
 
-1. Choose **Crear presentación**. **Agrupar ideas del mapa** groups your ideas locally into 1–100 slides. **Generar con IA** requests 1–12 slides. Leave the count blank for a draft of 3–7 slides.
+1. Choose **Crear presentación**. **Agrupar ideas del mapa** groups your ideas locally into 1–100 slides and fills the title, subtitle, body and key points from the map. **Generar con IA** requests 1–12 slides. Leave the count blank for a draft of 3–7 slides.
 2. Review the AI draft and its linked ideas before you create a presentation or replace an existing one.
 3. Edit titles, subtitles, body text and key points. Use **Anterior** and **Siguiente** to navigate, and **Mover antes** or **Mover después** to reorder slides. You can add and delete slides in the editor.
 4. Choose an idea under **Ideas vinculadas** to return to it on the map. The map centers the card and highlights it briefly so you can find it.

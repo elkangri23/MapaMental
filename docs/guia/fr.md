@@ -43,7 +43,7 @@ L’application s’appuie sur le contenu de la branche, des consignes et des fi
 
 ## Créer et exporter des diapositives
 
-1. Cliquez sur **Crear presentación**. **Agrupar ideas del mapa** regroupe les idées localement en 1 à 100 diapositives. **Generar con IA** permet d’en demander de 1 à 12. Laissez le nombre vide pour obtenir un brouillon de 3 à 7 diapositives.
+1. Cliquez sur **Crear presentación**. **Agrupar ideas del mapa** transforme localement la carte en 1 à 100 diapositives et répartit le contenu entre titre, sous-titre, développement et points clés. **Generar con IA** permet d’en demander de 1 à 12. Laissez le nombre vide pour obtenir un brouillon de 3 à 7 diapositives.
 2. Vérifiez le brouillon de l’IA et les idées associées avant de créer une présentation ou de remplacer la précédente.
 3. Modifiez les titres, sous-titres, textes et points clés. Parcourez la présentation avec **Anterior** et **Siguiente**. Réorganisez-la avec **Mover antes** et **Mover después**. L’éditeur permet aussi d’ajouter et de supprimer des diapositives.
 4. Cliquez sur une idée dans **Ideas vinculadas** pour la retrouver sur la carte. La vue se centre sur la carte et la met brièvement en évidence.

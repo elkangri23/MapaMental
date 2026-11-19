@@ -1,5 +1,9 @@
 # Criterios de aceptación
 
+## Distribución del texto al crear diapositivas — T-011 — 2026-11-19
+
+La conversión local del mapa asigna título, subtítulo, texto de desarrollo y puntos clave a partir de la jerarquía, los nombres y las relaciones existentes. La propuesta de presentación con IA recibe instrucciones para que el título sea conciso, el subtítulo sitúe el enfoque, el desarrollo resuma el tema en prosa y las viñetas aporten puntos complementarios. Si subtítulo o desarrollo llegan vacíos, el servidor los completa de forma determinista usando ideas vinculadas, sin añadir hechos externos. `npm run build` pasó. No se hizo una evaluación con LLM real; la calidad semántica de la prosa generada sigue pendiente de revisar.
+
 ## Navegación a idea vinculada desde una diapositiva — T-029 — 2026-11-19
 
 El botón de una idea vinculada vuelve al mapa, ajusta la vista a la tarjeta correspondiente y aplica un realce animado temporal. Tras 1,25 segundos termina la animación y la marca se retira; repetir la navegación vuelve a activar el efecto. Con `prefers-reduced-motion: reduce`, el mapa salta al destino y la tarjeta recibe un contorno estático temporal. La compilación completa pasó. No se registra recorrido visual manual en navegador.

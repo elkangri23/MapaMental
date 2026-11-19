@@ -1,5 +1,9 @@
 # Cambios
 
+## Versión 0.1.5
+
+- La conversión local del mapa ahora completa título, subtítulo y texto de desarrollo además de las ideas clave. La generación con IA recibe instrucciones más claras y completa campos vacíos con el contexto de las ideas vinculadas.
+
 ## Versión 0.1.4
 
 - Al abrir una idea vinculada desde una diapositiva, el mapa centra la tarjeta y la destaca brevemente con una animación suave que no deja una selección visual permanente. Se respeta la preferencia de movimiento reducido.

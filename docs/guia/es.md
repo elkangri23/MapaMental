@@ -43,7 +43,7 @@ La aplicación usa el contenido de la rama, instrucciones y filtros para evitar 
 
 ## Crear diapositivas y exportar
 
-1. Pulsa **Crear presentación**. **Agrupar ideas del mapa** convierte el mapa localmente en entre 1 y 100 diapositivas. **Generar con IA** permite pedir de 1 a 12 o dejar la cantidad vacía para recibir una propuesta de entre 3 y 7.
+1. Pulsa **Crear presentación**. **Agrupar ideas del mapa** convierte el mapa localmente en entre 1 y 100 diapositivas y reparte el contenido entre título, subtítulo, desarrollo e ideas clave. **Generar con IA** permite pedir de 1 a 12 o dejar la cantidad vacía para recibir una propuesta de entre 3 y 7.
 2. En el borrador de IA, revisa las diapositivas y las ideas vinculadas antes de crear o sustituir la presentación.
 3. Edita títulos, subtítulos, texto e ideas clave. Usa **Anterior**, **Siguiente**, **Mover antes** y **Mover después** para recorrer u ordenar las diapositivas. Desde el editor puedes añadir o quitar diapositivas.
 4. Pulsa una idea de **Ideas vinculadas** para volver a ella en el mapa. La tarjeta se centra y se resalta un instante para que la encuentres.
