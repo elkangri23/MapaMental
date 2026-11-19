@@ -7,7 +7,7 @@
 
 ### Próximas funciones
 
-- Se anotan las propuestas T-029 para expansión jerárquica de ideas con IA y T-030 para presentar diapositivas a pantalla completa.
+- Se anotan T-029 para expansión jerárquica de ideas, T-030 para presentar a pantalla completa y T-031 para variar las composiciones y recursos visuales de las diapositivas. Se conserva la distinción entre sugerencias de mapa y de diapositivas.
 
 ### Licencia
 
