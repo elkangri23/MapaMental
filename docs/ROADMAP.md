@@ -10,6 +10,7 @@ Los hitos son incrementos internos de implementación v1, no productos comercial
 | M3 — Presentaciones | Conversión desde mapa, edición y visor | Cantidad pedida coincide con navegación y PDF; PNG actual legible | T-011 |
 | M4 — Uso diario | Instalador Windows y documentación operativa | Instalación, inicio, actualización y desinstalación verificadas; guía coincide con paquete | T-013–T-014 |
 | M5 — Identidad y autenticación (diseño aprobado) | Modo protegido opcional con OIDC, segundo factor WebAuthn y recuperación TOTP | Sesión revocable; OIDC, alta/recuperación de passkeys y revisiones de seguridad recorridas | T-021, T-023–T-026 (T-018–T-020, T-022 y T-027 completadas) |
+| M6 — Creación y presentación | Desarrollo jerárquico de ideas con IA y modo para presentar diapositivas a pantalla completa | Previsualizar/editar y aplicar/deshacer una expansión en árbol; recorrer la presentación con teclado y controles de pantalla | T-029–T-030 (pendientes de diseño mientras continúa la revisión de la app) |
 
 La revisión de seguridad retomada el 2026-11-17 corrigió la respuesta de excepciones internas en rutas de autenticación: los fallos inesperados pasan a 500 genérico y dejan de filtrar mensajes de bibliotecas/almacenamiento. Build y `npm audit` pasaron. T-015 y T-026 permanecen parciales; [informe](reviews/2026-11-17-security-audit.md).
 
@@ -130,3 +131,6 @@ El usuario indicó continuar el roadmap. T-017 sigue parcial: se recorrieron mig
 
 
 Se muestrearon los colores de texto del CSS de impresión tras revisar el PDF: la relación más baja fue 4,63:1 para el subtítulo y las demás entre 6,60:1 y 13,84:1. No sustituye la revisión de todos los estados ni de salida física; queda pendiente guardar desde la vista previa interactiva.
+
+
+Las propuestas de producto T-029 y T-030 quedan registradas para diseñarse después de que el usuario termine de revisar el funcionamiento actual. El editor de diapositivas y la exportación ya existen; el modo de presentación a pantalla completa todavía no.

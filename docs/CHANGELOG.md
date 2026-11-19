@@ -2,6 +2,10 @@
 
 ## Sin publicar
 
+### Próximas funciones
+
+- Se anotan las propuestas T-029 para expansión jerárquica de ideas con IA y T-030 para presentar diapositivas a pantalla completa.
+
 ### Licencia
 
 - Se incorpora GNU AGPLv3 únicamente para el contenido original, con atribución a elkangri23. El README y las guías en español, francés e inglés explican el uso comercial, el alojamiento y la obligación de ofrecer el código fuente de versiones modificadas.
