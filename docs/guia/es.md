@@ -18,7 +18,7 @@ Puedes completar el mapa y convertirlo en diapositivas sin configurar IA. El bot
 
 - **Renombrar.** Haz doble clic en el nombre de una idea o dale el foco y pulsa **Intro** o **F2**. Confirma con **Intro** o cancela con **Escape**.
 - **Relacionar.** Arrastra un tirador desde una idea hasta otra. El vínculo va desde la primera idea hasta la segunda. Ese sentido ayuda a delimitar qué ideas se incluyen en una rama.
-- **Organizar.** Arrastra las tarjetas, cambia el zoom o pulsa **Ordenar**. En **Vista de lista** puedes recorrer y seleccionar ideas con el teclado.
+- **Organizar.** Arrastra las tarjetas, cambia el zoom o pulsa **Ordenar y ajustar**. En **Vista de lista** puedes recorrer y seleccionar ideas con el teclado.
 - **Eliminar.** Selecciona una rama y pulsa la papelera. La eliminación incluye sus descendientes. La idea central se conserva. El límite del mapa es de 10.000 ideas.
 
 ## Configurar la IA

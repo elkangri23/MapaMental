@@ -1,5 +1,10 @@
 # Cambios
 
+## Versión 0.1.3
+
+- Las ideas manuales y las propuestas de IA buscan espacio libre según el largo de sus etiquetas para evitar solapamientos.
+- Ordenar y ajustar separa las tarjetas y encuadra el mapa en la vista disponible.
+
 ## Versión 0.1.2
 
 - El instalador, su asistente y los accesos directos usan el icono oficial del proyecto.

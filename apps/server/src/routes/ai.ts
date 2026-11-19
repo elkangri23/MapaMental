@@ -1,7 +1,7 @@
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
 import { PassThrough } from 'node:stream';
 import { isDeepStrictEqual } from 'node:util';
-import { AI_DECK_SLIDE_LIMIT, buildProjectAiContext, isValidSlideTable, PROJECT_NODE_LIMIT, PROJECT_SLIDE_LIMIT, SLIDE_TABLE_LIMITS } from '@espacio-visual/domain';
+import { AI_DECK_SLIDE_LIMIT, buildProjectAiContext, isValidSlideTable, placeIdeaGroup, PROJECT_NODE_LIMIT, PROJECT_SLIDE_LIMIT, SLIDE_TABLE_LIMITS } from '@espacio-visual/domain';
 import type { ProviderKind } from '@espacio-visual/domain';
 import type { AiChatMessage, AiDeckProposal, AiDeckSlide, AiGenerationEvent, AiGenerationStage, AiIdeaProposal, AiProposal, AiSlideDraft, AiSuggestion, ProjectDocument, PresentationSlide } from '@espacio-visual/domain';
 import { generateProviderText, getActiveProviderForRequest } from '../services/provider-store.js';
@@ -350,14 +350,6 @@ function addContextualCalendarTableSuggestion(suggestions: AiSuggestion[], scope
   }
 }
 
-function ideaPosition(parent: IdeaNode, index: number, count: number) {
-  const { x, y } = parent.position;
-  const offsetX = x > 999_700 ? -300 : 300;
-  const halfHeight = (count - 1) / 2 * 112;
-  const centerY = Math.max(-1_000_000 + halfHeight, Math.min(1_000_000 - halfHeight, y));
-  return { x: x + offsetX, y: centerY - halfHeight + index * 112 };
-}
-
 function ideaLabelKey(label: string): string {
   return label.normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('es');
 }
@@ -380,7 +372,7 @@ function branchLabels(scope: { nodes: IdeaNode[]; edges: IdeaEdge[] }, parentNod
   return scope.nodes.filter(({ id }) => included.has(id)).map(({ data }) => data.label);
 }
 
-function sanitizedIdeas(value: unknown, parent: IdeaNode, existingLabels: string[]): AiIdeaProposal[] {
+function sanitizedIdeas(value: unknown, parent: IdeaNode, existingLabels: string[], existingNodes: IdeaNode[]): AiIdeaProposal[] {
   if (!Array.isArray(value) || value.length < 1 || value.length > 12) throw Object.assign(new Error('La propuesta debe contener entre 1 y 12 ideas.'), { statusCode: 502 });
   const tones = new Set(['lavender', 'mint', 'peach', 'blue']);
   const usedLabels = new Set(existingLabels.map(ideaLabelKey));
@@ -393,7 +385,8 @@ function sanitizedIdeas(value: unknown, parent: IdeaNode, existingLabels: string
     const id = `ai-${crypto.randomUUID()}`;
     return [{ id, label, tone: tones.has(String(entry.tone)) ? entry.tone as AiIdeaProposal['tone'] : 'blue' as const }];
   });
-  return ideas.map((idea, index) => ({ ...idea, position: ideaPosition(parent, index, ideas.length) }));
+  const positions = placeIdeaGroup(parent, ideas, existingNodes);
+  return ideas.map((idea, index) => ({ ...idea, position: positions[index] }));
 }
 
 function normalizeSlideBlocks(slide: PresentationSlide): PresentationSlide {
@@ -598,7 +591,7 @@ Omite sugerencias duplicadas, genéricas o que requieran hechos ausentes. Los va
     const content = await generateProviderText(provider.profile, provider.apiKey, [{ role: 'user', content: request.body.prompt.trim() }], system, signal);
     report('validating', provider.profile.kind);
     const parsed = parseJson(content);
-    const ideas = sanitizedIdeas(parsed.ideas, parent, existingBranchLabels);
+    const ideas = sanitizedIdeas(parsed.ideas, parent, existingBranchLabels, project.map.nodes as IdeaNode[]);
     if (typeof parsed.message !== 'string') throw Object.assign(new Error('La propuesta no incluye un mensaje válido.'), { statusCode: 502 });
     if (ideas.length === 0) {
       throw Object.assign(new Error('El modelo no propuso ideas nuevas para esta rama. Prueba a pedir otro enfoque.'), { statusCode: 422 });
@@ -809,7 +802,8 @@ Omite sugerencias duplicadas, genéricas o que requieran hechos ausentes. Los va
       usedLabels.add(label);
     }
     const allowedTones = new Set(['lavender', 'mint', 'peach', 'blue']);
-    const safeIdeas = ideas.map((idea, index) => ({ ...idea, tone: allowedTones.has(idea.tone) ? idea.tone : 'blue', position: ideaPosition(parent, index, ideas.length) }));
+    const positions = placeIdeaGroup(parent, ideas.map((idea) => ({ label: idea.label })), current.map.nodes as IdeaNode[]);
+    const safeIdeas = ideas.map((idea, index) => ({ ...idea, tone: allowedTones.has(idea.tone) ? idea.tone : 'blue', position: positions[index] }));
     const addedEdges: IdeaEdge[] = safeIdeas.map((idea) => ({ id: `ai-edge-${crypto.randomUUID()}`, source: parent.id, target: idea.id, type: 'smoothstep' }));
     const next: ProjectDocument = {
       ...current,

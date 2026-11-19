@@ -18,7 +18,7 @@ You can finish the map and turn it into slides without an AI provider. The **?**
 
 - **Rename an idea.** Double-click its name, or focus it and press **Enter** or **F2**. Press **Enter** to confirm or **Escape** to cancel.
 - **Connect ideas.** Drag a handle from one idea to another. The link runs from the first idea to the second. Its direction helps determine which ideas belong to a branch.
-- **Rearrange the map.** Drag cards, adjust the zoom or choose **Ordenar** for automatic layout. Choose **Vista de lista** to navigate and select ideas with the keyboard.
+- **Rearrange the map.** Drag cards, adjust the zoom or choose **Arrange and fit** to space them without overlap. Choose **List view** to navigate and select ideas with the keyboard.
 - **Delete a branch.** Select it and choose the bin. This also removes its descendants. The central idea stays in place. A map can hold up to 10,000 ideas.
 
 ## Connecting an AI provider

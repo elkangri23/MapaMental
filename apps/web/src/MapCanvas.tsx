@@ -12,6 +12,7 @@ import {
   Position,
   ReactFlow,
   ReactFlowProvider,
+  useReactFlow,
   type Connection,
   type Edge,
   type Node,
@@ -32,6 +33,7 @@ type Props = {
   setSelectedNodeId: (id: string) => void;
   onLabelChange: LabelChange;
   aiBusy: boolean;
+  fitViewRequest: number;
 };
 
 function IdeaNodeView({ id, data, selected }: NodeProps<IdeaNode>) {
@@ -89,6 +91,21 @@ function IdeaNodeView({ id, data, selected }: NodeProps<IdeaNode>) {
 const nodeTypes = { idea: memo(IdeaNodeView) };
 const fitViewOptions = { padding: 0.25 };
 const minimapMaxNodes = 1_000;
+
+function FitMapOnRequest({ request }: { request: number }) {
+  const { fitView } = useReactFlow();
+  const previousRequest = useRef(request);
+  useEffect(() => {
+    if (request === previousRequest.current) return;
+    previousRequest.current = request;
+    let secondFrame = 0;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => { void fitView({ ...fitViewOptions, duration: 250 }); });
+    });
+    return () => { cancelAnimationFrame(firstFrame); cancelAnimationFrame(secondFrame); };
+  }, [fitView, request]);
+  return null;
+}
 const ariaLabelConfig = {
   'node.a11yDescription.default': 'Pulsa Intro o espacio para seleccionar una idea. Pulsa Suprimir para eliminarla o Escape para cancelar.',
   'node.a11yDescription.keyboardDisabled': 'Pulsa Intro o espacio para seleccionar una idea. Después usa las flechas para moverla, Suprimir para eliminarla o Escape para cancelar.',
@@ -103,7 +120,7 @@ const ariaLabelConfig = {
   'handle.ariaLabel': 'Punto de conexión',
 };
 
-function MapCanvas({ nodes, edges, setNodes, setEdges, setSelectedNodeId, onLabelChange, aiBusy }: Props) {
+function MapCanvas({ nodes, edges, setNodes, setEdges, setSelectedNodeId, onLabelChange, aiBusy, fitViewRequest }: Props) {
   const [minimumZoom, setMinimumZoom] = useState(() => window.matchMedia('(max-width: 760px)').matches ? 0.4 : 0.25);
   const nodesRef = useRef(nodes);
   nodesRef.current = nodes;
@@ -137,6 +154,7 @@ function MapCanvas({ nodes, edges, setNodes, setEdges, setSelectedNodeId, onLabe
           onlyRenderVisibleElements={nodes.length >= 100} nodesDraggable={!aiBusy} nodesConnectable={!aiBusy}
           elementsSelectable={!aiBusy} deleteKeyCode={null} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
           onConnect={onConnect} onNodeClick={onNodeClick} fitView fitViewOptions={fitViewOptions} minZoom={minimumZoom} maxZoom={1.6}>
+          <FitMapOnRequest request={fitViewRequest} />
           <Background variant={BackgroundVariant.Dots} gap={23} size={1} color="#dfe3ee" />
           <Controls position="bottom-left" showInteractive={false} />
           {nodes.length <= minimapMaxNodes && <MiniMap position="bottom-right" pannable zoomable nodeStrokeWidth={2} />}

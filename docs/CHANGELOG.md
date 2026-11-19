@@ -2,6 +2,8 @@
 
 ## Sin publicar
 
+- Se ajusta la colocación de ideas para evitar solapamientos y el botón Ordenar y ajustar encuadra el mapa completo.
+
 ### Próximas funciones
 
 - Se anotan las propuestas T-029 para expansión jerárquica de ideas con IA y T-030 para presentar diapositivas a pantalla completa.

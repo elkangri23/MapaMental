@@ -18,7 +18,7 @@ Vous pouvez terminer la carte et la convertir en diapositives sans configurer d�
 
 - **Renommer.** Double-cliquez sur le nom d’une idée ou placez-y le focus et appuyez sur **Entrée** ou **F2**. Validez avec **Entrée** ou annulez avec **Échap**.
 - **Relier.** Faites glisser une poignée d’une idée à une autre. Le lien va de la première idée à la seconde. Ce sens contribue à définir les idées comprises dans une branche.
-- **Organiser.** Déplacez les cartes, ajustez le zoom ou cliquez sur **Ordenar** pour les disposer automatiquement. La **Vista de lista** permet de parcourir et de sélectionner les idées au clavier.
+- **Organiser.** Déplacez les cartes, ajustez le zoom ou cliquez sur **Organiser et ajuster** pour les disposer automatiquement sans chevauchement. La **Vue liste** permet de parcourir et de sélectionner les idées au clavier.
 - **Supprimer.** Sélectionnez une branche et cliquez sur la corbeille. Ses descendants sont également supprimés. L’idée centrale est conservée. Une carte peut contenir jusqu’à 10 000 idées.
 
 ## Configurer un fournisseur d’IA

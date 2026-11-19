@@ -1,5 +1,9 @@
 # Criterios de aceptación
 
+## Distribución del mapa sin solapamientos — T-029 — 2026-11-19
+
+La colocación de subideas manuales y propuestas IA tiene en cuenta la altura estimada de las etiquetas y busca un espacio libre junto a la rama. Ordenar y ajustar distribuye los nodos por columna evitando cruces de tarjetas y encuadra el mapa mediante React Flow después de actualizar posiciones. Las etiquetas pueden partir palabras largas para mantenerse dentro de la tarjeta. La compilación completa pasó. No se registra recorrido manual ni evaluación de colisiones con una muestra real de mapas.
+
 ## Icono del instalador Windows — T-013 — 2026-11-19
 
 Se compiló el instalador Inno Setup y el ZIP portátil 0.1.2. El icono de 16 a 256 px está asignado al asistente, al desinstalador y a los accesos directos de Inicio y escritorio. Se extrajo el icono asociado del ejecutable Setup y se pudo abrir como imagen. El ZIP incluye el icono de Windows, el favicon de la interfaz web y los avisos LICENSE y COPYRIGHT. La compilación incluyó el sitio con favicon.ico. Queda pendiente recorrer visualmente una instalación y confirmar el icono en Inicio y Configuración.

@@ -10,4 +10,5 @@ export * from './api.js';
 export * from './ai-context.js';
 export * from './provider.js';
 export * from './ai.js';
+export * from './idea-layout.js';
 

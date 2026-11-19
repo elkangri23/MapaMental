@@ -2,7 +2,7 @@ import { PersonalProfileButton } from './PersonalProfileButton.js';
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import type { Edge, Node } from '@xyflow/react';
 import type { IdeaNodeData } from '@espacio-visual/domain';
-import { AI_DECK_SLIDE_LIMIT, buildProjectAiContext, PROJECT_CHAT_MESSAGE_LIMIT, PROJECT_NODE_LIMIT, PROJECT_SCHEMA_VERSION, PROJECT_SLIDE_LIMIT, type FutureProjectPreview, type PresentationSlide, type ProjectDocument, type ProjectSummary, type SlideTable } from '@espacio-visual/domain';
+import { AI_DECK_SLIDE_LIMIT, avoidIdeaOverlaps, buildProjectAiContext, placeIdeaGroup, PROJECT_CHAT_MESSAGE_LIMIT, PROJECT_NODE_LIMIT, PROJECT_SCHEMA_VERSION, PROJECT_SLIDE_LIMIT, type FutureProjectPreview, type PresentationSlide, type ProjectDocument, type ProjectSummary, type SlideTable } from '@espacio-visual/domain';
 import { isLocalProviderUrl, type ProviderConfiguration, type ProviderKind, type ProviderProfile, type ProviderRates } from '@espacio-visual/domain';
 import type { AiChatMessage, AiDeckProposal, AiProposal, AiSlideProposal, AiSuggestion } from '@espacio-visual/domain';
 import { ProjectRequestError, projectsApi } from './api/projects.js';
@@ -160,6 +160,7 @@ export default function App() {
   const [backups, setBackups] = useState<Array<{ file: string; revision: number; updatedAt: string }>>([]);
   const [recoveryOpen, setRecoveryOpen] = useState(false);
   const [mapListView, setMapListView] = useState(false);
+  const [mapFitRequest, setMapFitRequest] = useState(0);
   const [mapListPage, setMapListPage] = useState(0);
   const [selectedNodeId, setSelectedNodeId] = useState('root');
   const [health, setHealth] = useState<'checking' | 'online' | 'offline'>('checking');
@@ -600,10 +601,7 @@ export default function App() {
       id,
       type: 'idea',
       ariaLabel: label,
-      position: {
-        x: parent.position.x + (parent.position.x > 999_700 ? -300 : 300),
-        y: parent.position.y + (parent.position.y > 999_870 ? -130 : 130),
-      },
+      position: placeIdeaGroup(parent, [{ label }], nodes)[0],
       data: { label, tone: 'blue' },
     };
     setNodes((current) => [...current, next]);
@@ -763,7 +761,9 @@ export default function App() {
       positions.set(id, { x: rootX + horizontalGap, y });
       placeChildren(id, 2, y - 90, y + 90, 1);
     });
+    avoidIdeaOverlaps(nodes, positions);
     setNodes((current) => current.map((node) => ({ ...node, position: positions.get(node.id) ?? node.position })));
+    setMapFitRequest((request) => request + 1);
   }, [aiBusy, edges, nodes]);
 
   const deleteSelectedBranch = useCallback(() => {
@@ -1680,7 +1680,7 @@ export default function App() {
               {workspaceView === 'map' ? <>
                 <button className="quiet-button" onClick={() => setWorkspaceView('slides')} disabled={!slides.length}>Ver diapositivas{slides.length ? ` · ${slides.length}` : ''}</button>
                 <button className="quiet-button" onClick={(event) => openDeckDialog(event.currentTarget)} disabled={!nodes.length || loading || aiBusy}><span>✦</span> Crear presentación</button>
-                <button className="quiet-button" onClick={organizeMap} disabled={!nodes.length} title="Ordenar el mapa"><span>⤢</span> Ordenar</button>
+                <button className="quiet-button" onClick={organizeMap} disabled={!nodes.length} title="Distribuir las ideas sin solaparlas y ajustar el mapa a la vista"><span>⤢</span> Ordenar y ajustar</button>
                 <button className="round-button" aria-label="Eliminar la rama seleccionada y sus ideas descendientes" onClick={deleteSelectedBranch} disabled={!selectedNodeId || selectedNodeId === 'root'} title="Eliminar la rama seleccionada y sus ideas descendientes">⌫</button>
                 <button className="quiet-button" aria-pressed={mapListView} onClick={() => setMapListView((view) => !view)}>{mapListView ? 'Volver al lienzo' : 'Vista de lista'}</button>
                 <button className="quiet-button" onClick={() => addIdea()} disabled={!project || loading || nodes.length >= PROJECT_NODE_LIMIT} title={nodes.length >= PROJECT_NODE_LIMIT ? `El mapa admite como máximo ${PROJECT_NODE_LIMIT.toLocaleString('es-ES')} ideas` : undefined}><span>＋</span> {nodes.length >= PROJECT_NODE_LIMIT ? `Límite alcanzado · ${PROJECT_NODE_LIMIT.toLocaleString('es-ES')}` : 'Añadir idea'}</button>
@@ -1771,7 +1771,7 @@ export default function App() {
             </>}
             {!loading && !mapListView && <Suspense fallback={<div className="canvas-overlay" role="status">Cargando el mapa…</div>}>
               <MapCanvas nodes={nodes} edges={edges} setNodes={setNodes} setEdges={setEdges}
-                setSelectedNodeId={setSelectedNodeId} onLabelChange={updateLabel} aiBusy={aiBusy} />
+                setSelectedNodeId={setSelectedNodeId} onLabelChange={updateLabel} aiBusy={aiBusy} fitViewRequest={mapFitRequest} />
             </Suspense>}
             </>}
           </div>
